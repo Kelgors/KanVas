@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="../bin/last/EasyCanvas.js"></script>
+	</head>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+	<body>
+		<canvas id="main"></canvas>
+	</body>
+	<!-- <script src="../tests/TestLib.js"></script>
+	<script src="../tests/RectangleTest.js"></script>-->
+	<script>
+		ec.ready(function() {
+			ec.Color.prototype.toString = function() {
+				return '{ '+this.r+', '+this.g+', '+this.b+' }';
+			};
+			var stage = new ec.Stage();
+			var layer = new ec.Layer({
+				canvas: 'main',
+				width: window.innerWidth,
+				height: window.innerHeight
+			});
+			stage.add(layer);
+			var r = new ec.Rectangle({
+				x: 0,
+				y: 0,
+				width: layer.width,
+				height: layer.height,
+				fill: new ec.Color({
+					r: Math.floor(Math.random() * 255),
+					g: Math.floor(Math.random() * 255),
+					b: Math.floor(Math.random() * 255)
+				}),
+				state: 0,
+				up: true,
+				c: {
+					r: true,
+					g: true,
+					b: true
+				}
+			});
+			var t = new ec.Text({
+				value: r.fill.toString(),
+				stroke: ec.Color.BLACK(),
+				fill: ec.Color.WHITE(),
+				size: 52,
+				position: new ec.Point({
+					x: layer.width / 2,
+					y: layer.height / 2
+				}),
+				lineWidth: 2,
+				update: function(data) {
+					var s = (data.timer).toString();
+					var m = s.split('.')[1];
+					if (m) {
+						m = m.substr(0, 2);
+					}
+					this.value = s.split('.')[0] + '.' + m +' seconds';
+					ec.Text.prototype.update.call(this, data);
+				}
+			});
+			r.update = function() {
+				var rand = Math.random();
+				if (this.c.r) {
+					this.fill.r += Math.floor(rand * 2);
+					if (this.fill.r > 250) { this.c.r = false }
+				} else {
+					this.fill.r -= Math.floor(rand * 2);
+					if (this.fill.r < 5) { this.c.r = true }
+				}
+				if (this.c.g) {
+					this.fill.g += Math.floor(rand * 2);
+					if (this.fill.g > 250) { this.c.g = false }
+				} else {
+					this.fill.g -= Math.floor(rand * 2);
+					if (this.fill.g < 5) { this.c.g = true }
+				}
+				if (this.c.b) {
+					this.fill.b += Math.floor(rand * 2);
+					if (this.fill.b > 250) { this.c.b = false }
+				} else {
+					this.fill.b -= Math.floor(rand * 2);
+					if (this.fill.b < 5) { this.c.b = true }
+				}
+			};
+			r.currentPostion = r.position.clone();
+			layer.add(r);
+			layer.add(t);
+			stage.run();
+		});
+	</script>
+</html>
