@@ -77,9 +77,15 @@ ec.Object.prototype = {
 			return t;
 		}
 	},
-	toJSON: function(){
+	stringify: function() {
 		return JSON.stringify(this);
 	},
+	/**
+	*  Equivalent of instanceof but for ec.Objects
+	*  @param {function} the type of object ( ec.Object, not 'ec.Object' )
+	*  @type Boolean
+	*  @return {Boolean}
+	*/
 	inheritsof: function(type) {
 		return this._getInheritance(this.info).match(new RegExp( type.prototype.info.type )) == type.prototype.info.type;
 	},
@@ -88,8 +94,20 @@ ec.Object.prototype = {
 			? info.type + '|' + this._getInheritance(info.parent)
 			: info.type;
 	},
+	/**
+	* Return this type as String
+	* @return {String}
+	*/
 	toString: function(){
 		return this.info.type;
+	},
+	/**
+	*  Create a new Event Handler for this ec.Object
+	*  @param {string} event
+	*  @param {function} function to perform when the event's spreading
+	*/
+	on: function(event, fn) {
+		ec.EventManager.add(this, event, fn);
 	}
 	
 };

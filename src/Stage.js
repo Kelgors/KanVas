@@ -1,5 +1,7 @@
 ec.Stage = function(settings) {
 	ec.Object.call(this, settings);
+	this.timer = new ec.Timer();
+	this.layers = new Array();
 };
 
 ec.Stage.prototype = {
@@ -9,8 +11,8 @@ ec.Stage.prototype = {
 			return ec.Stage;
 		}
 	},
-	timer: new ec.Timer(),
-	layers: new Array(),
+	timer: null,
+	layers: null,
 	update: function() {
 		for ( var i in this.layers ) {
 			this.layers[i].update(this);
@@ -20,7 +22,6 @@ ec.Stage.prototype = {
 		for ( var i in this.layers ) {
 			this.layers[i].draw(this);
 		}
-		
 	},
 	run: function() {
 		this.isRunning = true;

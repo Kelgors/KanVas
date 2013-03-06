@@ -98,13 +98,6 @@ ec.Rectangle.prototype = {
 		return this.info.type + ' ' + this.position.toString() + ' ' + this.size.toString();
 	},
 	/**
-	 * Not implemented Yet !
-	 * @returns {String}
-	 */
-	toJSON: function() {
-		return JSON.stringify(this);
-	},
-	/**
 	 * Clone this instance
 	 * @type ec.Rectangle
 	 * @returns {ec.Rectangle}

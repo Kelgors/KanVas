@@ -37,7 +37,6 @@ ec.EventManager = {
 			document[this.type.add](evt, this.handler, false);
 		}
 		this.events[evt].push( { o: obj, func: fn } );
-		
 	},
 	/**
 	 * Delete specified event for the specified object
@@ -54,8 +53,8 @@ ec.EventManager = {
 		}
 	},
 	/**
-	 * Main handler for events
-	 * @param e
+	 * Main handler for all events
+	 * @param {Event} e
 	 */
 	handler: function(e) {
 		e.mousePosition = ec.Mouse.getPosition(e);
@@ -68,7 +67,10 @@ ec.EventManager = {
 	 * Delete all events
 	 */
 	purge: function() {
-		throw new Error('Not Implemented Yet');
+		for (var i in this.events) { 
+			document[this.type.rem](i, this.handler, false); 
+		}
+		this.events = {};
 	},
 	/**
 	 * Reset all ec.EventManager.app variables

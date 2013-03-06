@@ -122,6 +122,7 @@ ec.Vector2.prototype = {
 		});
 	}
 };
+ec.extend(ec.Vector2, ec.Point);
 /**
  * Perform an addition with two Vector2
  * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
@@ -194,6 +195,5 @@ ec.Vector2.distanceSquared = function(v1, v2) {
  * @returns {ec.Vector2}
  */
 ec.Vector2.One = function() {
-	return new Vector2({ x: 1, y: 1});
+	return new ec.Vector2({ x: 1, y: 1});
 };
-ec.extend(ec.Vector2, ec.Point);

@@ -92,10 +92,10 @@ ec.Color.invert = function(o) {
 };
 /**
  * Get a random color
- * @returns {cie.Color}
+ * @returns {ec.Color}
  */
 ec.Color.random = function () {
-    return new cie.Color(Math.random() * 256, Math.random() * 256, Math.random() * 256, 1);
+    return new ec.Color(Math.random() * 256, Math.random() * 256, Math.random() * 256, 1);
 };
 ec.extend(ec.Color, ec.Object);
 /**

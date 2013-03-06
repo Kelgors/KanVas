@@ -24,7 +24,6 @@ ec.Shape = function(settings) {
 			default:
 				this[i] = settings[i]; break;
 		}
-		
 	}
 	/* Support of draggable && clickable */
 	if (ec.EventManager) {
