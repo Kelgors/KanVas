@@ -9,13 +9,6 @@ Finally, i don't really like the approach of the subject but some functionality 
 
 If KineticJS suits you, i think you can go your way.
 
-### Bugs
-
-Some bugs remains in ec.Object class
-* equals method
-* clone method
-* compare method
-
 ### Next new functionalities
 * Image class
 * Line class

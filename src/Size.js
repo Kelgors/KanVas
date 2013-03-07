@@ -3,7 +3,9 @@
  * @param settings
  * @param settings.width
  * @param settings.height
- * @type ec.Size
+ * @constructor
+ * @extends {ec.Object}
+ * @type {ec.Size}
  * @returns {ec.Size}
  */
 ec.Size = function(settings) {
@@ -19,15 +21,18 @@ ec.Size.prototype = {
 			return ec.Size;
 		}
 	},
+	/** @define {number} */
 	width: 0,
+	/** @define {number} */
 	height: 0,
 	/**
 	 * Check the equality with ec.Size or a scalar variable
 	 * @param {ec.Size|Number} o
+	 * @override
 	 * @returns {Boolean}
 	 */
 	equals: function(o){
-		if (o instanceof ec.Size) {
+		if (o.inheritsof(ec.Size)) {
 			return this.width == o.width && this.height == o.height;
 		} else if (typeof o == 'number') {
 			return this.width == o && this.height == o;
@@ -40,6 +45,7 @@ ec.Size.prototype = {
 	/**
 	 * Performs a comparison between two size.
 	 * @param o
+	 * @override
 	 * @type ec.Size
 	 * @returns {ec.Size}
 	 * @description if this width is more than the other, it will returns 1 && if this height is less than the other, it will return -1. 0 for equality
@@ -57,6 +63,7 @@ ec.Size.prototype = {
 	},
 	/**
 	 * Clone this instance of ec.Size
+	 * @override
 	 * @type ec.Size
 	 * @returns {ec.Size}
 	 */

@@ -6,7 +6,7 @@ ec.Image = function(id) {
 ec.Image.prototype = {
 	imageSrc: null,
 	image: null,
-	draw: function() {
+	draw: function(data) {
 		
 	}
 };

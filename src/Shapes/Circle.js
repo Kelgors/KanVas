@@ -27,6 +27,9 @@ ec.Circle.prototype = {
 	draw: function(data) {
 		/** @returns {CanvasRenderingContext2D} */
 		var ctx = data.context;
+		if (this.graphics) {
+			this.graphics.beforedraw();
+		}
 		if (this.radius > 0 && this.fill || this.stroke && this.radius > 0) {
 			ctx.beginPath();
 			ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, Math.PI * 2 );
@@ -40,6 +43,9 @@ ec.Circle.prototype = {
 				ctx.lineWidth = this.lineWidth;
 				ctx.stroke();
 			}
+		}
+		if (this.graphics) {
+			this.graphics.afterdraw();
 		}
 	},
 	/**

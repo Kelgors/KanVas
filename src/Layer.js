@@ -83,11 +83,13 @@ ec.Layer.prototype = {
 	},
 	draw: function(stage) {
 		this.context.clearRect(0, 0, this.width, this.height);
+
 		for ( var i = 0; i < this.components.length; i++ ) {
 			if ( this.components[i].draw ) {
 				this.components[i].draw({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
 			}
 		}
+		this._restoreContext();
 	}
 };
 

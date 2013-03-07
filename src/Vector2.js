@@ -1,7 +1,11 @@
 /**
- * 
- * @param settings
- * @type ec.Vector2
+ * Vector object with two components
+ * @param settings		{Object}
+ * @param settings.x	{Number}	X Component
+ * @param settings.y	{Number}	Y Component
+ * @constructor
+ * @extends {ec.Point}
+ * @type {ec.Vector2}
  * @returns {ec.Vector2}
  */
 ec.Vector2 = function(settings) {
@@ -32,7 +36,7 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Substract to each value of this instance o
-	 * @param o {Number|ec.Point} Numeric value|Other Point
+	 * @param {Number|ec.Point} Numeric value|Other Point
 	 * @returns {ec.Vector2} this instance
 	 */
 	substracts: function(value){
@@ -99,6 +103,13 @@ ec.Vector2.prototype = {
 		
 		return NaN;
 	},
+	/**
+	 * Performs a comparison between two Vector2
+	 * @override
+	 * @param {ec.Point} o
+	 * @type {ec.Point}
+	 * @returns	{ec.Point}
+	 */
 	compare: function(o) {
 		if (o.inheritsof(ec.Point)) {
 			var x = 0, y = 0;
@@ -112,7 +123,8 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Clone this instance of Vector2
-	 * @type ec.Vector2
+	 * @override
+	 * @type {ec.Vector2}
 	 * @returns {ec.Vector2}
 	 */
 	clone: function() {
@@ -195,5 +207,5 @@ ec.Vector2.distanceSquared = function(v1, v2) {
  * @returns {ec.Vector2}
  */
 ec.Vector2.One = function() {
-	return new ec.Vector2({ x: 1, y: 1});
+	return new Vector2({ x: 1, y: 1});
 };

@@ -1,5 +1,7 @@
 /**
  * Basic instance
+ * @constructor
+ * @type {ec.Object}
  * @returns {ec.Object}
  */
 ec.Object = function(settings) {
@@ -17,26 +19,27 @@ ec.Object.prototype = {
 	},
 	/**
 	 * Return a clone of this instance
-	 * @type ec.Object
-	 * @returns	{ec.Object}
+	 * @type {ec.Object}
+	 * @returns	{ec.Object} the cloned object
 	 */
 	clone: function() {
-		var o = new ec[this.info.type.split('.')[1]]();
-		for ( var i in this ) {
-			if ( typeof(i) != 'function' ){
+		var o = this.constructor();
+		for(var i in this)
+			if (typeof(this[i]) == 'object') {
+				o[i] = this[i].inheritsof ? this[i].clone() : ec._clone(this[i]);
+			} else {
 				o[i] = this[i];
 			}
-		}
 		return o;
 	},
 	/**
 	 * Check if each value of this equals to others value
-	 * @param o {Object} other
-	 * @type Boolean
-	 * @returns {Boolean}
+	 * @param o {ec.Object} other
+	 * @type {boolean}
+	 * @returns {boolean}
 	 */
 	equals: function(o) {
-		if (o instanceof ec.Object) {
+		if (o.inheritsof(ec.Object)) {
 			for (var i in this) {
 				if (this[i] !== o[i]) {
 					return false;
@@ -77,14 +80,23 @@ ec.Object.prototype = {
 			return t;
 		}
 	},
+	/**
+	* Get the JSON representation of this instance
+	* @return {String}
+	*/
 	stringify: function() {
-		return JSON.stringify(this);
+		return JSON.stringify(this, function(k, v) {
+			if (k === 'parent') {
+				return undefined;
+			}
+			return v;
+		});
 	},
 	/**
 	*  Equivalent of instanceof but for ec.Objects
-	*  @param {function} the type of object ( ec.Object, not 'ec.Object' )
-	*  @type Boolean
-	*  @return {Boolean}
+	*  @param {Object.<String, Function>} the type of object ( ec.Object, not 'ec.Object' )
+	*  @type {boolean}
+	*  @return {boolean}
 	*/
 	inheritsof: function(type) {
 		return this._getInheritance(this.info).match(new RegExp( type.prototype.info.type )) == type.prototype.info.type;
@@ -103,8 +115,9 @@ ec.Object.prototype = {
 	},
 	/**
 	*  Create a new Event Handler for this ec.Object
-	*  @param {string} event
-	*  @param {function} function to perform when the event's spreading
+	*  @param {String} event
+	*  @param {Function(Event)} function to perform when the event's spreading
+	*  @remarks You can add as many 'mousemove' events as you want to same item, for example
 	*/
 	on: function(event, fn) {
 		ec.EventManager.add(this, event, fn);

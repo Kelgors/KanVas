@@ -3,7 +3,9 @@
  * @param settings		{Object}
  * @param settings.x	{Number}	X Component
  * @param settings.y	{Number}	Y Component
- * @type ec.Point
+ * @constructor
+ * @extends {ec.Object}
+ * @type {ec.Point}
  * @returns {ec.Point}
  */
 ec.Point = function(settings) {
@@ -18,12 +20,15 @@ ec.Point.prototype = {
 			return ec.Point;
 		}
 	},
+	/** @define {number} */
 	x: 0,
+	/** @define {number} */
 	y: 0,
 	/**
 	 * Check if X-Y component are equals to this instance
-	 * @param o	{ec.Point}
-	 * @returns {Boolean}
+	 * @override
+	 * @param {ec.Point}
+	 * @returns {boolean}
 	 */
 	equals: function(o) {
 		if (o.inheritsof(ec.Point)) {
@@ -33,9 +38,10 @@ ec.Point.prototype = {
 	},
 	/**
 	 * Performs a comparison between two points
+	 * @override
 	 * @param {ec.Point} o
-	 * @type ec.Point
-	 * @returns	ec.Point
+	 * @type {ec.Point}
+	 * @returns	{ec.Point}
 	 */
 	compare: function(o) {
 		if (o.inheritsof(ec.Point)) {
@@ -51,16 +57,16 @@ ec.Point.prototype = {
 	},
 	/**
 	 * get the string representation of this object
-	 * @type String
+	 * @override
+	 * @type {String}
 	 * @return {String}
 	 */
-	toString: function()
-	{
+	toString: function() {
 		return '{ x: ' + this.x + ', y: ' + this.y + ' }'; 
 	},
 	/**
 	 * Return this instance of Point as a Vector2
-	 * @type ec.Vector2
+	 * @type {ec.Vector2}
 	 * @returns {ec.Vector2}
 	 */
 	toVector2: function() {
@@ -71,7 +77,7 @@ ec.Point.prototype = {
 	},
 	/**
 	 * Clone this instance of ec.Point
-	 * @type ec.Point
+	 * @override
 	 * @returns {ec.Point}
 	 */
 	clone: function() {

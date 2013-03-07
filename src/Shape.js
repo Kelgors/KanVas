@@ -4,6 +4,17 @@ ec.Shape = function(settings) {
 	/* Redefine position && currentPosition for this construction */
 	this.currentPosition = new ec.Point();
 	this.position = new ec.Point();
+	this.transform = new ec.Object({
+		m11: 1,
+		m12: 0,
+		m21: 0,
+		m22: 1,
+		dx: 0,
+		dy: 0
+	});
+	this.defaultTransform = this.transform.clone();
+	this.scale = new ec.Point({ x:1,y:1 });
+	this.defaultScale = this.scale.clone();
 	/** 
 	 * Default random value associate to this shape, to simulate its own behavior
 	 * @returns {Number} Number[0-1]
@@ -38,6 +49,7 @@ ec.Shape = function(settings) {
 			this.counter = ec.counter++;
 		}
 	}
+	this.graphics = new ec.Graphics();
 };
 
 ec.Shape.prototype = {
@@ -53,6 +65,11 @@ ec.Shape.prototype = {
 	lineWidth : 1,
 	clickable : false,
 	draggable : false,
+	transform: null,
+	defaultTransform: null,
+	scale: null,
+	defaultScale: null,
+	graphics: null,
 	/** Element for floating effect */
 	float: {
 		speed: null,
