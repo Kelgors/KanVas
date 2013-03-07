@@ -7,6 +7,6 @@ ec.Image.prototype = {
 	imageSrc: null,
 	image: null,
 	draw: function(data) {
-		
+		// TODO: draw image, wait for ec.Graphics support
 	}
 };

@@ -16,7 +16,6 @@ window.ec = {
 	* @param {ec.Object} an ec.Object's type
 	*/
 	extend: function(that, p) {
-		console.log('---- BEGIN ' + that.prototype.info.type + ' ----');
 		/* Inheritance based on John Resigs code
 		* http://ejohn.org/blog/simple-javascript-inheritance */
 		var fnTest = /xyz/.test(function(){xyz;}) ? /\bparent\b/ : /.*/;

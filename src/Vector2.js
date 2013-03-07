@@ -201,8 +201,6 @@ ec.Vector2.distanceSquared = function(v1, v2) {
 };
 /**
  * Get a Vector2 instance x=1 && y=1
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
  * @type ec.Vector2
  * @returns {ec.Vector2}
  */

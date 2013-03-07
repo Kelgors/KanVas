@@ -103,7 +103,7 @@ ec.extend(ec.Color, ec.Object);
  * @type ec.Color
  * @returns {ec.Color}
  */
-ec.Color.BLACK = function() { return new ec.Color({ name:'black' }); };
+ec.Color.BLACK = function() { return new ec.Color({ name:'black', r: 0, g: 0, b: 0 }); };
 ec.Color.WHITE = function() { return new ec.Color({ r: 255, g: 255, b: 255, name:'white' }); };
 ec.Color.RED = function() { return new ec.Color({ r: 255, name: 'red' }); };
 ec.Color.GREEN = function() { return new ec.Color({ g: 255, name:'green' }); };

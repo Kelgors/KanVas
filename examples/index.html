@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<script src="../bin/last/EasyCanvas.js"></script>
+		<script src="../builds/last-build/EasyCanvas.js"></script>
 	</head>
 	<style>
 		html, body {
@@ -91,6 +91,20 @@
 			r.currentPostion = r.position.clone();
 			layer.add(r);
 			layer.add(t);
+			
+			window.onresize= function() {
+				var x = window.innerWidth/2, x;
+				if (x > layer.width - layer.context.measureText(t.value).width/2) {
+					x = layer.width - layer.context.measureText(t.value).width/2;
+				} else if (x < layer.context.measureText(t.value).width/2) {
+					x = layer.context.measureText(t.value).width/2;
+				}
+				t.position = new ec.Point({
+					x: x,
+					y: window.innerHeight/2 < layer.height - t.size/2 ? window.innerHeight/2 : layer.height - t.size/2
+				});
+			};
+			
 			stage.run();
 		});
 	</script>

@@ -17,7 +17,6 @@ window.ec = {
 	* @param {ec.Object} an ec.Object's type
 	*/
 	extend: function(that, p) {
-		console.log('---- BEGIN ' + that.prototype.info.type + ' ----');
 		/* Inheritance based on John Resigs code
 		* http://ejohn.org/blog/simple-javascript-inheritance */
 		var fnTest = /xyz/.test(function(){xyz;}) ? /\bparent\b/ : /.*/;
@@ -125,7 +124,9 @@ window.ec = {
             || /^\s*function\s*(\b[a-z$_][a-z0-9$_]*\b)*\s*\((|([a-z$_][a-z0-9$_]*)(\s*,[a-z$_][a-z0-9$_]*)*)\)\s*{\s*\[native code\]\s*}\s*$/i.test(String(f)));
 	}
 };
-window.ec._set_requestAnimFrame();ec.Mouse = {
+window.ec._set_requestAnimFrame();
+
+ec.Mouse = {
 	/**
 	 * Get the absolute mouse position as ec.Point from Event 
 	 * @param {MouseEvent} e
@@ -168,7 +169,9 @@ window.ec._set_requestAnimFrame();ec.Mouse = {
 	getY: function(e) {
 		return e.layerY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
 	}
-};ec.EventManager = {
+};
+
+ec.EventManager = {
 	init: function() {
 		if (document.attachEvent) {
 			this.type = ec.EventManager.TYPE.ATTACH;
@@ -257,7 +260,9 @@ ec.EventManager.TYPE = {
 	ADDLISTEN: { add: 'addEventListener', rem: 'removeEventListener' },
 	OLDIE: {add: 'attachEvent', rem: 'detachEvent' }
 };
-ec.EventManager.init();/**
+ec.EventManager.init();
+
+/**
  * Basic instance
  * @constructor
  * @type {ec.Object}
@@ -382,7 +387,9 @@ ec.Object.prototype = {
 		ec.EventManager.add(this, event, fn);
 	}
 	
-};/**
+};
+
+/**
  * Color Object
  * @param settings {Object}
  * @param settings.r {Number} [0-255]
@@ -487,7 +494,7 @@ ec.extend(ec.Color, ec.Object);
  * @type ec.Color
  * @returns {ec.Color}
  */
-ec.Color.BLACK = function() { return new ec.Color({ name:'black' }); };
+ec.Color.BLACK = function() { return new ec.Color({ name:'black', r: 0, g: 0, b: 0 }); };
 ec.Color.WHITE = function() { return new ec.Color({ r: 255, g: 255, b: 255, name:'white' }); };
 ec.Color.RED = function() { return new ec.Color({ r: 255, name: 'red' }); };
 ec.Color.GREEN = function() { return new ec.Color({ g: 255, name:'green' }); };
@@ -500,7 +507,9 @@ ec.Color.PURPLE = function() { return new ec.Color({ r: 160, g: 32, b: 240, name
 ec.Color.PINK = function() { return new ec.Color({ r: 255, g: 192, b: 203, name:'pink' }); };
 ec.Color.Gray = function(factor) {
 	return (new ec.Color({ name: 'Gray '+factor, r: factor, g: factor, b: factor }));
-};/**
+};
+
+/**
  * Point object as a simple point
  * @param settings		{Object}
  * @param settings.x	{Number}	X Component
@@ -589,7 +598,9 @@ ec.Point.prototype = {
 		});
 	}
 };
-ec.extend(ec.Point, ec.Object);/**
+ec.extend(ec.Point, ec.Object);
+
+/**
  * Vector object with two components
  * @param settings		{Object}
  * @param settings.x	{Number}	X Component
@@ -792,14 +803,14 @@ ec.Vector2.distanceSquared = function(v1, v2) {
 };
 /**
  * Get a Vector2 instance x=1 && y=1
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
  * @type ec.Vector2
  * @returns {ec.Vector2}
  */
 ec.Vector2.One = function() {
 	return new Vector2({ x: 1, y: 1});
-};/**
+};
+
+/**
  * Define a dimension
  * @param settings
  * @param settings.width
@@ -876,12 +887,9 @@ ec.Size.prototype = {
 	}
 };
 
-ec.extend(ec.Size, ec.Object);ec.counter = 0;
+ec.extend(ec.Size, ec.Object);
 
-ec.Shape = function(settings) {
-	/* Redefine position && currentPosition for this construction */
-	this.currentPosition = new ec.Point();
-	this.position = new ec.Point();
+ec.Graphics = function() {
 	this.transform = new ec.Object({
 		m11: 1,
 		m12: 0,
@@ -890,9 +898,77 @@ ec.Shape = function(settings) {
 		dx: 0,
 		dy: 0
 	});
-	this.defaultTransform = this.transform.clone();
 	this.scale = new ec.Point({ x:1,y:1 });
-	this.defaultScale = this.scale.clone();
+	this.defaults = {
+		transform: this.transform.clone(),
+		scale: this.scale.clone(),
+		rotation: 0
+	};
+};
+
+ec.Graphics.prototype = {
+	info: {
+		type: 'ec.Graphics',
+		getType: function() {
+			return ec.Graphics;
+		}
+	},
+	transform: null,
+	scale: null,
+	defaults: null,
+	rotation: 0,
+	beforedraw: function(ctx) {
+		if (this.rotation != this.defaults.rotation) {
+			this._saveContext();
+			ctx.rotate(this.rotation);
+		}
+		if (!this.scale.equals(this.defaults.scale)) {
+			this._saveContext(ctx);
+			ctx.scale(this.scale.x, this.scale.y);
+		}
+		if (!this.transform.equals(this.defaults.transform)) {
+			this._saveContext(ctx);
+			this.setTransform(ctx);
+		}
+	},
+	afterdraw: function(ctx) {
+		this._restoreContext(ctx);
+	},
+	setTransform: function(ctx) {
+		ctx.transform(
+			this.transform.m11,
+			this.transform.m12,
+			this.transform.m21,
+			this.transform.m22,
+			this.transform.dx,
+			this.transform.dy
+		);
+	},
+	_contextSaved: false,
+	_saveContext: function(ctx) {
+		if (!this._contextSaved) {
+			ctx.save();
+			return (this._contextSaved = true);
+		}
+		return false;
+	},
+	_restoreContext: function(ctx) {
+		if (this._contextSaved) {
+			ctx.restore();
+			return !(this._contextSaved = false);
+		}
+		return false;
+	}
+};
+
+ec.extend(ec.Graphics, ec.Object);
+
+ec.counter = 0;
+
+ec.Shape = function(settings) {
+	/* Redefine position && currentPosition for this construction */
+	this.currentPosition = new ec.Point();
+	this.position = new ec.Point();
 	/** 
 	 * Default random value associate to this shape, to simulate its own behavior
 	 * @returns {Number} Number[0-1]
@@ -1047,7 +1123,9 @@ ec.Shape.prototype = {
 
 	}
 };
-ec.extend(ec.Shape, ec.Object);/**
+ec.extend(ec.Shape, ec.Object);
+
+/**
  * Instanciate a drawable string
  * @param {Object} 		settings
  * @param {ec.Point} 	settings.position	Position where drawing this text
@@ -1082,7 +1160,7 @@ ec.Text.prototype = {
 	style: '',
 	currentPosition: null,
 	update: function(data) {
-		this.currentPosition.y = this.position.y;
+		this.currentPosition.y = this.position.y+this.size/2;
 		data.context.font = this.size+'px '+this.font+' '+this.style;
 		this.currentPosition.x = this.position.x - data.context.measureText(this.value).width/2;
 	},
@@ -1149,7 +1227,9 @@ ec.Text.prototype = {
 		});
 	}
 };
-ec.extend(ec.Text, ec.Object);/**
+ec.extend(ec.Text, ec.Object);
+
+/**
  * Create a rectangle
  * @param settings
  * @param {ec.Point} settings.position	Representation of the position of this instance	(Unnecessary if X && Y are given)
@@ -1254,8 +1334,8 @@ ec.Rectangle.prototype = {
 	 * @returns {ec.Rectangle}
 	 */
 	clone: function() {
-		var fill = this.fill instanceof ec.Color ? this.fill.clone : this.fill;
-		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone : this.stroke;
+		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;
+		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone() : this.stroke;
 		return new ec.Rectangle({
 			position: this.position.clone(),
 			size: this.size.clone(),
@@ -1270,6 +1350,8 @@ ec.Rectangle.prototype = {
 };
 
 ec.extend(ec.Rectangle, ec.Shape);
+
+
 /**
  * Create a instance of ec.Circle
  * @param {Object} settings
@@ -1330,7 +1412,7 @@ ec.Circle.prototype = {
 		tp = this.currentPosition ? this.currentPosition : this.position;
 		if ( c.inheritsof(ec.Point) ) {
 			d = ec.Vector2.distance(tp, c);
-			if (this.isClicked) { console.log(d, this.radius); this.isClicked = false; }
+			if (this.isClicked) { this.isClicked = false; }
             return (d < this.radius);
 		} else if (c.inheritsof(ec.Circle)) {
 			d = ec.Vector2.distance(tp, c.position);
@@ -1393,7 +1475,9 @@ ec.Circle.prototype = {
 	}
 };
 
-ec.extend(ec.Circle, ec.Shape);ec.Timer = function(seconds) {
+ec.extend(ec.Circle, ec.Shape);
+
+ec.Timer = function(seconds) {
 	this.base = ec.Timer.time;
 	this.last = ec.Timer.time;
 	
@@ -1463,7 +1547,9 @@ ec.Timer.step = function() {
 	ec.Timer._last = current;
 };
 
-ec.extend(ec.Timer, ec.Object);ec.Stage = function(settings) {
+ec.extend(ec.Timer, ec.Object);
+
+ec.Stage = function(settings) {
 	ec.Object.call(this, settings);
 	this.timer = new ec.Timer();
 	this.layers = new Array();
@@ -1508,7 +1594,9 @@ ec.Stage.prototype = {
 		this.layers.push(o);
 	}
 };
-ec.extend(ec.Stage, ec.Object);/**
+ec.extend(ec.Stage, ec.Object);
+
+/**
  * 
  * @param {Object} settings
  * @param {String} settings.canvas
@@ -1593,15 +1681,15 @@ ec.Layer.prototype = {
 	},
 	draw: function(stage) {
 		this.context.clearRect(0, 0, this.width, this.height);
-
 		for ( var i = 0; i < this.components.length; i++ ) {
 			if ( this.components[i].draw ) {
 				this.components[i].draw({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
 			}
 		}
-		this._restoreContext();
 	}
 };
 
 ec.extend(ec.Layer, ec.Object);
+
+
 })();

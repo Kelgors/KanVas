@@ -59,7 +59,7 @@ ec.Circle.prototype = {
 		tp = this.currentPosition ? this.currentPosition : this.position;
 		if ( c.inheritsof(ec.Point) ) {
 			d = ec.Vector2.distance(tp, c);
-			if (this.isClicked) { console.log(d, this.radius); this.isClicked = false; }
+			if (this.isClicked) { this.isClicked = false; }
             return (d < this.radius);
 		} else if (c.inheritsof(ec.Circle)) {
 			d = ec.Vector2.distance(tp, c.position);

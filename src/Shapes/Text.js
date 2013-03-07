@@ -33,7 +33,7 @@ ec.Text.prototype = {
 	style: '',
 	currentPosition: null,
 	update: function(data) {
-		this.currentPosition.y = this.position.y;
+		this.currentPosition.y = this.position.y+this.size/2;
 		data.context.font = this.size+'px '+this.font+' '+this.style;
 		this.currentPosition.x = this.position.x - data.context.measureText(this.value).width/2;
 	},

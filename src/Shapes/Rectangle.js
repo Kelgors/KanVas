@@ -103,8 +103,8 @@ ec.Rectangle.prototype = {
 	 * @returns {ec.Rectangle}
 	 */
 	clone: function() {
-		var fill = this.fill instanceof ec.Color ? this.fill.clone : this.fill;
-		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone : this.stroke;
+		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;
+		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone() : this.stroke;
 		return new ec.Rectangle({
 			position: this.position.clone(),
 			size: this.size.clone(),
