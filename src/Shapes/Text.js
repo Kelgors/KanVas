@@ -13,13 +13,12 @@
  */
 ec.Text = function(settings) {
 	this.value = '';
-	this.currentPosition = new ec.Point();
-	ec.Object.call(this, settings);
+	ec.Shape.call(this, settings);
 };
 
 ec.Text.prototype = {
 	info: {
-		type: 'ec.Text',
+		type: 'Text',
 		getType: function() {
 			return ec.Text;
 		}
@@ -40,6 +39,7 @@ ec.Text.prototype = {
 	draw: function(data){
 		/** @returns {CanvasRenderingContext2D} */
 		var ctx = data.context;
+		this.graphics.beforedraw(ctx);
 		ctx.font = this.size+'px '+this.font+' '+this.style;
 		if (this.fill) {
 			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
@@ -50,9 +50,10 @@ ec.Text.prototype = {
 			ctx.lineWidth = this.lineWidth;
 			ctx.strokeText(this.value, this.currentPosition.x, this.currentPosition.y);
 		}
+		this.graphics.afterdraw(ctx);
 	},
 	compare: function(o) {
-		// TODO: font/style comparison ???
+		// TODO: string comparison
 		if (o.inheritsof && o.inheritsof(ec.Text)) {
 			var text=0, font=0,size=0,style=0;
 			if (this.value !== o.value) {
@@ -100,4 +101,4 @@ ec.Text.prototype = {
 		});
 	}
 };
-ec.extend(ec.Text, ec.Object);
+ec.extend(ec.Text, ec.Shape);

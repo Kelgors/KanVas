@@ -8,11 +8,13 @@ ec.Object = function(settings) {
 	for( var i in settings ) {
 		this[i] = settings[i];
 	}
+	this.info.ID = ec.Guid.create();
 };
 
 ec.Object.prototype = {
 	info: {
-		type: 'ec.Object',
+		ID: null,
+		type: 'Object',
 		getType: function() {
 			return ec.Object;
 		}
@@ -23,12 +25,12 @@ ec.Object.prototype = {
 	 * @returns	{ec.Object} the cloned object
 	 */
 	clone: function() {
-		var o = this.constructor();
+		var o = this.info ? new ec[this.info.type]() : this.constructor();
 		for(var i in this)
 			if (typeof(this[i]) == 'object') {
 				o[i] = this[i].inheritsof ? this[i].clone() : ec._clone(this[i]);
 			} else {
-				o[i] = this[i];
+				if (typeof(this[i]) != 'function') {o[i] = this[i];}
 			}
 		return o;
 	},
@@ -94,7 +96,7 @@ ec.Object.prototype = {
 	},
 	/**
 	*  Equivalent of instanceof but for ec.Objects
-	*  @param {Object.<String, Function>} the type of object ( ec.Object, not 'ec.Object' )
+	*  @param {ec.Type} the type of object ( ec.Object, not 'ec.Object' )
 	*  @type {boolean}
 	*  @return {boolean}
 	*/

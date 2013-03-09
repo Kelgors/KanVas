@@ -8,8 +8,14 @@
  * @returns {ec.Layer}
  */
 ec.Layer = function(settings) {
-	this.lastMouse.rel = new ec.Point();
-	this.lastMouse.abs = new ec.Point();
+	this.lastMouse = {
+		rel: new ec.Point(),
+		abs: new ec.Point(),
+		pointed: false
+	};
+	this.offset = new ec.Point();
+	this.components = new Array();
+	this.graphics = new ec.Graphics();
 	if ( settings.canvas ) {
 		/** @returns {HTMLCanvasElement} */
 		this.canvas = document.getElementById(settings.canvas);
@@ -19,7 +25,6 @@ ec.Layer = function(settings) {
 		this.context = this.canvas.getContext('2d');
 		delete settings.canvas;
 	}
-	this.components = new Array();
 	ec.Object.call(this, settings);
 };
 
@@ -28,9 +33,10 @@ ec.Layer.prototype = {
 	context: null,
 	width: 0,
 	height: 0,
-	offset: new ec.Point(),
+	offset: null,
+	graphics: null,
 	info: {
-		type: 'ec.Layer',
+		type: 'Layer',
 		getType: function() {
 			return ec.Layer;
 		}
@@ -83,11 +89,18 @@ ec.Layer.prototype = {
 	},
 	draw: function(stage) {
 		this.context.clearRect(0, 0, this.width, this.height);
+		
+		this.graphics.beforedraw(this.context);
 		for ( var i = 0; i < this.components.length; i++ ) {
 			if ( this.components[i].draw ) {
 				this.components[i].draw({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
 			}
 		}
+		this.graphics.afterdraw(this.context);
+	},
+	equals: function() {
+		if (!o.inheritsof) { return false; }
+		return this.ID === o.ID && o.inheritsof(ec.Layer);
 	}
 };
 

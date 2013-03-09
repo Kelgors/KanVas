@@ -19,15 +19,22 @@ ec.Rectangle = function(settings) {
 
 ec.Rectangle.prototype = {
 	info: {
-		type: 'ec.Rectangle',
+		type: 'Rectangle',
 		getType: function() {
 			return ec.Rectangle;
 		}
 	},
 	size: null,
 	currentPosition: null,
+	getOrigin: function() {
+		return new ec.Vector2({
+			x: this.position.x + this.size.width/2,
+			y: this.position.y + this.size.height/2
+		});
+	},
 	draw: function(data) {
 		var ctx = data.context;
+		this.graphics.beforedraw(ctx);
 		if ( this.fill ) {
 			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
 			ctx.fillRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
@@ -37,6 +44,7 @@ ec.Rectangle.prototype = {
 			ctx.lineWidth = this.lineWidth;
 			ctx.strokeRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
 		}
+		this.graphics.afterdraw(ctx);
 	},
 	/**
 	*  Check if another >Rectangle or >Point is containing by this instance
@@ -91,15 +99,8 @@ ec.Rectangle.prototype = {
 		});
 	},
 	/**
-	 * Return a string representation of this instance
-	 * @returns {String}
-	 */
-	toString: function() {
-		return this.info.type + ' ' + this.position.toString() + ' ' + this.size.toString();
-	},
-	/**
 	 * Clone this instance
-	 * @type ec.Rectangle
+	 * @type {ec.Rectangle}
 	 * @returns {ec.Rectangle}
 	 */
 	clone: function() {

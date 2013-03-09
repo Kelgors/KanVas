@@ -1,0 +1,125 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Chronos</title>
+<style>
+	html, body {
+		padding: 0;
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+<!--
+<script src="../src/Core.js"></script><script src="../src/Object.js"></script><script src="../src/EventManager.js"></script><script src="../src/Mouse.js"></script><script src="../src/Point.js"></script><script src="../src/Graphics.js"></script><script src="../src/Size.js"></script><script src="../src/Graphics.js"></script><script src="../src/Vector2.js"></script><script src="../src/Timer.js"></script><script src="../src/Color.js"></script><script src="../src/Layer.js"></script><script src="../src/Stage.js"></script><script src="../src/Shape.js"></script><script src="../src/Shapes/Rectangle.js"></script><script src="../src/Shapes/Circle.js"></script><script src="../src/Shapes/Text.js"></script>
+-->
+<script src="../builds/last-build/EasyCanvas.js"></script>
+<script>
+ec.ready(function()  {
+	document.body.setAttribute('style', 'background-color: ' + ec.Color.CORNFLOWERBLUE().toHexa() + ';');
+	window.onfocus = function() {
+		if (window.savedDate) {
+			var diff = Math.abs(new Date().getTime() - window.savedDate) / 1000;
+			circle.timer.base -= diff;
+			delete window.savedDate;
+		}
+	};
+	window.onblur = function() {
+		window.savedDate = new Date().getTime();
+	};
+	stage = new ec.Stage();
+	var layer = new ec.Layer({
+		canvas: 'main',
+		width: window.innerWidth,
+		height: window.innerHeight
+	});
+	layer.graphics.transform.m12 = 0.1; /* shear the layer */
+	layer.graphics.transform.m21 = 0.75;
+	layer.graphics.transform.dx = -200; /* translation x -200 */
+	layer.graphics.setScale(1.2); /* and scale it to 120% */
+	
+	stage.add(layer);
+	
+	var maxTime = 1200;
+	
+	var circle = new ec.Circle({
+		radius: layer.canvas.width/2 - layer.canvas.width/2/5,
+		x: layer.canvas.width/2,
+		y: layer.canvas.height/2,
+		angle: Math.PI,
+		lineWidth: 4,
+		setAngle: function(degree) {
+			this.angle = degree * Math.PI / 180;
+		},
+		stroke: '#FFF',
+		timer: new ec.Timer(maxTime),
+		reference: 1,
+		lastdiff: 0,
+		update: function(data) {
+			var delta = this.timer.delta();
+			if (delta < 0.1) {
+				var diff = maxTime-delta;
+				this.angle = diff % this.reference * Math.PI;
+			} else {
+				this.setAngle(360);
+			}
+			ec.Circle.prototype.update.call(this, data);
+		},
+		draw: function(data) {
+			/** @returns {CanvasRenderingContext2D} */
+			var ctx = data.context;
+			if (this.radius > 0 && this.fill || this.stroke && this.radius > 0) {
+				ctx.beginPath();
+				ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, this.angle * 2, true );
+				if ( this.fill ) {
+					ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
+					ctx.fill();
+				}
+				if ( this.stroke ) {
+					ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
+					ctx.lineWidth = this.lineWidth;
+					ctx.stroke();
+				}
+			}
+		},
+		toString: function() {
+			return this.info.type;
+		}
+	});
+	window.t = circle.timer;
+	var size = 122;
+	var text = new ec.Text({
+		position: circle.position.toVector2().adds({ x: size/2, y: -size }),
+		size: size,
+		lineWidth: 4,
+		font: 'Tahoma',
+		fill: ec.Color.WHITE(),
+		stroke: ec.Color.BLACK(),
+		update: function(data) {
+			var delta = circle.timer.delta();
+			if (delta < 0.1) {
+				if (delta < -3600) {
+					var hour = Math.abs(Math.ceil(delta / 60 / 60));
+					var min = Math.floor(
+						(Math.abs(delta))/60 - (60*hour)
+					);
+					if (min == 60) { hour+=1; min = ''; } else if (min == 0) { min = ''; } else { min=' '+(min).toString()+' min'; }
+					this.value = hour+'h'+ min;
+				}else if (delta > -3600 && delta < -60) {
+					var min = Math.floor((Math.abs(delta)) / 60);
+					this.value = min+'min';
+				} else {
+					var n = Math.abs(circle.timer.delta()).toString().split('.');
+					this.value = n.length > 1 ? n[0]+'.'+n[1].substr(0,2) : n[0];
+				}
+			} else {
+				this.value = 'Terminate';
+				circle.fill = '#FF0000';
+				stage.isRunning = false;
+			}
+			ec.Text.prototype.update.call(this, data);
+		}
+	});
+	layer.add(circle);
+	layer.add(text);
+	
+	stage.run();
+});
+</script></head><body><canvas id="main"></canvas></body></html>

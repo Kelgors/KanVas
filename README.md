@@ -10,7 +10,9 @@ Finally, i don't really like the approach of the subject but some functionality 
 If KineticJS suits you, i think you can go your way.
 
 ### Next new functionalities
+* getOrigin Function in ec.Shape
+* String comparison
+* Input class
+* ec.Stage/ec.Layer Prerendering
 * Image class
 * Line class
-* ec.Object improvements
-* Prerendering

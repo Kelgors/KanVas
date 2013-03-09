@@ -12,8 +12,6 @@
 	<body>
 		<canvas id="main"></canvas>
 	</body>
-	<!-- <script src="../tests/TestLib.js"></script>
-	<script src="../tests/RectangleTest.js"></script>-->
 	<script>
 		ec.ready(function() {
 			ec.Color.prototype.toString = function() {
@@ -60,7 +58,8 @@
 					if (m) {
 						m = m.substr(0, 2);
 					}
-					this.value = s.split('.')[0] + '.' + m +' seconds';
+					//this.value = s.split('.')[0] + '.' + m +' seconds';
+					this.value = r.fill.toString();
 					ec.Text.prototype.update.call(this, data);
 				}
 			});

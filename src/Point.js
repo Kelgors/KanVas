@@ -9,13 +9,14 @@
  * @returns {ec.Point}
  */
 ec.Point = function(settings) {
+	this.x = this.y = 0;
 	if(settings) {
 		ec.Object.call(this, settings);
 	}
 };
 ec.Point.prototype = {
 	info:{
-		type: 'ec.Point',
+		type: 'Point',
 		getType: function() {
 			return ec.Point;
 		}
@@ -31,7 +32,7 @@ ec.Point.prototype = {
 	 * @returns {boolean}
 	 */
 	equals: function(o) {
-		if (o.inheritsof(ec.Point)) {
+		if ( o.x && o.y ) {
 			return this.x == o.x && this.y == o.y;
 		}
 		return false;
@@ -44,7 +45,7 @@ ec.Point.prototype = {
 	 * @returns	{ec.Point}
 	 */
 	compare: function(o) {
-		if (o.inheritsof(ec.Point)) {
+		if ( o.x && o.y ) {
 			var x = 0, y = 0;
 			if (this.x > o.x) { x = 1; } else if (this.x < o.x) { x = -1; }
 			if (this.y > o.y) { y = 1; } else if (this.y < o.y) { y = -1; }
@@ -71,17 +72,6 @@ ec.Point.prototype = {
 	 */
 	toVector2: function() {
 		return new ec.Vector2({
-			x: this.x,
-			y: this.y
-		});
-	},
-	/**
-	 * Clone this instance of ec.Point
-	 * @override
-	 * @returns {ec.Point}
-	 */
-	clone: function() {
-		return new ec.Point({
 			x: this.x,
 			y: this.y
 		});

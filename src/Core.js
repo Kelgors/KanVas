@@ -1,12 +1,12 @@
 
 window.ec = {
 	/** 
-	* @type {string}
+	* @type {String}
 	* @const 
 	*/
-	LANG: 'fr',
+	LANG: 'FR-fr',
 	/** 
-	* @type {boolean}
+	* @type {Boolean}
 	* @const 
 	*/
 	DEBUG: false,
@@ -64,9 +64,8 @@ window.ec = {
 	* @return {*} the cloned object
 	*/
 	_clone: function(obj) {
-		if(obj == null || typeof(obj) != 'object') {
-			return obj;
-		}
+		if(obj == null || typeof(obj) != 'object') { return obj; }
+		if (obj instanceof Array) { return obj.slice(0); }
 		var temp = obj.constructor(); // changed
 		for(var key in obj)
 			temp[key] = ec._clone(obj[key]);
@@ -74,7 +73,7 @@ window.ec = {
 	},
 	/**
 	* Execute a function when the DOM is ready
-	* @param {function()}
+	* @param {Function}
 	*/
 	ready: function(fn, stages) {
 		if(!fn){return;}
@@ -121,6 +120,32 @@ window.ec = {
 	    return !!f && (typeof f).toLowerCase() == 'function' 
             && (f === Function.prototype 
             || /^\s*function\s*(\b[a-z$_][a-z0-9$_]*\b)*\s*\((|([a-z$_][a-z0-9$_]*)(\s*,[a-z$_][a-z0-9$_]*)*)\)\s*{\s*\[native code\]\s*}\s*$/i.test(String(f)));
+	},
+	/**
+	* Guid Object
+	* @define {Object}
+	*/
+	Guid: {
+		/**
+		* Create a uuid
+		* @param {Boolean=} if false, no uuid without dashes
+		* @return {String}
+		*/
+		create: function(dashes) {
+			dashes = dashes == null ? true : dashes;
+			/* http://www.ietf.org/rfc/rfc4122.txt */
+			var s = [];
+			var hexDigits = "0123456789abcdef";
+			for (var i = 0; i < 36; i++) {
+				s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+			}
+			s[14] = "4";  /* bits 12-15 of the time_hi_and_version field to 0010 */
+			s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  /* bits 6-7 of the clock_seq_hi_and_reserved to 01 */
+			s[8] = s[13] = s[18] = s[23] = dashes ? '-' : '';
+
+			var uuid = s.join("");
+			return uuid;
+		}
 	}
 };
 window.ec._set_requestAnimFrame();

@@ -16,7 +16,7 @@ ec.Size = function(settings) {
 
 ec.Size.prototype = {
 	info: {
-		type: 'ec.Size',
+		type: 'Size',
 		getType: function() {
 			return ec.Size;
 		}
@@ -32,7 +32,7 @@ ec.Size.prototype = {
 	 * @returns {Boolean}
 	 */
 	equals: function(o){
-		if (o.inheritsof(ec.Size)) {
+		if (o.inheritsof && o.inheritsof(ec.Size)) {
 			return this.width == o.width && this.height == o.height;
 		} else if (typeof o == 'number') {
 			return this.width == o && this.height == o;

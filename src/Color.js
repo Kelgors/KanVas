@@ -13,7 +13,7 @@ ec.Color = function(settings) {
 
 ec.Color.prototype = {
 	info: {
-		type: 'ec.Color',
+		type: 'Color',
 		getType: function() {
 			return ec.Color;
 		}
@@ -114,6 +114,7 @@ ec.Color.AQUA = function() { return new ec.Color({ g: 255, b: 255, name:'aqua' }
 ec.Color.ORANGE = function() { return new ec.Color({ r: 255, g: 165, name:'orange' }); };
 ec.Color.PURPLE = function() { return new ec.Color({ r: 160, g: 32, b: 240, name:'purple' }); };
 ec.Color.PINK = function() { return new ec.Color({ r: 255, g: 192, b: 203, name:'pink' }); };
+ec.Color.CORNFLOWERBLUE = function() { return new ec.Color({ r: 100, g: 149, b: 237, name:'cornflower blue' }); }
 ec.Color.Gray = function(factor) {
 	return (new ec.Color({ name: 'Gray '+factor, r: factor, g: factor, b: factor }));
 };

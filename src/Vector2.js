@@ -14,7 +14,7 @@ ec.Vector2 = function(settings) {
 
 ec.Vector2.prototype = {
 	info: {
-		type: 'ec.Vector2',
+		type: 'Vector2',
 		getType: function() {
 			return ec.Vector2;
 		}
@@ -28,7 +28,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x += value;
 			this.y += value;
-		} else if (value.info && value.inheritsof(ec.Point)){
+		} else if ( value.x != null && value.y != null ) {
 			this.x += value.x;
 			this.y += value.y;
 		}
@@ -43,7 +43,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x -= value;
 			this.y -= value;
-		} else if (value.info && value.inheritsof(ec.Point)){
+		} else if ( value.x != null && value.y != null ) {
 			this.x -= value.x;
 			this.y -= value.y;
 		}
@@ -58,7 +58,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x *= value;
 			this.y *= value;
-		} else if ( value.info && value.inheritsof(ec.Point) ) {
+		} else if ( value.x != null && value.y != null ) {
 			this.x *= value.x;
 			this.y *= value.y;
 		}
@@ -73,8 +73,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x /= value;
 			this.y /= value;
-		}
-		else if ( value.info && value.inheritsof(ec.Point) ) {
+		} else if ( value.x != null && value.y != null ) {
 			this.x /= value.x;
 			this.y /= value.y;
 		}
@@ -86,7 +85,7 @@ ec.Vector2.prototype = {
 	 * @returns	{Number|NaN}
 	 */
 	distance: function(o) {
-		if ( o.inheritsof(ec.Point) ) {
+		if ( o.x != null && o.y != null ) {
 			return Math.sqrt(Math.pow(this.x - o.x, 2) + Math.pow(this.y - o.y, 2));
 		}
 		return NaN;
@@ -97,10 +96,9 @@ ec.Vector2.prototype = {
 	 * @returns	{Number|NaN}
 	 */
 	distanceSquared: function(o) {
-		if ( o.inheritsof(ec.Point) ) {
+		if ( o.x != null && o.y != null ) {
 			return Math.pow(this.x - o.x, 2) + Math.pow(this.y - o.y, 2);
 		}
-		
 		return NaN;
 	},
 	/**
@@ -120,18 +118,6 @@ ec.Vector2.prototype = {
 				y: y
 			});
 		}
-	},
-	/**
-	 * Clone this instance of Vector2
-	 * @override
-	 * @type {ec.Vector2}
-	 * @returns {ec.Vector2}
-	 */
-	clone: function() {
-		return new ec.Vector2({
-			x: this.x,
-			y: this.y
-		});
 	}
 };
 ec.extend(ec.Vector2, ec.Point);
@@ -183,7 +169,7 @@ ec.Vector2.divide = function(v1 , v2){
  * @returns {Number|NaN}
  */
 ec.Vector2.distance = function(v1 , v2){
-	if ( v1.inheritsof(ec.Point) && v2.inheritsof(ec.Point) ) {
+	if ( v1.x != null && v1.y != null && v2.x != null && v2.y != null ) {
 		return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
 	}
 	return NaN;
@@ -196,8 +182,7 @@ ec.Vector2.distance = function(v1 , v2){
  * @returns {Number}
  */
 ec.Vector2.distanceSquared = function(v1, v2) {
-	var v = v1.clone();
-	return v.distanceSquared(v2);
+	return v1.clone().distanceSquared(v2);
 };
 /**
  * Get a Vector2 instance x=1 && y=1

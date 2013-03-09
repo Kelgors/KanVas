@@ -17,7 +17,7 @@ ec.Circle = function(settings) {
 
 ec.Circle.prototype = {
 	info: {
-		type: 'ec.Circle',
+		type: 'Circle',
 		getType: function() {
 			return ec.Circle;
 		}
@@ -27,13 +27,10 @@ ec.Circle.prototype = {
 	draw: function(data) {
 		/** @returns {CanvasRenderingContext2D} */
 		var ctx = data.context;
-		if (this.graphics) {
-			this.graphics.beforedraw();
-		}
+		this.graphics.beforedraw(ctx);
 		if (this.radius > 0 && this.fill || this.stroke && this.radius > 0) {
 			ctx.beginPath();
 			ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, Math.PI * 2 );
-			ctx.closePath();
 			if ( this.fill ) {
 				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
 				ctx.fill();
@@ -44,9 +41,7 @@ ec.Circle.prototype = {
 				ctx.stroke();
 			}
 		}
-		if (this.graphics) {
-			this.graphics.afterdraw();
-		}
+		this.graphics.afterdraw(ctx);
 	},
 	/**
 	 * Check if this instance containing another
@@ -66,13 +61,6 @@ ec.Circle.prototype = {
 			return d < ( this.radius + c.radius );
 		}
 		return false;
-	},
-	/**
-	 * Return the string representation of this instance
-	 * @returns {String}
-	 */
-	toString: function() {
-		return '{ '+this.info.type + ': ' + this.positon.toString() + ', radius: ' + this.radius + ' }';
 	},
 	/**
 	 * Check if this instance of circle is equal to another
@@ -106,8 +94,8 @@ ec.Circle.prototype = {
 		return false;
 	},
 	clone: function() {
-		var fill = this.fill instanceof ec.Color ? this.fill.clone : this.fill;
-		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone : this.stroke;
+		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;
+		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone() : this.stroke;
 		return new ec.Circle({
 			position: this.position.clone(),
 			radius: this.radius,

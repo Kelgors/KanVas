@@ -7,7 +7,7 @@ ec.Timer = function(seconds) {
 	
 ec.Timer.prototype = {
 	info: {
-		type: 'ec.Timer',
+		type: 'Timer',
 		getType: function() {
 			return ec.Timer;
 		}

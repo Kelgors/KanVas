@@ -1,9 +1,8 @@
-ec.counter = 0;
-
 ec.Shape = function(settings) {
 	/* Redefine position && currentPosition for this construction */
 	this.currentPosition = new ec.Point();
 	this.position = new ec.Point();
+	this.graphics = new ec.Graphics();
 	/** 
 	 * Default random value associate to this shape, to simulate its own behavior
 	 * @returns {Number} Number[0-1]
@@ -25,6 +24,7 @@ ec.Shape = function(settings) {
 				this[i] = settings[i]; break;
 		}
 	}
+	this.currentPosition.x = this.position.x;
 	/* Support of draggable && clickable */
 	if (ec.EventManager) {
 		if (this.clickable) {
@@ -35,31 +35,59 @@ ec.Shape = function(settings) {
 			ec.EventManager.add(this, 'mousedown', this.events.drag.begin.bind(this));
 			ec.EventManager.add(this, 'mousemove', this.events.drag.move.bind(this));
 			ec.EventManager.add(this, 'mouseup', this.events.drag.end.bind(this));
-			this.counter = ec.counter++;
 		}
 	}
-	this.graphics = new ec.Graphics();
+	ec.Object.call(this);
 };
 
 ec.Shape.prototype = {
 	info : {
-		type : 'ec.Shape',
+		type : 'Shape',
 		getType: function() {
 			return ec.Shape;
 		}
 	},
+	/** 
+	* The position where to draw the shape
+	* @define {ec.Point} 
+	*/
 	position : null,
+	/** 
+	* The position where to draw the shape + position modifications
+	* @define {ec.Point} 
+	*/
+	currentPosition: null,
+	/** 
+	* The fill color
+	* @define {ec.Color|string} 
+	*/
 	fill : null,
+	/** 
+	* The stroke color
+	* @define {ec.Color|string} 
+	*/
 	stroke : null,
+	/** 
+	* The stroke lineWidth
+	* @define {Number} 
+	*/
 	lineWidth : 1,
+	/** 
+	* Define if the object is clickable or not
+	* @define {Number} 
+	*/
 	clickable : false,
+	/** 
+	* Define if the object is draggable or not
+	* @define {Number} 
+	*/
 	draggable : false,
-	transform: null,
-	defaultTransform: null,
-	scale: null,
-	defaultScale: null,
+	/** 
+	* Defines the referential
+	* @define {ec.Graphics} 
+	*/
 	graphics: null,
-	/** Element for floating effect */
+	/** Elements for floating effect */
 	float: {
 		speed: null,
 		amplitude: null
@@ -78,7 +106,6 @@ ec.Shape.prototype = {
 		if (this.clickable && this.onclick && this.isClicked) {
 			this.onclick(data);
 		}
-		this.currentPosition.x = this.position.x;
 		/* Floating effect support */
 		if (this.float.speed && this.float.amplitude) {
 			this.currentPosition.y = this.position.y + Math.cos(data.timer * (2 * this.float.speed)) * this.float.amplitude;
@@ -143,19 +170,16 @@ ec.Shape.prototype = {
 					this.isDragging = false;
 				}
 			}
-		},
-		compare: function(o) {
-			if (o.inheritsof) {
-				if (o.inheritsof(ec.Shape)) {
-					var type = this.info.type.split('.')[1];
-					return new ec[type]({
-						position: this.position.compare(o.position),
-						currentPosition: this.currentPosition.compare(o.currentPosition)
-					});
-				}
-			}
 		}
-
+	},
+	compare: function(o) {
+		if (o.inheritsof && o.inheritsof(ec.Shape)) {
+			return new o.info.getType()({
+				position: this.position.compare(o.position),
+				currentPosition: this.currentPosition.compare(o.currentPosition)
+			});
+		}
+		return null;
 	}
 };
 ec.extend(ec.Shape, ec.Object);

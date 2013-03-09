@@ -6,7 +6,7 @@ ec.Stage = function(settings) {
 
 ec.Stage.prototype = {
 	info: {
-		type: 'ec.Stage',
+		type: 'Stage',
 		getType: function() {
 			return ec.Stage;
 		}
@@ -41,6 +41,10 @@ ec.Stage.prototype = {
 	},
 	add: function(o) {
 		this.layers.push(o);
+	},
+	equals: function(o) {
+		if (!o.inheritsof) { return false; }
+		return this.ID === o.ID && o.inheritsof(ec.Stage);
 	}
 };
 ec.extend(ec.Stage, ec.Object);

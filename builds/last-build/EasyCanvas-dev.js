@@ -1,13 +1,38 @@
+/**
+* EasyCanvas
+* @package ec
+* @version 0.2.3 (2013-03-09)
+* @author Matthieu BOHEAS <matthieuboheas@gmail.com>
+* @copyright Copyright (c) 2013 Matthieu BOHEAS
+* @link https://github.com/Kelgors/EasyCanvas
+* @license http://opensource.org/licenses/mit-license.php MIT License
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this
+* software and associated documentation files (the "Software"), to deal in the Software
+* without restriction, including without limitation the rights to use, copy, modify, merge,
+* publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+* persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+* LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+* OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 (function() {
 
 window.ec = {
 	/** 
-	* @type {string}
+	* @type {String}
 	* @const 
 	*/
-	LANG: 'fr',
+	LANG: 'FR-fr',
 	/** 
-	* @type {boolean}
+	* @type {Boolean}
 	* @const 
 	*/
 	DEBUG: false,
@@ -65,9 +90,8 @@ window.ec = {
 	* @return {*} the cloned object
 	*/
 	_clone: function(obj) {
-		if(obj == null || typeof(obj) != 'object') {
-			return obj;
-		}
+		if(obj == null || typeof(obj) != 'object') { return obj; }
+		if (obj instanceof Array) { return obj.slice(0); }
 		var temp = obj.constructor(); // changed
 		for(var key in obj)
 			temp[key] = ec._clone(obj[key]);
@@ -75,7 +99,7 @@ window.ec = {
 	},
 	/**
 	* Execute a function when the DOM is ready
-	* @param {function()}
+	* @param {Function}
 	*/
 	ready: function(fn, stages) {
 		if(!fn){return;}
@@ -122,6 +146,32 @@ window.ec = {
 	    return !!f && (typeof f).toLowerCase() == 'function' 
             && (f === Function.prototype 
             || /^\s*function\s*(\b[a-z$_][a-z0-9$_]*\b)*\s*\((|([a-z$_][a-z0-9$_]*)(\s*,[a-z$_][a-z0-9$_]*)*)\)\s*{\s*\[native code\]\s*}\s*$/i.test(String(f)));
+	},
+	/**
+	* Guid Object
+	* @define {Object}
+	*/
+	Guid: {
+		/**
+		* Create a uuid
+		* @param {Boolean=} if false, no uuid without dashes
+		* @return {String}
+		*/
+		create: function(dashes) {
+			dashes = dashes == null ? true : dashes;
+			/* http://www.ietf.org/rfc/rfc4122.txt */
+			var s = [];
+			var hexDigits = "0123456789abcdef";
+			for (var i = 0; i < 36; i++) {
+				s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+			}
+			s[14] = "4";  /* bits 12-15 of the time_hi_and_version field to 0010 */
+			s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  /* bits 6-7 of the clock_seq_hi_and_reserved to 01 */
+			s[8] = s[13] = s[18] = s[23] = dashes ? '-' : '';
+
+			var uuid = s.join("");
+			return uuid;
+		}
 	}
 };
 window.ec._set_requestAnimFrame();
@@ -272,11 +322,13 @@ ec.Object = function(settings) {
 	for( var i in settings ) {
 		this[i] = settings[i];
 	}
+	this.info.ID = ec.Guid.create();
 };
 
 ec.Object.prototype = {
 	info: {
-		type: 'ec.Object',
+		ID: null,
+		type: 'Object',
 		getType: function() {
 			return ec.Object;
 		}
@@ -287,12 +339,12 @@ ec.Object.prototype = {
 	 * @returns	{ec.Object} the cloned object
 	 */
 	clone: function() {
-		var o = this.constructor();
+		var o = this.info ? new ec[this.info.type]() : this.constructor();
 		for(var i in this)
 			if (typeof(this[i]) == 'object') {
 				o[i] = this[i].inheritsof ? this[i].clone() : ec._clone(this[i]);
 			} else {
-				o[i] = this[i];
+				if (typeof(this[i]) != 'function') {o[i] = this[i];}
 			}
 		return o;
 	},
@@ -358,7 +410,7 @@ ec.Object.prototype = {
 	},
 	/**
 	*  Equivalent of instanceof but for ec.Objects
-	*  @param {Object.<String, Function>} the type of object ( ec.Object, not 'ec.Object' )
+	*  @param {ec.Type} the type of object ( ec.Object, not 'ec.Object' )
 	*  @type {boolean}
 	*  @return {boolean}
 	*/
@@ -404,7 +456,7 @@ ec.Color = function(settings) {
 
 ec.Color.prototype = {
 	info: {
-		type: 'ec.Color',
+		type: 'Color',
 		getType: function() {
 			return ec.Color;
 		}
@@ -505,6 +557,7 @@ ec.Color.AQUA = function() { return new ec.Color({ g: 255, b: 255, name:'aqua' }
 ec.Color.ORANGE = function() { return new ec.Color({ r: 255, g: 165, name:'orange' }); };
 ec.Color.PURPLE = function() { return new ec.Color({ r: 160, g: 32, b: 240, name:'purple' }); };
 ec.Color.PINK = function() { return new ec.Color({ r: 255, g: 192, b: 203, name:'pink' }); };
+ec.Color.CORNFLOWERBLUE = function() { return new ec.Color({ r: 100, g: 149, b: 237, name:'cornflower blue' }); }
 ec.Color.Gray = function(factor) {
 	return (new ec.Color({ name: 'Gray '+factor, r: factor, g: factor, b: factor }));
 };
@@ -520,13 +573,14 @@ ec.Color.Gray = function(factor) {
  * @returns {ec.Point}
  */
 ec.Point = function(settings) {
+	this.x = this.y = 0;
 	if(settings) {
 		ec.Object.call(this, settings);
 	}
 };
 ec.Point.prototype = {
 	info:{
-		type: 'ec.Point',
+		type: 'Point',
 		getType: function() {
 			return ec.Point;
 		}
@@ -542,7 +596,7 @@ ec.Point.prototype = {
 	 * @returns {boolean}
 	 */
 	equals: function(o) {
-		if (o.inheritsof(ec.Point)) {
+		if ( o.x && o.y ) {
 			return this.x == o.x && this.y == o.y;
 		}
 		return false;
@@ -555,7 +609,7 @@ ec.Point.prototype = {
 	 * @returns	{ec.Point}
 	 */
 	compare: function(o) {
-		if (o.inheritsof(ec.Point)) {
+		if ( o.x && o.y ) {
 			var x = 0, y = 0;
 			if (this.x > o.x) { x = 1; } else if (this.x < o.x) { x = -1; }
 			if (this.y > o.y) { y = 1; } else if (this.y < o.y) { y = -1; }
@@ -585,17 +639,6 @@ ec.Point.prototype = {
 			x: this.x,
 			y: this.y
 		});
-	},
-	/**
-	 * Clone this instance of ec.Point
-	 * @override
-	 * @returns {ec.Point}
-	 */
-	clone: function() {
-		return new ec.Point({
-			x: this.x,
-			y: this.y
-		});
 	}
 };
 ec.extend(ec.Point, ec.Object);
@@ -616,7 +659,7 @@ ec.Vector2 = function(settings) {
 
 ec.Vector2.prototype = {
 	info: {
-		type: 'ec.Vector2',
+		type: 'Vector2',
 		getType: function() {
 			return ec.Vector2;
 		}
@@ -630,7 +673,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x += value;
 			this.y += value;
-		} else if (value.info && value.inheritsof(ec.Point)){
+		} else if ( value.x != null && value.y != null ) {
 			this.x += value.x;
 			this.y += value.y;
 		}
@@ -645,7 +688,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x -= value;
 			this.y -= value;
-		} else if (value.info && value.inheritsof(ec.Point)){
+		} else if ( value.x != null && value.y != null ) {
 			this.x -= value.x;
 			this.y -= value.y;
 		}
@@ -660,7 +703,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x *= value;
 			this.y *= value;
-		} else if ( value.info && value.inheritsof(ec.Point) ) {
+		} else if ( value.x != null && value.y != null ) {
 			this.x *= value.x;
 			this.y *= value.y;
 		}
@@ -675,8 +718,7 @@ ec.Vector2.prototype = {
 		if ( typeof(value) == 'number' ) {
 			this.x /= value;
 			this.y /= value;
-		}
-		else if ( value.info && value.inheritsof(ec.Point) ) {
+		} else if ( value.x != null && value.y != null ) {
 			this.x /= value.x;
 			this.y /= value.y;
 		}
@@ -688,7 +730,7 @@ ec.Vector2.prototype = {
 	 * @returns	{Number|NaN}
 	 */
 	distance: function(o) {
-		if ( o.inheritsof(ec.Point) ) {
+		if ( o.x != null && o.y != null ) {
 			return Math.sqrt(Math.pow(this.x - o.x, 2) + Math.pow(this.y - o.y, 2));
 		}
 		return NaN;
@@ -699,10 +741,9 @@ ec.Vector2.prototype = {
 	 * @returns	{Number|NaN}
 	 */
 	distanceSquared: function(o) {
-		if ( o.inheritsof(ec.Point) ) {
+		if ( o.x != null && o.y != null ) {
 			return Math.pow(this.x - o.x, 2) + Math.pow(this.y - o.y, 2);
 		}
-		
 		return NaN;
 	},
 	/**
@@ -722,18 +763,6 @@ ec.Vector2.prototype = {
 				y: y
 			});
 		}
-	},
-	/**
-	 * Clone this instance of Vector2
-	 * @override
-	 * @type {ec.Vector2}
-	 * @returns {ec.Vector2}
-	 */
-	clone: function() {
-		return new ec.Vector2({
-			x: this.x,
-			y: this.y
-		});
 	}
 };
 ec.extend(ec.Vector2, ec.Point);
@@ -785,7 +814,7 @@ ec.Vector2.divide = function(v1 , v2){
  * @returns {Number|NaN}
  */
 ec.Vector2.distance = function(v1 , v2){
-	if ( v1.inheritsof(ec.Point) && v2.inheritsof(ec.Point) ) {
+	if ( v1.x != null && v1.y != null && v2.x != null && v2.y != null ) {
 		return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
 	}
 	return NaN;
@@ -798,8 +827,7 @@ ec.Vector2.distance = function(v1 , v2){
  * @returns {Number}
  */
 ec.Vector2.distanceSquared = function(v1, v2) {
-	var v = v1.clone();
-	return v.distanceSquared(v2);
+	return v1.clone().distanceSquared(v2);
 };
 /**
  * Get a Vector2 instance x=1 && y=1
@@ -828,7 +856,7 @@ ec.Size = function(settings) {
 
 ec.Size.prototype = {
 	info: {
-		type: 'ec.Size',
+		type: 'Size',
 		getType: function() {
 			return ec.Size;
 		}
@@ -844,7 +872,7 @@ ec.Size.prototype = {
 	 * @returns {Boolean}
 	 */
 	equals: function(o){
-		if (o.inheritsof(ec.Size)) {
+		if (o.inheritsof && o.inheritsof(ec.Size)) {
 			return this.width == o.width && this.height == o.height;
 		} else if (typeof o == 'number') {
 			return this.width == o && this.height == o;
@@ -889,7 +917,7 @@ ec.Size.prototype = {
 
 ec.extend(ec.Size, ec.Object);
 
-ec.Graphics = function() {
+ec.Graphics = function(settings) {
 	this.transform = new ec.Object({
 		m11: 1,
 		m12: 0,
@@ -899,16 +927,18 @@ ec.Graphics = function() {
 		dy: 0
 	});
 	this.scale = new ec.Point({ x:1,y:1 });
+	this.rotation = 0;
 	this.defaults = {
 		transform: this.transform.clone(),
 		scale: this.scale.clone(),
 		rotation: 0
 	};
+	ec.Object.call(this, settings);
 };
 
 ec.Graphics.prototype = {
 	info: {
-		type: 'ec.Graphics',
+		type: 'Graphics',
 		getType: function() {
 			return ec.Graphics;
 		}
@@ -928,13 +958,13 @@ ec.Graphics.prototype = {
 		}
 		if (!this.transform.equals(this.defaults.transform)) {
 			this._saveContext(ctx);
-			this.setTransform(ctx);
+			this.doTransform(ctx);
 		}
 	},
 	afterdraw: function(ctx) {
 		this._restoreContext(ctx);
 	},
-	setTransform: function(ctx) {
+	doTransform: function(ctx) {
 		ctx.transform(
 			this.transform.m11,
 			this.transform.m12,
@@ -943,6 +973,13 @@ ec.Graphics.prototype = {
 			this.transform.dx,
 			this.transform.dy
 		);
+	},
+	setScale: function(value) {
+		if (typeof(value) == 'number') {
+			this.scale.y = this.scale.x = value;
+		} else if (value.inheritsof && value.inheritsof(ec.Point)) {
+			this.scale = value.clone();
+		}
 	},
 	_contextSaved: false,
 	_saveContext: function(ctx) {
@@ -963,12 +1000,11 @@ ec.Graphics.prototype = {
 
 ec.extend(ec.Graphics, ec.Object);
 
-ec.counter = 0;
-
 ec.Shape = function(settings) {
 	/* Redefine position && currentPosition for this construction */
 	this.currentPosition = new ec.Point();
 	this.position = new ec.Point();
+	this.graphics = new ec.Graphics();
 	/** 
 	 * Default random value associate to this shape, to simulate its own behavior
 	 * @returns {Number} Number[0-1]
@@ -990,6 +1026,7 @@ ec.Shape = function(settings) {
 				this[i] = settings[i]; break;
 		}
 	}
+	this.currentPosition.x = this.position.x;
 	/* Support of draggable && clickable */
 	if (ec.EventManager) {
 		if (this.clickable) {
@@ -1000,31 +1037,59 @@ ec.Shape = function(settings) {
 			ec.EventManager.add(this, 'mousedown', this.events.drag.begin.bind(this));
 			ec.EventManager.add(this, 'mousemove', this.events.drag.move.bind(this));
 			ec.EventManager.add(this, 'mouseup', this.events.drag.end.bind(this));
-			this.counter = ec.counter++;
 		}
 	}
-	this.graphics = new ec.Graphics();
+	ec.Object.call(this);
 };
 
 ec.Shape.prototype = {
 	info : {
-		type : 'ec.Shape',
+		type : 'Shape',
 		getType: function() {
 			return ec.Shape;
 		}
 	},
+	/** 
+	* The position where to draw the shape
+	* @define {ec.Point} 
+	*/
 	position : null,
+	/** 
+	* The position where to draw the shape + position modifications
+	* @define {ec.Point} 
+	*/
+	currentPosition: null,
+	/** 
+	* The fill color
+	* @define {ec.Color|string} 
+	*/
 	fill : null,
+	/** 
+	* The stroke color
+	* @define {ec.Color|string} 
+	*/
 	stroke : null,
+	/** 
+	* The stroke lineWidth
+	* @define {Number} 
+	*/
 	lineWidth : 1,
+	/** 
+	* Define if the object is clickable or not
+	* @define {Number} 
+	*/
 	clickable : false,
+	/** 
+	* Define if the object is draggable or not
+	* @define {Number} 
+	*/
 	draggable : false,
-	transform: null,
-	defaultTransform: null,
-	scale: null,
-	defaultScale: null,
+	/** 
+	* Defines the referential
+	* @define {ec.Graphics} 
+	*/
 	graphics: null,
-	/** Element for floating effect */
+	/** Elements for floating effect */
 	float: {
 		speed: null,
 		amplitude: null
@@ -1043,7 +1108,6 @@ ec.Shape.prototype = {
 		if (this.clickable && this.onclick && this.isClicked) {
 			this.onclick(data);
 		}
-		this.currentPosition.x = this.position.x;
 		/* Floating effect support */
 		if (this.float.speed && this.float.amplitude) {
 			this.currentPosition.y = this.position.y + Math.cos(data.timer * (2 * this.float.speed)) * this.float.amplitude;
@@ -1108,19 +1172,16 @@ ec.Shape.prototype = {
 					this.isDragging = false;
 				}
 			}
-		},
-		compare: function(o) {
-			if (o.inheritsof) {
-				if (o.inheritsof(ec.Shape)) {
-					var type = this.info.type.split('.')[1];
-					return new ec[type]({
-						position: this.position.compare(o.position),
-						currentPosition: this.currentPosition.compare(o.currentPosition)
-					});
-				}
-			}
 		}
-
+	},
+	compare: function(o) {
+		if (o.inheritsof && o.inheritsof(ec.Shape)) {
+			return new o.info.getType()({
+				position: this.position.compare(o.position),
+				currentPosition: this.currentPosition.compare(o.currentPosition)
+			});
+		}
+		return null;
 	}
 };
 ec.extend(ec.Shape, ec.Object);
@@ -1140,13 +1201,12 @@ ec.extend(ec.Shape, ec.Object);
  */
 ec.Text = function(settings) {
 	this.value = '';
-	this.currentPosition = new ec.Point();
-	ec.Object.call(this, settings);
+	ec.Shape.call(this, settings);
 };
 
 ec.Text.prototype = {
 	info: {
-		type: 'ec.Text',
+		type: 'Text',
 		getType: function() {
 			return ec.Text;
 		}
@@ -1167,6 +1227,7 @@ ec.Text.prototype = {
 	draw: function(data){
 		/** @returns {CanvasRenderingContext2D} */
 		var ctx = data.context;
+		this.graphics.beforedraw(ctx);
 		ctx.font = this.size+'px '+this.font+' '+this.style;
 		if (this.fill) {
 			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
@@ -1177,9 +1238,10 @@ ec.Text.prototype = {
 			ctx.lineWidth = this.lineWidth;
 			ctx.strokeText(this.value, this.currentPosition.x, this.currentPosition.y);
 		}
+		this.graphics.afterdraw(ctx);
 	},
 	compare: function(o) {
-		// TODO: font/style comparison ???
+		// TODO: string comparison
 		if (o.inheritsof && o.inheritsof(ec.Text)) {
 			var text=0, font=0,size=0,style=0;
 			if (this.value !== o.value) {
@@ -1227,7 +1289,7 @@ ec.Text.prototype = {
 		});
 	}
 };
-ec.extend(ec.Text, ec.Object);
+ec.extend(ec.Text, ec.Shape);
 
 /**
  * Create a rectangle
@@ -1250,15 +1312,22 @@ ec.Rectangle = function(settings) {
 
 ec.Rectangle.prototype = {
 	info: {
-		type: 'ec.Rectangle',
+		type: 'Rectangle',
 		getType: function() {
 			return ec.Rectangle;
 		}
 	},
 	size: null,
 	currentPosition: null,
+	getOrigin: function() {
+		return new ec.Vector2({
+			x: this.position.x + this.size.width/2,
+			y: this.position.y + this.size.height/2
+		});
+	},
 	draw: function(data) {
 		var ctx = data.context;
+		this.graphics.beforedraw(ctx);
 		if ( this.fill ) {
 			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
 			ctx.fillRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
@@ -1268,6 +1337,7 @@ ec.Rectangle.prototype = {
 			ctx.lineWidth = this.lineWidth;
 			ctx.strokeRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
 		}
+		this.graphics.afterdraw(ctx);
 	},
 	/**
 	*  Check if another >Rectangle or >Point is containing by this instance
@@ -1322,15 +1392,8 @@ ec.Rectangle.prototype = {
 		});
 	},
 	/**
-	 * Return a string representation of this instance
-	 * @returns {String}
-	 */
-	toString: function() {
-		return this.info.type + ' ' + this.position.toString() + ' ' + this.size.toString();
-	},
-	/**
 	 * Clone this instance
-	 * @type ec.Rectangle
+	 * @type {ec.Rectangle}
 	 * @returns {ec.Rectangle}
 	 */
 	clone: function() {
@@ -1370,7 +1433,7 @@ ec.Circle = function(settings) {
 
 ec.Circle.prototype = {
 	info: {
-		type: 'ec.Circle',
+		type: 'Circle',
 		getType: function() {
 			return ec.Circle;
 		}
@@ -1380,13 +1443,10 @@ ec.Circle.prototype = {
 	draw: function(data) {
 		/** @returns {CanvasRenderingContext2D} */
 		var ctx = data.context;
-		if (this.graphics) {
-			this.graphics.beforedraw();
-		}
+		this.graphics.beforedraw(ctx);
 		if (this.radius > 0 && this.fill || this.stroke && this.radius > 0) {
 			ctx.beginPath();
 			ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, Math.PI * 2 );
-			ctx.closePath();
 			if ( this.fill ) {
 				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
 				ctx.fill();
@@ -1397,9 +1457,7 @@ ec.Circle.prototype = {
 				ctx.stroke();
 			}
 		}
-		if (this.graphics) {
-			this.graphics.afterdraw();
-		}
+		this.graphics.afterdraw(ctx);
 	},
 	/**
 	 * Check if this instance containing another
@@ -1419,13 +1477,6 @@ ec.Circle.prototype = {
 			return d < ( this.radius + c.radius );
 		}
 		return false;
-	},
-	/**
-	 * Return the string representation of this instance
-	 * @returns {String}
-	 */
-	toString: function() {
-		return '{ '+this.info.type + ': ' + this.positon.toString() + ', radius: ' + this.radius + ' }';
 	},
 	/**
 	 * Check if this instance of circle is equal to another
@@ -1459,8 +1510,8 @@ ec.Circle.prototype = {
 		return false;
 	},
 	clone: function() {
-		var fill = this.fill instanceof ec.Color ? this.fill.clone : this.fill;
-		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone : this.stroke;
+		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;
+		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone() : this.stroke;
 		return new ec.Circle({
 			position: this.position.clone(),
 			radius: this.radius,
@@ -1486,7 +1537,7 @@ ec.Timer = function(seconds) {
 	
 ec.Timer.prototype = {
 	info: {
-		type: 'ec.Timer',
+		type: 'Timer',
 		getType: function() {
 			return ec.Timer;
 		}
@@ -1557,7 +1608,7 @@ ec.Stage = function(settings) {
 
 ec.Stage.prototype = {
 	info: {
-		type: 'ec.Stage',
+		type: 'Stage',
 		getType: function() {
 			return ec.Stage;
 		}
@@ -1592,6 +1643,10 @@ ec.Stage.prototype = {
 	},
 	add: function(o) {
 		this.layers.push(o);
+	},
+	equals: function(o) {
+		if (!o.inheritsof) { return false; }
+		return this.ID === o.ID && o.inheritsof(ec.Stage);
 	}
 };
 ec.extend(ec.Stage, ec.Object);
@@ -1606,8 +1661,14 @@ ec.extend(ec.Stage, ec.Object);
  * @returns {ec.Layer}
  */
 ec.Layer = function(settings) {
-	this.lastMouse.rel = new ec.Point();
-	this.lastMouse.abs = new ec.Point();
+	this.lastMouse = {
+		rel: new ec.Point(),
+		abs: new ec.Point(),
+		pointed: false
+	};
+	this.offset = new ec.Point();
+	this.components = new Array();
+	this.graphics = new ec.Graphics();
 	if ( settings.canvas ) {
 		/** @returns {HTMLCanvasElement} */
 		this.canvas = document.getElementById(settings.canvas);
@@ -1617,7 +1678,6 @@ ec.Layer = function(settings) {
 		this.context = this.canvas.getContext('2d');
 		delete settings.canvas;
 	}
-	this.components = new Array();
 	ec.Object.call(this, settings);
 };
 
@@ -1626,9 +1686,10 @@ ec.Layer.prototype = {
 	context: null,
 	width: 0,
 	height: 0,
-	offset: new ec.Point(),
+	offset: null,
+	graphics: null,
 	info: {
-		type: 'ec.Layer',
+		type: 'Layer',
 		getType: function() {
 			return ec.Layer;
 		}
@@ -1681,11 +1742,18 @@ ec.Layer.prototype = {
 	},
 	draw: function(stage) {
 		this.context.clearRect(0, 0, this.width, this.height);
+		
+		this.graphics.beforedraw(this.context);
 		for ( var i = 0; i < this.components.length; i++ ) {
 			if ( this.components[i].draw ) {
 				this.components[i].draw({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
 			}
 		}
+		this.graphics.afterdraw(this.context);
+	},
+	equals: function() {
+		if (!o.inheritsof) { return false; }
+		return this.ID === o.ID && o.inheritsof(ec.Layer);
 	}
 };
 
