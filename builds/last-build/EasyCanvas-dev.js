@@ -977,7 +977,7 @@ ec.Graphics.prototype = {
 	setScale: function(value) {
 		if (typeof(value) == 'number') {
 			this.scale.y = this.scale.x = value;
-		} else if (value.inheritsof && value.inheritsof(ec.Point)) {
+		} else if ( value.x != null && value.y != null ) {
 			this.scale = value.clone();
 		}
 	},

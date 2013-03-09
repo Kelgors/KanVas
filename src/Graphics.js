@@ -58,7 +58,7 @@ ec.Graphics.prototype = {
 	setScale: function(value) {
 		if (typeof(value) == 'number') {
 			this.scale.y = this.scale.x = value;
-		} else if ( value.x != null && value.y != null )) {
+		} else if ( value.x != null && value.y != null ) {
 			this.scale = value.clone();
 		}
 	},
