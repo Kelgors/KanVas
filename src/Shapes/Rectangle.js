@@ -50,7 +50,6 @@ ec.Rectangle.prototype = {
 	*  Check if another >Rectangle or >Point is containing by this instance
 	* @param {ec.Point|ec.Rectangle}
 	* @return {Boolean}
-	* @remark	Check the ec.Rectangle check function
 	**/
 	contains: function(o) {
 		var tp = this.currentPosition ? this.currentPosition : this.position;
@@ -111,8 +110,8 @@ ec.Rectangle.prototype = {
 			size: this.size.clone(),
 			fill: fill,
 			stroke: stroke,
-			amplitude: this.float.amplitude,
-			speed: this.float.speed,
+			amplitude: this.floating.amplitude,
+			speed: this.floating.speed,
 			clickable: this.clickable,
 			draggable: this.draggable
 		});

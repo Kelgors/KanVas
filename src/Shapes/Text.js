@@ -1,18 +1,17 @@
 /**
- * Instanciate a drawable string
+ * A drawable string
  * @param {Object} 		settings
  * @param {ec.Point} 	settings.position	Position where drawing this text
  * @param {String} 		settings.value		String to draw
- * @param {ec.Color} 	settings.fill		Fill color
- * @param {ec.Color} 	settings.stroke		Stroke color
- * @param {Number} 		settings.size		Font size
- * @param {String} 		settings.font		Font family
- * @param {String} 		settings.style 		[italic, bold, underline]
- * @param {Number} 		settings.lineWidth	stroke line width
+ * @param {ec.Font} 	settings.font		ec.Font instance
+ * @constructor
+ * @extends {ec.Shape}
+ * @type {ec.Text}
  * @returns {ec.Text}
  */
 ec.Text = function(settings) {
 	this.value = '';
+	this.font = new ec.Font();
 	ec.Shape.call(this, settings);
 };
 
@@ -24,81 +23,103 @@ ec.Text.prototype = {
 		}
 	},
 	value: null,
-	fill: null,
-	stroke: null,
-	lineWidth: 1,
-	font: 'Verdana',
-	size: 30,
-	style: '',
 	currentPosition: null,
+	getOrigin: function() {
+		return ec.Vector2.add(this.position, this.origin);
+	},
 	update: function(data) {
-		this.currentPosition.y = this.position.y+this.size/2;
-		data.context.font = this.size+'px '+this.font+' '+this.style;
-		this.currentPosition.x = this.position.x - data.context.measureText(this.value).width/2;
+		if (this.value != this.lastValue) {
+			this.font.applyFont(data.context);
+			this.width = data.context.measureText(this.value).width;
+			this.origin = new ec.Point({
+				x: this.width/2,
+				y: this.size/2
+			});
+			this.currentPosition.x = this.position.x - this.origin.x;
+			this.currentPosition.y = this.position.y + this.origin.y;
+			this.lastValue = this.value;
+			/* multilines support */
+			var str = this.value.split('\n');
+			this.multiline = new Array();
+			for (var i in str) {
+				this.multiline[i] = { content: str[i], width: data.context.measureText(str[i]).width, y: this.position.y + this.font.size * i };
+			}
+		}
 	},
 	draw: function(data){
 		/** @returns {CanvasRenderingContext2D} */
 		var ctx = data.context;
+		/* Modify context referential */
 		this.graphics.beforedraw(ctx);
-		ctx.font = this.size+'px '+this.font+' '+this.style;
-		if (this.fill) {
-			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
-			ctx.fillText(this.value, this.currentPosition.x, this.currentPosition.y);
+		this.font.set(ctx);
+		if (this.font.fill || this.font.stroke) {
+			for (var i in this.multiline) {
+				if (this.font.fill)
+					ctx.fillText(this.multiline[i].content, this.position.x, this.multiline[i].y);
+				if (this.font.stroke)
+					ctx.strokeText(this.multiline[i].content, this.position.x, this.multiline[i].y);
+			}
 		}
-		if (this.stroke) {
-			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
-			ctx.lineWidth = this.lineWidth;
-			ctx.strokeText(this.value, this.currentPosition.x, this.currentPosition.y);
-		}
+		/* Restore context referential */
 		this.graphics.afterdraw(ctx);
 	},
 	compare: function(o) {
-		// TODO: string comparison
-		if (o.inheritsof && o.inheritsof(ec.Text)) {
-			var text=0, font=0,size=0,style=0;
-			if (this.value !== o.value) {
-				if (this.value.length > o.value.length) {
-					text = 1;
-				} else if (this.value.length < o.value.length) {
-					text = -1;
-				}
-			}
-			if (this.size > o.size) { size = 1; } else if (this.size < o.size) { size = -1; }
-			if (this.font !== o.font) {
-				if (this.font.length > o.font.length) {
-					font = 1;
-				} else if (this.font.length < o.font.length) {
-					font = -1;
-				}
-			}
-			if (this.style !== o.style) {
-				if (this.style.length > o.style.length) {
-					style = 1;
-				} else if (this.style.length < o.style.length) {
-					style = -1;
-				}
-			}
-			return new ec.Text({
-				value: text,
-				font: font,
-				size: size,
-				style: style
-			});
-		}
+		/* TODO: ec.Text comparison */
+		return null;
 	},
 	clone: function() {
-		var fill = this.fill instanceof ec.Color ? this.fill.clone : this.fill;
-		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone : this.stroke;
 		return new ec.Text({
 			position: this.position.clone(),
-			stroke: stroke,
-			fill: fill,
-			font: this.font,
-			lineWidth: this.lineWidth,
-			style: this.style, 
-			size: this.size,
+			font: this.font.clone(),
 			value: this.value
 		});
+	},
+	contains: function(p) {
+		if (p.x != null && p.y != null) {
+			var posY = 0, posYMax = 0, posX = 0, posXMax = 0;
+			/* multilines containing support */
+			for(var i in this.multiline) {
+				/* support different baselines */
+				switch (this.font.baseLine) {
+					case 'top':
+						posY = this.multiline[i].y; 
+						posYMax = this.multiline[i].y + this.font.size;
+						break;
+					case 'middle': 
+						posY = this.multiline[i].y - this.font.size/2; 
+						posYMax = this.multiline[i].y + this.font.size/2;
+						break;
+					case 'bottom':
+						posY = this.multiline[i].y - this.font.size; 
+						posYMax = this.multiline[i].y;
+						break;
+					case 'alphabetic':
+					case 'ideographic':
+						posY = this.multiline[i].y - this.font.size; 
+						posYMax = this.multiline[i].y;
+						break;
+				}
+				/* support different alignements */
+				switch (this.font.textAlign) {
+					case 'left':
+						posX = this.position.x;
+						posXMax = this.position.x + this.multiline[i].width;
+						break;
+					case 'center':
+						posX = this.position.x - this.multiline[i].width/2;
+						posXMax = this.position.x + this.multiline[i].width/2;
+						break;
+					case 'right':
+						posX = this.position.x - this.multiline[i].width;
+						posXMax = this.position.x;
+						break;
+				}
+				if (p.x > posX && p.y > posY && p.x < posXMax && p.y < posYMax) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 };
 ec.extend(ec.Text, ec.Shape);

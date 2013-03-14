@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<script src="../builds/last-build/EasyCanvas.js"></script>
+		<script src="../builds/nightly-build/EasyCanvas.js"></script>
 	</head>
 	<style>
 		html, body {
@@ -40,24 +40,29 @@
 					r: true,
 					g: true,
 					b: true
+				},
+				contains: function() {
+					return false;
 				}
 			});
 			var t = new ec.Text({
 				value: r.fill.toString(),
-				stroke: ec.Color.BLACK(),
-				fill: ec.Color.WHITE(),
-				size: 52,
+				font: new ec.Font({
+					stroke: ec.Color.BLACK(),
+					fill: ec.Color.WHITE(),
+					size: 52,
+					lineWidth: 2,
+					baseLine: 'middle',
+					textAlign: 'center'
+				}),
 				position: new ec.Point({
 					x: layer.width / 2,
 					y: layer.height / 2
 				}),
-				lineWidth: 2,
 				update: function(data) {
 					var s = (data.timer).toString();
 					var m = s.split('.')[1];
-					if (m) {
-						m = m.substr(0, 2);
-					}
+					if (m) { m = m.substr(0, 2); }
 					//this.value = s.split('.')[0] + '.' + m +' seconds';
 					this.value = r.fill.toString();
 					ec.Text.prototype.update.call(this, data);
@@ -91,16 +96,16 @@
 			layer.add(r);
 			layer.add(t);
 			
-			window.onresize= function() {
-				var x = window.innerWidth/2, x;
-				if (x > layer.width - layer.context.measureText(t.value).width/2) {
-					x = layer.width - layer.context.measureText(t.value).width/2;
-				} else if (x < layer.context.measureText(t.value).width/2) {
-					x = layer.context.measureText(t.value).width/2;
+			window.onresize = function() {
+				var posX = window.innerWidth/2;
+				if (posX > layer.width - layer.context.measureText(t.value).width/2) {
+					posX = layer.width - layer.context.measureText(t.value).width/2;
+				} else if (posX < layer.context.measureText(t.value).width/2) {
+					posX = layer.context.measureText(t.value).width/2;
 				}
 				t.position = new ec.Point({
-					x: x,
-					y: window.innerHeight/2 < layer.height - t.size/2 ? window.innerHeight/2 : layer.height - t.size/2
+					x: posX,
+					y: window.innerHeight/2 < layer.height - t.font.size/2 ? window.innerHeight/2 : layer.height - t.font.size/2
 				});
 			};
 			

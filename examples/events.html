@@ -1,0 +1,51 @@
+ <html>
+	<head>
+		<meta charset="utf-8">
+		<!-- <script src="../src/Core.js"></script><script src="../src/Object.js"></script><script src="../src/Mouse.js"></script><script src="../src/EventManager.js"></script><script src="../src/Point.js"></script><script src="../src/Graphics.js"></script><script src="../src/Size.js"></script><script src="../src/Graphics.js"></script><script src="../src/Vector2.js"></script><script src="../src/Timer.js"></script><script src="../src/Font.js"></script><script src="../src/Color.js"></script><script src="../src/Layer.js"></script><script src="../src/Stage.js"></script><script src="../src/Shape.js"></script><script src="../src/Shapes/Rectangle.js"></script><script src="../src/Shapes/Circle.js"></script><script src="../src/Shapes/Text.js"></script>-->
+		<script src="../builds/nightly-build/EasyCanvas-dev.js"></script>
+	</head>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+	<body>
+		<canvas id="main"></canvas>
+	</body>
+	<script>
+		ec.ready(function() {
+			var stage = new ec.Stage();
+			
+			var layer = new ec.Layer({
+				canvas: 'main',
+				width: 800,
+				height: 600
+			});
+			
+			var rect1 = new ec.Rectangle({
+				x: 12,
+				y: 12,
+				width: 150,
+				height: 150,
+				fill: ec.Color.CORNFLOWERBLUE(),
+				draggable: true
+			});
+			layer.add(rect1);
+			var rect2 = new ec.Rectangle({
+				x: 22,
+				y: 22,
+				width: 130,
+				height: 130,
+				fill: ec.Color.BLUE(),
+				draggable: true
+			});
+			layer.add(rect2);
+			
+			stage.add(layer);
+			
+			stage.run();
+			
+		});
+	</script>
+</html>

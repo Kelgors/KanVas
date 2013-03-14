@@ -1,90 +1,41 @@
-ec.EventManager = {
-	init: function() {
-		if (document.attachEvent) {
-			this.type = ec.EventManager.TYPE.ATTACH;
-		} else if (document.addEventListener){
-			this.type = ec.EventManager.TYPE.ADDLISTEN;
-		} else {
-			ec.Errors.log('EM001');
-		}
-	},
-	/**
-	 * Type of browser event function
-	 */
-	type: '',
-	/**
-	 * Events container
-	 */
-	events: {},
-	/**
-	 * Events global variable
-	 */
-	app: {
-		mouse: {
-			pressed: false,
-			clicked: false
-		}
-	},
-	/**
-	 * Add a new event handler
-	 * @param {Object} obj
-	 * @param {String} evt
-	 * @param {Function} fn
-	 */
-	add: function(obj, evt, fn) {
-		if (!this.events[evt]) {
-			this.events[evt] = new Array();
-			document[this.type.add](evt, this.handler, false);
-		}
-		this.events[evt].push( { o: obj, func: fn } );
-	},
-	/**
-	 * Delete specified event for the specified object
-	 * @param {Object} obj
-	 * @param {String} evt
-	 */
-	remove: function(obj, evt) {
-		for ( var i in this.events[evt] ) {
-			if ( this.events[evt][i].o.equals(obj) ) {
-				if (this.type === ec.EventManager.TYPE.ADDLISTEN) {
-					document[this.type.rem](evt, this.events[evt][i].func, false);
+/**
+* An event manager
+* @constructor
+* @type {ec.EventManager}
+* @return {ec.EventManager}
+*/
+ec.EventManager = function() {
+	this.state = {
+		clicked: false,
+		pressed: false,
+		dragging: false
+	};
+};
+
+ec.EventManager.prototype = {
+	state: null,
+	execute: function(e) {
+		var dontStop = true;
+		if (this[e.type]) {
+			for (var i in this[e.type]) {
+				if (typeof(this[e.type][i]) == 'function') {
+					if (this[e.type][i](e) == false) {
+						dontStop = false;
+					}
 				}
 			}
 		}
+		return dontStop;
 	},
-	/**
-	 * Main handler for all events
-	 * @param {Event} e
-	 */
-	handler: function(e) {
-		e.mousePosition = ec.Mouse.getPosition(e);
-		e.mouseAbsPosition = ec.Mouse.getAbsolutePosition(e);
-		for ( var i in ec.EventManager.events[e.type] ){
-			ec.EventManager.events[e.type][i].func(e);
-		}
-	},
-	/**
-	 * Delete all events
-	 */
-	purge: function() {
-		for (var i in this.events) { 
-			document[this.type.rem](i, this.handler, false); 
-		}
-		this.events = {};
-	},
-	/**
-	 * Reset all ec.EventManager.app variables
-	 */
 	reset: function() {
-		for (var i in ec.EventManager.app) {
-			if(typeof ec.EventManager.app[i] == 'boolean') {
-				ec.EventManager.app[i] = false;
+		for(var i in this.state) {
+			if (typeof(this.state[i]) == 'boolean') {
+				this.state[i] = false;
 			}
 		}
-	}
+	},
+	click: null,
+	mouseup: null,
+	mousedown: null
+	/* etc... */
 };
-ec.EventManager.TYPE = {
-	ADDLISTEN: { add: 'addEventListener', rem: 'removeEventListener' },
-	OLDIE: {add: 'attachEvent', rem: 'detachEvent' }
-};
-ec.EventManager.init();

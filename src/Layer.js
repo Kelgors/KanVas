@@ -8,10 +8,10 @@
  * @returns {ec.Layer}
  */
 ec.Layer = function(settings) {
+	this.info.supportedEvents = new Object();
 	this.lastMouse = {
 		rel: new ec.Point(),
-		abs: new ec.Point(),
-		pointed: false
+		abs: new ec.Point()
 	};
 	this.offset = new ec.Point();
 	this.components = new Array();
@@ -39,49 +39,55 @@ ec.Layer.prototype = {
 		type: 'Layer',
 		getType: function() {
 			return ec.Layer;
-		}
+		},
+		supportedEvents: null
 	},
 	fixed: false,
 	components: null,
-	mouseupCorrection: false,
 	lastMouse: {
 		rel: null,
-		abs: null,
-		pointed: false
+		abs: null
 	},
 	add: function(component) {
 		this.components.push(component);
-		if (!this.mouseupCorrection && component.clickable||component.draggable && !this.mouseupCorrection) {
-			var that = this;
-			this.canvas.oncontextmenu = function(e) { e.preventDefault(); return false; };
-			ec.EventManager.add(this, 'mousemove', (function(e) {
-				this.lastMouse.rel = e.mousePosition;
-				this.lastMouse.abs = e.mouseAbsPosition;
-			}).bind(this));
-			ec.EventManager.add(document, 'mouseup', function() {
-				if (!ec.EventManager.app.mouse.pressed) {
-					that.canvas.style.cursor = 'default';
+		for (var i in component.events) 
+		{
+			/* If the event does not exists */
+			if (!this.info.supportedEvents[i]) {
+				var addEventFunc = this.canvas.addEventListener ? 'addEventListener' : 'attachEvent';
+				this.canvas[addEventFunc](i, (function(e) {
+					if (e.type == 'mouseup' || e.type == 'mousedown' || e.type == 'click' || e.type == 'mousemove') {
+						this.lastMouse.rel = e.mousePosition = ec.Mouse.getPosition(e);
+						this.lastMouse.abs = e.mouseAbsPosition = ec.Mouse.getAbsolutePosition(e);
+					}
+					for (var i = this.components.length-1; i > -1; i--) {
+						/* for each components, spread the event */
+						if (!this.components[i].events.execute(e)) {
+							if (e.preventDefault) { e.preventDefault(); }
+							return false;
+						}
+					}
+				}).bind(this), false);
+				this.info.supportedEvents[i] = true;
+				if (!this.mouseUpCorrection) {
+					document.addEventListener('mouseup', (function(e) {
+						var target = null;
+						if (e.originalTarget) { target = e.originalTarget; }
+						else if (e.toElement) { target = e.toElement; }
+						else if (e.target) { target = e.target; }
+						if (target != this.canvas) {
+							for(var i in this.components) {
+								this.components[i].events.reset();
+							}
+						}
+					}).bind(this), false);
+					this.mouseUpCorrection = true;
 				}
-			});
-			this.mouseupCorrection = true;
+			}
 		}
 	},
 	update: function(stage) {
-		this.lastMouse.pointed = false;
-		for ( var i = 0; i < this.components.length; i++ ) {
-			/* mousehover support */
-			if (this.components[i].contains && !this.lastMouse.pointed) {
-				if (this.components[i].contains(this.lastMouse.rel)) {
-					if (this.components[i].isDragging) {
-						this.canvas.style.cursor = 'move';
-					} else {
-						this.canvas.style.cursor = 'pointer';
-					}
-					this.lastMouse.pointed = true;
-				} else {
-					this.canvas.style.cursor = 'default';
-				}
-			}
+		for ( var i in this.components ) {
 			if ( this.components[i].update ) {
 				this.components[i].update({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
 			}

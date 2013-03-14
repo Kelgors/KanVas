@@ -31,7 +31,6 @@ ec.Stage.prototype = {
 	},
 	_loop: function() {
 		if (this.isRunning) {
-			ec.EventManager.reset();
 			ec.Timer.step();
 			this.update();
 			ec.Timer.step();

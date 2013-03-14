@@ -45,7 +45,7 @@ ec.Point.prototype = {
 	 * @returns	{ec.Point}
 	 */
 	compare: function(o) {
-		if ( o.x && o.y ) {
+		if ( o.x != null && o.y != null ) {
 			var x = 0, y = 0;
 			if (this.x > o.x) { x = 1; } else if (this.x < o.x) { x = -1; }
 			if (this.y > o.y) { y = 1; } else if (this.y < o.y) { y = -1; }

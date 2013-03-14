@@ -7,8 +7,10 @@
  * @param {Number} settings.y			Y component of the position (Unnecessary if position is given)
  * @param {Number} settings.radius		Radius of this circle
  * @param {Number} settings.amplitude	Necessary for floating effect
- * @param {Number} settings.speed		Necessary for floating effect 
- * @type ec.Circle
+ * @param {Number} settings.speed		Necessary for floating effect
+ * @constructor
+ * @extends {ec.Shape} 
+ * @type {ec.Circle}
  * @returns {ec.Circle}
  */
 ec.Circle = function(settings) {

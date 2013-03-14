@@ -2,7 +2,7 @@
  * Basic instance
  * @constructor
  * @type {ec.Object}
- * @returns {ec.Object}
+ * @return {ec.Object}
  */
 ec.Object = function(settings) {
 	for( var i in settings ) {
@@ -22,16 +22,18 @@ ec.Object.prototype = {
 	/**
 	 * Return a clone of this instance
 	 * @type {ec.Object}
-	 * @returns	{ec.Object} the cloned object
+	 * @return	{ec.Object} the cloned object
 	 */
 	clone: function() {
 		var o = this.info ? new ec[this.info.type]() : this.constructor();
-		for(var i in this)
+		for(var i in this) {
+			if (!this[i]) { continue; }
 			if (typeof(this[i]) == 'object') {
 				o[i] = this[i].inheritsof ? this[i].clone() : ec._clone(this[i]);
-			} else {
-				if (typeof(this[i]) != 'function') {o[i] = this[i];}
+			} else if (typeof(this[i]) != 'function') {
+				o[i] = this[i];
 			}
+		}
 		return o;
 	},
 	/**
@@ -41,11 +43,41 @@ ec.Object.prototype = {
 	 * @returns {boolean}
 	 */
 	equals: function(o) {
+		if (!o.inheritsof) { return false; }
 		if (o.inheritsof(ec.Object)) {
 			for (var i in this) {
-				if (this[i] !== o[i]) {
-					return false;
+				switch(typeof(this[i])) {
+					case 'function': continue;
+					case 'object':
+						if (this[i] instanceof Date && o[i] instanceof Date) {
+						/* Date equals */
+							if (this[i].getTime() != o[i].getTime()) {
+								return false;
+							}
+						} else if (this[i] instanceof Array && o[i] instanceof Array && this[i].length == o[i].length) {
+						/* Array equals */
+							for (var n in this[i]) {
+								if (this[i][n].equals) {
+									/* Array of ec.Object */
+									if (!this[i][n].equals(o[i][n])) {
+										return false;
+									}
+								} else if (typeof(this[i][n]) == 'object' && typeof(o[i][n]) == 'object') {
+									/* Array of object */
+									if (!(new ec.Object(this[i][n]).equals(o[i][n]))) {
+										return false;
+									}
+								} else {
+									return false;
+								}// TODO: finish ec.Object.prototype.equals()
+							}
+						}
+						break;
+					default: 
+						if (this[i] !== o[i]) { return false; } 
+						break;
 				}
+				
 			}
 			return true;
 		}
@@ -55,29 +87,33 @@ ec.Object.prototype = {
 	 * Compare two instances
 	 * @param {ec.Object} o
 	 * @type {ec.Object}
-	 * @returns {ec.Object}
+	 * @return {ec.Object}
 	 */
 	compare: function(o) {
-		/* TODO: object support */
-		if (o.inheritsof(this.info.getType())) {
-			/* Create an instance of this */
-			var t = new ec[this.info.type.split('.')[1]]();
-			for (var i in this) {
-				/* if this[i] is a number */
-				if (typeof(this[i]) == 'number') {
-					if (this[i] > o[i]) {
-						t[i] = 1;
-					} else if (this[i] < o[i]) {
-						t[i] = -1;
-					} else {
-						t[i] = 0;
-					}
-				/* if this[i] is an object|ec.Object */
-				} else if (typeof(o[i]) == 'object') {
-					if (o[i].inheritsof) {
+		var t = new ec[this.info.type]();
+		for (var i in this) {
+			switch(typeof(this[i])) {
+				case 'number':
+					t[i] = ec.Number.compare(this[i], o[i]); break;
+				case 'string':
+					t[i] = this[i].localeCompare(o[i]); break;
+				case 'boolean':
+					t[i] = this[i] == o[i]; break;
+				case 'object':
+					if (this[i].compare) {
+						/* Compare these two ec.Object */
 						t[i] = this[i].compare(o[i]);
+					} else if (o[i] instanceof Date) {
+						/* compare their timestamp */
+						t[i] = ec.Number.compare(this[i].getTime(), o[i].getTime());
+					} else if (o[i] instanceof Array) {
+						/* compare arrays length */
+						t[i] = ec.Number.compare(this[i].length, o[i].length);
+					} else {
+						/* Create a new ec.Object with the javascript object and compare them */
+						t[i] = new ec.Object(this[i]).compare(o[i]);
 					}
-				}
+					break;
 			}
 			return t;
 		}
@@ -114,15 +150,6 @@ ec.Object.prototype = {
 	*/
 	toString: function(){
 		return this.info.type;
-	},
-	/**
-	*  Create a new Event Handler for this ec.Object
-	*  @param {String} event
-	*  @param {Function(Event)} function to perform when the event's spreading
-	*  @remarks You can add as many 'mousemove' events as you want to same item, for example
-	*/
-	on: function(event, fn) {
-		ec.EventManager.add(this, event, fn);
 	}
 	
 };

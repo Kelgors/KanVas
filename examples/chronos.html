@@ -10,7 +10,8 @@
 <!--
 <script src="../src/Core.js"></script><script src="../src/Object.js"></script><script src="../src/EventManager.js"></script><script src="../src/Mouse.js"></script><script src="../src/Point.js"></script><script src="../src/Graphics.js"></script><script src="../src/Size.js"></script><script src="../src/Graphics.js"></script><script src="../src/Vector2.js"></script><script src="../src/Timer.js"></script><script src="../src/Color.js"></script><script src="../src/Layer.js"></script><script src="../src/Stage.js"></script><script src="../src/Shape.js"></script><script src="../src/Shapes/Rectangle.js"></script><script src="../src/Shapes/Circle.js"></script><script src="../src/Shapes/Text.js"></script>
 -->
-<script src="../builds/last-build/EasyCanvas.js"></script>
+<!-- <script src="../builds/last-build/EasyCanvas.js"></script>-->
+<script src="../builds/nightly-build/EasyCanvas-dev.js"></script>
 <script>
 ec.ready(function()  {
 	document.body.setAttribute('style', 'background-color: ' + ec.Color.CORNFLOWERBLUE().toHexa() + ';');
@@ -87,11 +88,13 @@ ec.ready(function()  {
 	var size = 122;
 	var text = new ec.Text({
 		position: circle.position.toVector2().adds({ x: size/2, y: -size }),
-		size: size,
-		lineWidth: 4,
-		font: 'Tahoma',
-		fill: ec.Color.WHITE(),
-		stroke: ec.Color.BLACK(),
+		font: new ec.Font({
+			size: size,
+			lineWidth: 4,
+			family: 'Tahoma',
+			fill: ec.Color.WHITE(),
+			stroke: ec.Color.BLACK(),
+		}),
 		update: function(data) {
 			var delta = circle.timer.delta();
 			if (delta < 0.1) {

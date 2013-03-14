@@ -81,8 +81,7 @@ window.ec = {
 		f = function(e) {
 			if (document.removeEventListener) {
 				document.removeEventListener('DOMContentLoaded', f, false);
-			}
-			else if (document.detachEvent) {
+			} else if (document.detachEvent) {
 				document.detachEvent('DOMContentLoaded', f, false);
 			}
 			fn();
@@ -90,8 +89,7 @@ window.ec = {
 		
 		if (document.addEventListener) {
 			document.addEventListener('DOMContentLoaded', f, false);
-		}
-		else if (document.attachEvent) {
+		} else if (document.attachEvent) {
 			document.attachEvent('DOMContentLoaded', f, false);
 		}
 	},
@@ -121,6 +119,56 @@ window.ec = {
             && (f === Function.prototype 
             || /^\s*function\s*(\b[a-z$_][a-z0-9$_]*\b)*\s*\((|([a-z$_][a-z0-9$_]*)(\s*,[a-z$_][a-z0-9$_]*)*)\)\s*{\s*\[native code\]\s*}\s*$/i.test(String(f)));
 	},
+	equal: function(o1, o2) {
+		/* Different types */
+		if (typeof(o1) != typeof(o2)) { return false; }
+		/* not object */
+		if (typeof(o1) != 'object') { return o1 === o2; }
+		/* check object equality */
+		for (var i in this) {
+			switch(typeof(this[i])) {
+				case 'function': continue;
+				case 'object':
+					if (this[i] instanceof Date && o[i] instanceof Date) {
+					/* Date equals */
+						if (this[i].getTime() != o[i].getTime()) {
+							return false;
+						}
+					} else if (
+							this[i] instanceof Array 
+						&& o[i] instanceof Array 
+						&& this[i].length == o[i].length
+						|| this[i] instanceof Object
+						&& o[i] instanceof Object
+					) {
+					/* Array/Object equals */
+						for (var n in this[i]) {
+							if (typeof(this[i][n]) == 'function') { continue; }
+							if (this[i][n].equals) {
+								/* Array/Object of ec.Object */
+								if (!this[i][n].equals(o[i][n])) {
+									return false;
+								}
+							} else if (typeof(this[i][n]) == 'object' && typeof(o[i][n]) == 'object') {
+								/* Array/Object of object */
+								if (!ec.equal(this[i][n], o[i][n])) {
+									return false;
+								}
+							} else {
+								if (this[i][n] !== o[i][n]) {
+									return false;
+								}
+							}
+						}
+					} else { return false; }
+					break;
+				default:
+					if (this[i] !== o[i]) { return false; } 
+					break;
+			}
+			
+		}
+	},
 	/**
 	* Guid Object
 	* @define {Object}
@@ -128,7 +176,7 @@ window.ec = {
 	Guid: {
 		/**
 		* Create a uuid
-		* @param {Boolean=} if false, no uuid without dashes
+		* @param {Boolean=} if false, uuid without dashes
 		* @return {String}
 		*/
 		create: function(dashes) {
@@ -145,6 +193,16 @@ window.ec = {
 
 			var uuid = s.join("");
 			return uuid;
+		}
+	},
+	Number: {
+		compare: function(n1, n2) {
+			if (n1 > n2) {
+				return 1; 
+			} else if (n1 < n2) {
+				return -1;
+			}
+			return 0;
 		}
 	}
 };
