@@ -27,6 +27,15 @@ ec.Text.prototype = {
 	getOrigin: function() {
 		return ec.Vector2.add(this.position, this.origin);
 	},
+	/**
+	* Update all values if the value != lastvalue
+	* @param {Object} data
+	* @param {CanvasRenderingContext2D} data.context
+	* @param {Number} data.timer
+	* @param {Object} data.lastMouse
+	* @param {ec.Point} data.lastMouse.rel
+	* @param {ec.Point} data.lastMouse.abs
+	*/
 	update: function(data) {
 		if (this.value != this.lastValue) {
 			this.font.applyFont(data.context);
@@ -46,8 +55,18 @@ ec.Text.prototype = {
 			}
 		}
 	},
+	/**
+	* Draw the Text with data.context
+	* @override
+	* @param {Object} data
+	* @param {CanvasRenderingContext2D} data.context
+	* @param {Number} data.timer
+	* @param {Object} data.lastMouse
+	* @param {ec.Point} data.lastMouse.rel
+	* @param {ec.Point} data.lastMouse.abs
+	*/
 	draw: function(data){
-		/** @returns {CanvasRenderingContext2D} */
+		/** @define {CanvasRenderingContext2D} */
 		var ctx = data.context;
 		/* Modify context referential */
 		this.graphics.beforedraw(ctx);
@@ -63,10 +82,21 @@ ec.Text.prototype = {
 		/* Restore context referential */
 		this.graphics.afterdraw(ctx);
 	},
+	/**
+	* Compare this instance to another
+	* @override
+	* @param {?} o
+	* @return {ec.Text}
+	*/
 	compare: function(o) {
 		/* TODO: ec.Text comparison */
 		return null;
 	},
+	/**
+	* Clone this instance of ec.Text
+	* @override
+	* @return {ec.Text}
+	*/
 	clone: function() {
 		return new ec.Text({
 			position: this.position.clone(),
@@ -74,7 +104,14 @@ ec.Text.prototype = {
 			value: this.value
 		});
 	},
+	/**
+	* Check if this contains another shape
+	* For now, only Point support
+	* @param {ec.Point} p
+	* @return {Boolean}
+	*/
 	contains: function(p) {
+	    /* ec.Point support */
 		if (p.x != null && p.y != null) {
 			var posY = 0, posYMax = 0, posX = 0, posXMax = 0;
 			/* multilines containing support */

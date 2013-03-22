@@ -8,8 +8,6 @@
 * @param {Boolean} settings.draggable
 * @constructor
 * @extends {ec.Object}
-* @type {ec.Shape}
-* @return {ec.Shape}
 */
 ec.Shape = function(settings) {
 	/* Redefine position && currentPosition for this construction */
@@ -19,7 +17,7 @@ ec.Shape = function(settings) {
 	this.graphics = new ec.Graphics();
 	/** 
 	 * Default random value associate to this shape, to simulate its own behavior
-	 * @returns {Number} Number[0-1]
+	 * @define {Number} Number[0-1]
 	 */
 	this.random = Math.random();
 	this.floating = {};
@@ -61,47 +59,48 @@ ec.Shape.prototype = {
 	},
 	/** 
 	* The position where to draw the shape
-	* @define {ec.Point} 
+	* @type {ec.Point} 
 	*/
 	position : null,
+	zIndex: 0,
 	/** 
 	* The position where to draw the shape + position modifications
-	* @define {ec.Point} 
+	* @type {ec.Point} 
 	*/
 	currentPosition: null,
 	/** 
 	* The fill color
-	* @define {ec.Color|string} 
+	* @type {ec.Color|string} 
 	*/
 	fill : null,
 	/** 
 	* The stroke color
-	* @define {ec.Color|string} 
+	* @type {ec.Color|string} 
 	*/
 	stroke : null,
 	/** 
 	* The stroke lineWidth
-	* @define {Number} 
+	* @type {Number} 
 	*/
 	lineWidth : 1,
 	/** 
 	* Define if the object is clickable or not
-	* @define {Number} 
+	* @type {Number} 
 	*/
 	clickable : false,
 	/** 
 	* Define if the object is draggable or not
-	* @define {Number} 
+	* @type {Number} 
 	*/
 	draggable : false,
 	/** 
 	* Defines the referential
-	* @define {ec.Graphics} 
+	* @type {ec.Graphics} 
 	*/
 	graphics: null,
 	/**
 	* Events container
-	* @define {ec.EventManager}
+	* @type {ec.EventManager}
 	*/
 	events: null,
 	/** Elements for floating effect */
@@ -123,7 +122,7 @@ ec.Shape.prototype = {
 		}
 		this.currentPosition.x = this.position.x;
 	},
-	draw : null,
+	draw : function() {},
 	/** Events handlers container */
 	eventsHandlers: {
 		click : {
@@ -170,7 +169,9 @@ ec.Shape.prototype = {
 					this.position.x = e.mousePosition.x + this.events.state.lastPosition.x;
 					this.position.y = e.mousePosition.y + this.events.state.lastPosition.y;
 					this.events.state.dragging = true;
+					return false;
 				}
+				return true;
 			},
 			end : function(e) {
 				if (this.events.state.dragging) {
@@ -179,10 +180,18 @@ ec.Shape.prototype = {
 					this.events.state.dragging = false;
 					this.events.state.pressed = false;
 					ec.Mouse.pressed = false;
+					return false;
 				}
+				return true;
 			}
 		}
 	},
+	/**
+	* Compare this Shape to another
+	* @override
+	* @param {ec.Shape} o
+	* @return {ec.Shape}
+	*/
 	compare: function(o) {
 		if (o.inheritsof && o.inheritsof(ec.Shape)) {
 			return new o.info.getType()({
@@ -194,9 +203,9 @@ ec.Shape.prototype = {
 	},
 	/**
 	*  Create a new Event Handler for this ec.Object
+	* You can add as many 'mousemove' events as you want to same item, for example
 	*  @param {String} e
 	*  @param {Function(Event)} function to perform when the event's spreading
-	*  @remarks You can add as many 'mousemove' events as you want to same item, for example
 	*/
 	on: function(e, fn) {
 		var events = e.split(' ');

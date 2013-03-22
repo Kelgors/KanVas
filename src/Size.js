@@ -5,8 +5,6 @@
  * @param settings.height
  * @constructor
  * @extends {ec.Object}
- * @type {ec.Size}
- * @returns {ec.Size}
  */
 ec.Size = function(settings) {
 	if (settings) {
@@ -21,9 +19,9 @@ ec.Size.prototype = {
 			return ec.Size;
 		}
 	},
-	/** @define {number} */
+	/** @type {number} */
 	width: 0,
-	/** @define {number} */
+	/** @type {number} */
 	height: 0,
 	/**
 	 * Check the equality with ec.Size or a scalar variable
@@ -39,16 +37,20 @@ ec.Size.prototype = {
 		}
 		return false;
 	},
+	/**
+	* Get the equivalent to string of this size
+	* @override
+	* @return {String}
+	*/
 	toString: function() {
 		return '{ width: ' + this.width + ', height: ' + this.height + ' }';
 	},
 	/**
 	 * Performs a comparison between two size.
-	 * @param o
+	 * if this width is more than the other, it will returns 1 && if this height is less than the other, it will return -1. 0 for equality
 	 * @override
-	 * @type ec.Size
+	 * @param o
 	 * @returns {ec.Size}
-	 * @description if this width is more than the other, it will returns 1 && if this height is less than the other, it will return -1. 0 for equality
 	 */
 	compare: function(o) {
 		if (o.inheritsof(ec.Size)) {
@@ -64,7 +66,6 @@ ec.Size.prototype = {
 	/**
 	 * Clone this instance of ec.Size
 	 * @override
-	 * @type ec.Size
 	 * @returns {ec.Size}
 	 */
 	clone: function() {

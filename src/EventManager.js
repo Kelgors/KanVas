@@ -1,8 +1,6 @@
 /**
 * An event manager
 * @constructor
-* @type {ec.EventManager}
-* @return {ec.EventManager}
 */
 ec.EventManager = function() {
 	this.state = {
@@ -14,6 +12,11 @@ ec.EventManager = function() {
 
 ec.EventManager.prototype = {
 	state: null,
+	/**
+	* Performs all functions link to an event
+	* @param {Event}
+	* @return {Boolean} true: continue to spread the event; false: stop the event
+	*/
 	execute: function(e) {
 		var dontStop = true;
 		if (this[e.type]) {
@@ -27,6 +30,9 @@ ec.EventManager.prototype = {
 		}
 		return dontStop;
 	},
+	/**
+	* Reset states
+	*/
 	reset: function() {
 		for(var i in this.state) {
 			if (typeof(this.state[i]) == 'boolean') {
@@ -34,8 +40,25 @@ ec.EventManager.prototype = {
 			}
 		}
 	},
+	/**
+	* Container of all functions link to the 'click' event
+	* @type {Array}
+	*/
 	click: null,
+	/**
+	* Container of all functions link to the 'mouseup' event
+	* @type {Array}
+	*/
 	mouseup: null,
-	mousedown: null
+	/**
+	* Container of all functions link to the 'mousedown' event
+	* @type {Array}
+	*/
+	mousedown: null,
+	/**
+	* Container of all functions link to the 'mousemove' event
+	* @type {Array}
+	*/
+	mousemove: null
 	/* etc... */
 };

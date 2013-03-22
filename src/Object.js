@@ -1,8 +1,6 @@
 /**
  * Basic instance
  * @constructor
- * @type {ec.Object}
- * @return {ec.Object}
  */
 ec.Object = function(settings) {
 	for( var i in settings ) {
@@ -21,7 +19,6 @@ ec.Object.prototype = {
 	},
 	/**
 	 * Return a clone of this instance
-	 * @type {ec.Object}
 	 * @return	{ec.Object} the cloned object
 	 */
 	clone: function() {
@@ -39,8 +36,7 @@ ec.Object.prototype = {
 	/**
 	 * Check if each value of this equals to others value
 	 * @param o {ec.Object} other
-	 * @type {boolean}
-	 * @returns {boolean}
+	 * @return {boolean}
 	 */
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
@@ -86,7 +82,6 @@ ec.Object.prototype = {
 	/**
 	 * Compare two instances
 	 * @param {ec.Object} o
-	 * @type {ec.Object}
 	 * @return {ec.Object}
 	 */
 	compare: function(o) {
@@ -132,8 +127,7 @@ ec.Object.prototype = {
 	},
 	/**
 	*  Equivalent of instanceof but for ec.Objects
-	*  @param {ec.Type} the type of object ( ec.Object, not 'ec.Object' )
-	*  @type {boolean}
+	*  @param {Type} the type of object ( ec.Object, not 'ec.Object' )
 	*  @return {boolean}
 	*/
 	inheritsof: function(type) {

@@ -32,7 +32,18 @@ ec.Rectangle.prototype = {
 			y: this.position.y + this.size.height/2
 		});
 	},
+	/**
+	* Draw the Rectangle with data.context
+	* @override
+	* @param {Object} data
+	* @param {CanvasRenderingContext2D} data.context
+	* @param {Number} data.timer
+	* @param {Object} data.lastMouse
+	* @param {ec.Point} data.lastMouse.rel
+	* @param {ec.Point} data.lastMouse.abs
+	*/
 	draw: function(data) {
+    	/** @define {CanvasRenderingContext2D} */
 		var ctx = data.context;
 		this.graphics.beforedraw(ctx);
 		if ( this.fill ) {
@@ -50,7 +61,7 @@ ec.Rectangle.prototype = {
 	*  Check if another >Rectangle or >Point is containing by this instance
 	* @param {ec.Point|ec.Rectangle}
 	* @return {Boolean}
-	**/
+	*/
 	contains: function(o) {
 		var tp = this.currentPosition ? this.currentPosition : this.position;
 		if (o.inheritsof(ec.Point)) {
@@ -67,6 +78,12 @@ ec.Rectangle.prototype = {
 		}
 		return false;
 	},
+	/**
+	* Check if this instance of ec.Rectangle is equals to another
+	* @override
+	* @param {?} o
+	* @return {Boolean}
+	*/
 	equals: function(o) {
 		if (o.inheritsof(ec.Rectangle)) {
 			return o.position.x == this.position.x && o.position.y == this.position.y
@@ -75,9 +92,9 @@ ec.Rectangle.prototype = {
 	},
 	/**
 	 * Performs a comparison between two rectangles
+	 * @override
 	 * @param {ec.Rectangle} o
-	 * @type ec.Rectangle
-	 * @returns {ec.Rectangle}
+	 * @return {ec.Rectangle}
 	 */
 	compare: function(o) {
 		if (!o.inheritsof(ec.Rectangle)) { return null; }
@@ -99,8 +116,8 @@ ec.Rectangle.prototype = {
 	},
 	/**
 	 * Clone this instance
-	 * @type {ec.Rectangle}
-	 * @returns {ec.Rectangle}
+	 * @override
+	 * @return {ec.Rectangle}
 	 */
 	clone: function() {
 		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;

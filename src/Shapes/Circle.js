@@ -26,8 +26,18 @@ ec.Circle.prototype = {
 	},
 	currentPosition: null,
 	radius: 0,
+	/**
+	* Draw the circle with data.context
+	* @override
+	* @param {Object} data
+	* @param {CanvasRenderingContext2D} data.context
+	* @param {Number} data.timer
+	* @param {Object} data.lastMouse
+	* @param {ec.Point} data.lastMouse.rel
+	* @param {ec.Point} data.lastMouse.abs
+	*/
 	draw: function(data) {
-		/** @returns {CanvasRenderingContext2D} */
+		/** @define {CanvasRenderingContext2D} */
 		var ctx = data.context;
 		this.graphics.beforedraw(ctx);
 		if (this.radius > 0 && this.fill || this.stroke && this.radius > 0) {
@@ -48,7 +58,7 @@ ec.Circle.prototype = {
 	/**
 	 * Check if this instance containing another
 	 * @param {ec.Point|ec.Circle} c
-	 * @returns {Boolean}
+	 * @return {Boolean}
 	 */
 	contains: function( c ) {
 		/** @returns {Number} */
@@ -66,9 +76,9 @@ ec.Circle.prototype = {
 	},
 	/**
 	 * Check if this instance of circle is equal to another
+	 * @override
 	 * @param {ec.Circle} o other instance of circle
-	 * @returns {Boolean}
-	 * @description position are equals && radius too
+	 * @return {Boolean}
 	 */
 	equals: function(o) {
 		if (o.inheritsof(ec.Circle)) {
@@ -80,8 +90,7 @@ ec.Circle.prototype = {
 	/**
 	 * Performs a comparison between two circles
 	 * @param {ec.Circle} o
-	 * @type ec.Circle
-	 * @returns {ec.Circle|Boolean}
+	 * @return {ec.Circle|Boolean}
 	 */
 	compare: function(o) {
 		if (o.inheritsof(ec.Shape)) {
@@ -95,6 +104,11 @@ ec.Circle.prototype = {
 		}
 		return false;
 	},
+	/**
+	* Clone this instance of circle
+	* @override
+	* @return {ec.Circle}
+	*/
 	clone: function() {
 		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;
 		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone() : this.stroke;

@@ -1,0 +1,47 @@
+0.2.6
+[+] zIndex management in the update function into the Layer && zIndex attribute added to all Shapes
+[+] ec.List class (this is just an array++)
+[+] Comments
+[+] changes.log
+
+0.2.5
+[+] ec.EventManager non-static version to have an EventManager for each Layer
+[+] ec.Font to manage font for ec.Text
+[+] ec.Graphics which manage translations, scales, rotations && transformations
+[+] ec.Shape.on  to add an event to this shape
+[+] ec.Shape.off to delete an event of this shape
+[+=] ec.Text
+[-] ec.EventManager static version
+
+0.2.4
+[+] ec.Guid static class
+[+] ec.Object.info.ID 
+[+] examples/chronos.html
+[+] examples/color.html
+[+=] ec.Layer/ec.Stage .equals method
+
+0.2.3
+[+] ec.Object.stringify
+[+] ec.EventManager.purge method to clear all events
+[+=] ec.Object
+[+=] ec.Color
+[+=] ec.Rectangle
+[+=] ec.Vector2
+[+=] ec.Stage
+
+0.2.2
+[+] ec Object
+[+] ec.EventManager
+[+] ec.Object
+[+] ec.Point
+[+] ec.Vector2
+[+] ec.Size
+[+] ec.Layer
+[+] ec.Stage
+[+] ec.Color
+[+] ec.Shape
+[+] ec.Timer
+[+] ec.Circle
+[+] ec.Rectangle
+[+] ec.Text
+[+] ec.Mouse

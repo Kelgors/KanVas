@@ -2,14 +2,14 @@
 window.ec = {
 	/** 
 	* @type {String}
-	* @const 
+	* @const
 	*/
 	LANG: 'FR-fr',
 	/** 
 	* @type {Boolean}
 	* @const 
 	*/
-	DEBUG: false,
+	DEBUG: true,
 	/**
 	* Extend a type with another type
 	* @param {?}
@@ -75,7 +75,7 @@ window.ec = {
 	* Execute a function when the DOM is ready
 	* @param {Function}
 	*/
-	ready: function(fn, stages) {
+	ready: function(fn) {
 		if(!fn){return;}
 		var f = null;
 		f = function(e) {
@@ -111,14 +111,20 @@ window.ec = {
     },
 	/**
 	* Check if the function f is a native function or not
-	* @param {function}
-	* @return {boolean} true if the function is browser native
+	* @param {Function}
+	* @return {Boolean} true if the function is browser native
 	*/
 	isNativeFunction: function(f) {
 	    return !!f && (typeof f).toLowerCase() == 'function' 
             && (f === Function.prototype 
             || /^\s*function\s*(\b[a-z$_][a-z0-9$_]*\b)*\s*\((|([a-z$_][a-z0-9$_]*)(\s*,[a-z$_][a-z0-9$_]*)*)\)\s*{\s*\[native code\]\s*}\s*$/i.test(String(f)));
 	},
+	/**
+	* Check the equality between two objects
+	* @param {Object} o1
+	* @param {OBject} o2
+	* @return {Boolean}
+	*/
 	equal: function(o1, o2) {
 		/* Different types */
 		if (typeof(o1) != typeof(o2)) { return false; }
@@ -171,7 +177,6 @@ window.ec = {
 	},
 	/**
 	* Guid Object
-	* @define {Object}
 	*/
 	Guid: {
 		/**
@@ -195,6 +200,9 @@ window.ec = {
 			return uuid;
 		}
 	},
+	/**
+	* Number functions
+	*/
 	Number: {
 		compare: function(n1, n2) {
 			if (n1 > n2) {

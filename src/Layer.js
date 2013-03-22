@@ -1,11 +1,11 @@
 /**
- * 
+ * This class represents a Layer that drawing multiple Shapes
  * @param {Object} settings
  * @param {String} settings.canvas
  * @param {Number} settings.width
  * @param {Number} settings.height
- * @type ec.Layer
- * @returns {ec.Layer}
+ * @constructor
+ * @extends {ec.Object}
  */
 ec.Layer = function(settings) {
 	this.info.supportedEvents = new Object();
@@ -14,14 +14,14 @@ ec.Layer = function(settings) {
 		abs: new ec.Point()
 	};
 	this.offset = new ec.Point();
-	this.components = new Array();
+	this.components = new ec.List();
 	this.graphics = new ec.Graphics();
 	if ( settings.canvas ) {
-		/** @returns {HTMLCanvasElement} */
+		/** @define {HTMLCanvasElement} */
 		this.canvas = document.getElementById(settings.canvas);
 		this.canvas.width = settings.width;
 		this.canvas.height = settings.height;
-		/** @returns {CanvasRenderingContext2D} */
+		/** @define {CanvasRenderingContext2D} */
 		this.context = this.canvas.getContext('2d');
 		delete settings.canvas;
 	}
@@ -29,12 +29,6 @@ ec.Layer = function(settings) {
 };
 
 ec.Layer.prototype = {
-	canvas: null,
-	context: null,
-	width: 0,
-	height: 0,
-	offset: null,
-	graphics: null,
 	info: {
 		type: 'Layer',
 		getType: function() {
@@ -42,14 +36,64 @@ ec.Layer.prototype = {
 		},
 		supportedEvents: null
 	},
-	fixed: false,
+	/**
+	* The canvas html Element
+	* @type {HTMLCanvasElement}
+	*/
+	canvas: null,
+	/**
+	* The rendering context
+	* @type {CanvasRenderingContext2D}
+	*/
+	context: null,
+	/**
+	* The width of the canvas
+	* @type {Number}
+	*/
+	width: 0,
+	/**
+	* The height of the canvas
+	* @type {Number}
+	*/
+	height: 0,
+	/**
+	* The current offset of the context
+	* It is always necessary with the ec.Graphics Object ?
+	*/
+	offset: null,
+	/**
+	* Graphics referential Object
+	* @type {ec.Graphics}
+	*/
+	graphics: null,
+	/**
+	* Array of all components
+	* @type {Array}
+	*/
 	components: null,
+	/**
+	* Last position of the mouse since the last event
+	* @type {Object}
+	*/
 	lastMouse: {
+	    /**
+	    * Last relative position of the mouse since the last MouseEvent
+	    * @type {ec.Point}
+	    */
 		rel: null,
+	    /**
+	    * Last absolute position of the mouse since the last MouseEvent
+	    * No scrolling page
+	    * @type {ec.Point}
+	    */
 		abs: null
 	},
+	/**
+	* Add a drawable component, configure events before add
+	* @param {ec.Object} the component to add
+	*/
 	add: function(component) {
-		this.components.push(component);
+		this.components.add(component);
 		for (var i in component.events) 
 		{
 			/* If the event does not exists */
@@ -60,9 +104,9 @@ ec.Layer.prototype = {
 						this.lastMouse.rel = e.mousePosition = ec.Mouse.getPosition(e);
 						this.lastMouse.abs = e.mouseAbsPosition = ec.Mouse.getAbsolutePosition(e);
 					}
-					for (var i = this.components.length-1; i > -1; i--) {
+					for (var i = this.components.items.length-1; i > -1; i--) {
 						/* for each components, spread the event */
-						if (!this.components[i].events.execute(e)) {
+						if (!this.components.items[i].events.execute(e)) {
 							if (e.preventDefault) { e.preventDefault(); }
 							return false;
 						}
@@ -86,25 +130,52 @@ ec.Layer.prototype = {
 			}
 		}
 	},
+	/**
+	* update all components which are updatable
+	* @param {ec.Stage}
+	*/
 	update: function(stage) {
-		for ( var i in this.components ) {
-			if ( this.components[i].update ) {
-				this.components[i].update({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
-			}
-		}
+		var data = {
+			context: this.context,
+			timer: stage.timer.delta(),
+			mouse: this.lastMouse
+		};
+		/* Update each components in the list */
+		this.components.each(function() {
+			this.update(data);
+		});
+		/* Resort the list */
+		this.components.sort(function(c1, c2) {
+			return c1.zIndex > c2.zIndex ? 1 : c1.zIndex < c2.zIndex ? -1 : 0;
+		});
 	},
+	/**
+	* Draw all components which are drawable
+	* @param {ec.Stage}
+	*/
 	draw: function(stage) {
+	    /* Clear the canvas */
 		this.context.clearRect(0, 0, this.width, this.height);
-		
+		/* Change scale, translation, rotation, ... */
 		this.graphics.beforedraw(this.context);
-		for ( var i = 0; i < this.components.length; i++ ) {
-			if ( this.components[i].draw ) {
-				this.components[i].draw({ context: this.context, timer: stage.timer.delta(), mouse: this.lastMouse });
-			}
-		}
+		var data = {
+			context: this.context,
+			timer: stage.timer.delta(),
+			mouse: this.lastMouse
+		};
+		/* Draw each components */
+		this.components.each(function() {
+			this.draw(data);
+		});
 		this.graphics.afterdraw(this.context);
 	},
-	equals: function() {
+	/**
+	* Check if a Layer equals to another ec.Object (which is a Layer)
+	* @param {ec.Object}
+	* @override
+	* @return {Boolean}
+	*/
+	equals: function(o) {
 		if (!o.inheritsof) { return false; }
 		return this.ID === o.ID && o.inheritsof(ec.Layer);
 	}

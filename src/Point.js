@@ -5,8 +5,6 @@
  * @param settings.y	{Number}	Y Component
  * @constructor
  * @extends {ec.Object}
- * @type {ec.Point}
- * @returns {ec.Point}
  */
 ec.Point = function(settings) {
 	this.x = this.y = 0;
@@ -21,15 +19,15 @@ ec.Point.prototype = {
 			return ec.Point;
 		}
 	},
-	/** @define {number} */
+	/** @type {number} */
 	x: 0,
-	/** @define {number} */
+	/** @type {number} */
 	y: 0,
 	/**
 	 * Check if X-Y component are equals to this instance
 	 * @override
 	 * @param {ec.Point}
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	equals: function(o) {
 		if ( o.x && o.y ) {
@@ -41,8 +39,7 @@ ec.Point.prototype = {
 	 * Performs a comparison between two points
 	 * @override
 	 * @param {ec.Point} o
-	 * @type {ec.Point}
-	 * @returns	{ec.Point}
+	 * @return	{ec.Point}
 	 */
 	compare: function(o) {
 		if ( o.x != null && o.y != null ) {
@@ -59,7 +56,6 @@ ec.Point.prototype = {
 	/**
 	 * get the string representation of this object
 	 * @override
-	 * @type {String}
 	 * @return {String}
 	 */
 	toString: function() {
@@ -67,8 +63,7 @@ ec.Point.prototype = {
 	},
 	/**
 	 * Return this instance of Point as a Vector2
-	 * @type {ec.Vector2}
-	 * @returns {ec.Vector2}
+	 * @return {ec.Vector2}
 	 */
 	toVector2: function() {
 		return new ec.Vector2({

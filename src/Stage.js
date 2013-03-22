@@ -23,6 +23,11 @@ ec.Stage.prototype = {
 			this.layers[i].draw(this);
 		}
 	},
+	stop: function() {
+		this.isRunning = false;
+		clearTimeout();
+		clearInterval();
+	},
 	run: function() {
 		this.isRunning = true;
 		ec.Timer.step();
@@ -41,6 +46,12 @@ ec.Stage.prototype = {
 	add: function(o) {
 		this.layers.push(o);
 	},
+	/**
+	* Check the equality of this to another ec.Stage
+	* @override
+	* @param {?} o
+	* @return {Boolean}
+	*/
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
 		return this.ID === o.ID && o.inheritsof(ec.Stage);
