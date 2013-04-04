@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<head><meta charset="utf-8"><title>Lines</title><!-- <script src="../builds/last-build/EasyCanvas.js"></script> -->
+<script src="../src/Core.js"></script><script src="../src/Object.js"></script><script src="../src/List.js"></script><script src="../src/EventManager.js"></script><script src="../src/Mouse.js"></script><script src="../src/Point.js"></script><script src="../src/Graphics.js"></script><script src="../src/Size.js"></script><script src="../src/Graphics.js"></script><script src="../src/Vector2.js"></script><script src="../src/Timer.js"></script><script src="../src/Color.js"></script><script src="../src/Layer.js"></script><script src="../src/Stage.js"></script><script src="../src/Shape.js"></script><script src="../src/Shapes/Rectangle.js"></script><script src="../src/Shapes/Circle.js"></script><script src="../src/Font.js"></script><script src="../src/Shapes/Text.js"></script><script src="../src/Shapes/Image.js"></script><script src="../src/Shapes/Line.js"></script>
+<style>
+	html, body {
+		margin: 0;
+		padding: 0;
+		background-color: #000;
+	}
+</style></head><body role="application"><canvas id="main" style="position: absolute; z-index: 0;"></canvas><canvas id="text"  style="position: absolute; z-index: 4;"></canvas><script type="text/javascript">
+	ec.ready(function() {
+		/* This example use a new function (2013-04-04) ==> var myShape = new ec.Shape(settings).addTo(layer) where addTo return the Shape */
+		stage = new ec.Stage();
+		layer = new ec.Layer({
+			canvas: 'main',
+			width: window.innerWidth,
+			height: window.innerHeight
+		}).addTo(stage);
+		var size = 200;
+		/* Add two rectangles (with width == height) */
+		square1 = new ec.Rectangle({
+			position: new ec.Point({
+				x: layer.width/2 - size/2 + 50,
+				y: layer.height/2 - size/2 + 50
+			}),
+			size: new ec.Size({
+				width: size,
+				height: size,
+				lineWidth: 2
+			}),
+			stroke: '#FFF'
+		}).addTo(layer);
+		
+		square2 = new ec.Rectangle({
+			position: new ec.Point({
+				x: square1.position.x - 50,
+				y: square1.position.y - 50
+			}),
+			size: new ec.Size({
+				width: size,
+				height: size,
+				lineWidth: 2
+			}),
+			stroke: '#AAA'
+		}).addTo(layer);
+		/* Add jointures between these two squares */
+		new ec.Line({
+			points: [
+				square1.position,
+				square2.position
+			],
+			stroke: '#FFF'
+		}).addTo(layer);
+		new ec.Line({
+			points: [
+				square1.get('top', 'right'),
+				square2.get('top', 'right')
+			],
+			stroke: '#FFF'
+		}).addTo(layer);
+		new ec.Line({
+			points: [
+				square1.get('bottom', 'right'),
+				square2.get('bottom', 'right')
+			],
+			stroke: square2.stroke
+		}).addTo(layer);
+		new ec.Line({
+			points: [
+				square1.get('bottom', 'left'),
+				square2.get('bottom', 'left')
+			],
+			stroke: '#FFF'
+		}).addTo(layer);
+		last = null, isClicked = false;
+		/* Manage Events */
+		ec.EventManager.add('mousedown', function(e) {
+			if (!last && e.which == 1) {
+				last = ec.Mouse.getPosition(e);
+				isClicked = true;
+			}
+		}, false);
+		/* on mousemove, change the transformation of the main layer if user is holding the Mouse Button 1 */
+		ec.EventManager.add('mousemove', function(e) {
+			if (last) {
+				var pos = ec.Mouse.getPosition(e);
+				
+				layer.graphics.transform.m21 -= (pos.x - last.x)/100;
+				layer.graphics.transform.m22 -= (pos.y - last.y)/100;
+				
+				layer.graphics.transform.m11 += (pos.x - last.x)/100;
+				layer.graphics.transform.m12 += (pos.y - last.y)/100;
+				
+				layer.graphics.transform.dx -= (pos.x - last.x)*Math.PI;
+				layer.graphics.transform.dy -= (pos.y - last.y)*Math.PI;
+				
+				last = pos.clone();
+			}
+		}, false);
+		ec.EventManager.add('mouseup', function(e) {
+			if (e.which == 1)
+				last = null;
+		}, false);
+		
+		/* Create a new stage with a new layer which will be stopped after the animation of the text */
+		s = new ec.Stage();
+		l = new ec.Layer({
+			canvas: 'text',
+			width: window.innerWidth,
+			height: window.innerHeight / 4
+		});
+		s.add(l);
+		/* Create a text */
+		new ec.Text({
+			font: new ec.Font({
+				family: 'Arial',
+				size: 24,
+				fill: ec.Color.WHITE(),
+				baseLine: 'middle',
+				textAlign: 'center'
+			}),
+			value: 'Rectangles & Lines + Transformations\nClick and move',
+			position: new ec.Point({
+				x: window.innerWidth/2,
+				y: l.height/2
+			}),
+			update: function(data) {
+				ec.Text.prototype.update.call(this, data);
+				if (isClicked) {
+					if (this.font.fill.a > 0) {
+						this.font.fill.a -= 0.02;
+					} else {
+						l.components.removeAt(0);
+						s.stop();
+					}
+				}
+			}
+		}).addTo(l);
+		/* run the stage which contains the ec.Text */
+		s.run();
+		
+		/* run the main stage */
+		stage.run();
+	});
+</script></body></html>

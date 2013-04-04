@@ -1,16 +1,20 @@
 /**
 * This class is an Array with more function, so is it an ArrayList ? Maybe, but List is shorter
-* @param {Object} settings
+* @param {Object|Array} settings
 * @param {Array} settings.array
 * @constructor
 * @extends {ec.Object}
 */
 ec.List = function(settings) {
 	this.types = {};
-	if (settings && settings.array) {
-		this.items = settings.array.slice();
-		delete settings.array;
+	if (settings && settings instanceof Object && settings.items) {
+		this.items = settings.items.slice();
+		delete settings.items;
 		this._checkType();
+	} else if (settings instanceof Array) {
+		this.items = settings.slice();
+		settings = null;
+		this._checkType()
 	} else {
 		this.items = new Array();
 	}

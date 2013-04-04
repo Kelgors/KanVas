@@ -44,11 +44,11 @@ ec.Circle.prototype = {
 			ctx.beginPath();
 			ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, Math.PI * 2 );
 			if ( this.fill ) {
-				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
+				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
 				ctx.fill();
 			}
 			if ( this.stroke ) {
-				ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
+				ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
 				ctx.lineWidth = this.lineWidth;
 				ctx.stroke();
 			}

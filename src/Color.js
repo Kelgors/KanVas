@@ -22,11 +22,17 @@ ec.Color.prototype = {
 	g: 0,
 	b: 0,
 	a: 1,
+	valid: function() {
+		this.r = this.r > 255 ? 255 : this.r < 0 ? 0 : this.r;
+		this.g = this.g > 255 ? 255 : this.g < 0 ? 0 : this.g;
+		this.b = this.b > 255 ? 255 : this.b < 0 ? 0 : this.b;
+	},
 	/**
 	 * return the color as HexaDecimal
 	 * @return {String}
 	 */
 	toHexa: function() {
+		this.valid();
 		return '#' + ((1 << 24) + (this.r << 16) + (this.g << 8) + this.b).toString(16).slice(1);
 	},
 	/**
@@ -35,7 +41,15 @@ ec.Color.prototype = {
 	 * @return {String}
 	 */
 	toString: function() {
+		return '{ r: ' + this.r + ', g: ' + this.g + ', b: ' + this.b + ', a: ' + this.a + ' }';
+	},
+	toRGBA: function() {
+		this.valid();
 		return 'rgba( ' + this.r + ', ' + this.g + ', ' + this.b + ', ' + this.a + ')';
+	},
+	toRGB: function() {
+		this.valid();
+		return 'rgb( ' + this.r + ', ' + this.g + ', ' + this.b + ')';
 	},
 	/**
 	 * Reverse this instance of color
@@ -89,6 +103,7 @@ ec.Color.prototype = {
     	});
     }
 };
+ec.extend(ec.Color, ec.Object);
 /**
  * Reverse color without changing instance
  * @param {Number} o
@@ -106,10 +121,14 @@ ec.Color.invert = function(o) {
  * Get a random color
  * @return {ec.Color}
  */
-ec.Color.random = function () {
-    return new ec.Color(Math.random() * 256, Math.random() * 256, Math.random() * 256, 1);
+ec.Color.random = function() {
+    return new ec.Color({
+		r: Math.floor(Math.random() * 256), 
+		g: Math.floor(Math.random() * 256),
+		b: Math.floor(Math.random() * 256), 
+		a: 1
+	});
 };
-ec.extend(ec.Color, ec.Object);
 
 /**
 * get the black color

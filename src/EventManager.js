@@ -24,9 +24,18 @@ ec.EventManager.prototype = {
 				if (typeof(this[e.type][i]) == 'function') {
 					if (this[e.type][i](e) == false) {
 						dontStop = false;
+						break;
 					}
 				}
 			}
+		}
+		if (!dontStop) {
+			if (e.preventDefault) { e.preventDefault(); }
+			if (e.stopImmediatePropagation) { e.stopImmediatePropagation(); }
+			e.cancelBubble = true;
+			e.returnValue = false;
+			
+			return false;
 		}
 		return dontStop;
 	},
@@ -61,4 +70,12 @@ ec.EventManager.prototype = {
 	*/
 	mousemove: null
 	/* etc... */
+};
+
+ec.EventManager.add = function(e, f, b) {
+	return document.addEventListener ? document.addEventListener(e, f, b) : document.attachEvent(e, f, b);
+};
+
+ec.EventManager.remove = function(e, f, b) {
+	return document.removeEventListener ? document.removeEventListener(e, f, b) : document.detachEvent(e, f, b);
 };

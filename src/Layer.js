@@ -89,6 +89,19 @@ ec.Layer.prototype = {
 		abs: null
 	},
 	/**
+	* Add this ec.Layer to an Array, Stage or something else with the add|push method
+	* @param {ec.Stage|Array} this instance is adding to that
+	* @return {ec.Layer} this instance
+	*/
+	addTo: function(stage) {
+		if (stage instanceof Array) {
+			stage.push(this);
+		} else if (stage.add) {
+			stage.add(this);
+		}
+		return this;
+	},
+	/**
 	* Add a drawable component, configure events before add
 	* @param {ec.Object} the component to add
 	*/
@@ -107,7 +120,6 @@ ec.Layer.prototype = {
 					for (var i = this.components.items.length-1; i > -1; i--) {
 						/* for each components, spread the event */
 						if (!this.components.items[i].events.execute(e)) {
-							if (e.preventDefault) { e.preventDefault(); }
 							return false;
 						}
 					}
@@ -120,9 +132,9 @@ ec.Layer.prototype = {
 						else if (e.toElement) { target = e.toElement; }
 						else if (e.target) { target = e.target; }
 						if (target != this.canvas) {
-							for(var i in this.components) {
-								this.components[i].events.reset();
-							}
+							this.components.each(function() {
+								this.events.reset();
+							});
 						}
 					}).bind(this), false);
 					this.mouseUpCorrection = true;

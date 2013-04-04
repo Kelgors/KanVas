@@ -83,9 +83,9 @@ ec.Font.prototype = {
 		this.applyFont(ctx);
 		ctx.lineWidth = this.lineWidth;
 		if (this.fill)
-			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
+			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
 		if (this.stroke)
-			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
+			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
 	},
 	/**
 	* Set just the necessaries parameters for update

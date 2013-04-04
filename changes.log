@@ -1,4 +1,13 @@
-0.2.6
+0.2.8
+[+] ec.Line class
+[+=] ec.ready function take two parameters now ec.ready(function fn, String event = 'DOMContentLoaded')
+[+] Lines example
+[+] website experimentation in examples/
+[+] ec.List constructor can take directly an array ec.List(Object|Array settings)
+[+] ec.Image class functions
+[+] ec.EventManager add() && remove() which calls the right browser's method 
+
+0.2.7
 [+] zIndex management in the update function into the Layer && zIndex attribute added to all Shapes
 [+] ec.List class (this is just an array++)
 [+] Comments

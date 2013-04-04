@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<head><!-- <script src="../builds/last-build/EasyCanvas.js"></script> -->
+<script src="../src/Core.js"></script><script src="../src/Object.js"></script><script src="../src/List.js"></script><script src="../src/EventManager.js"></script><script src="../src/Mouse.js"></script><script src="../src/Point.js"></script><script src="../src/Graphics.js"></script><script src="../src/Size.js"></script><script src="../src/Graphics.js"></script><script src="../src/Vector2.js"></script><script src="../src/Timer.js"></script><script src="../src/Color.js"></script><script src="../src/Layer.js"></script><script src="../src/Stage.js"></script><script src="../src/Shape.js"></script><script src="../src/Shapes/Rectangle.js"></script><script src="../src/Shapes/Circle.js"></script><script src="../src/Font.js"></script><script src="../src/Shapes/Text.js"></script>
+<style>
+	html, body {
+		margin: 0;
+		padding: 0;
+		background-color: #000;
+	}
+</style></head><body><canvas id="main"></canvas><script type="text/javascript">
+
+
+ec.ready(function() {
+	ec.DEBUG = true;
+	var stage = new ec.Stage();
+	
+	var layer = new ec.Layer({
+		canvas: 'main',
+		width: window.innerWidth,
+		height: window.innerHeight
+	});
+	stage.add(layer);
+	var main_site = new ec.Rectangle({
+		x: layer.canvas.width/4,
+		y: layer.canvas.height/4,
+		width: layer.canvas.width/2,
+		height: layer.canvas.height/2,
+		fill: ec.Color.WHITE(),
+		speed: 10,
+		amplitude: 40
+	});
+	var text = new ec.Text({
+		font: new ec.Font({
+			fill: 'white',
+			size: 16
+		}),
+		position: new ec.Point({
+			x: main_site.position.x + 20,
+			y: main_site.position.y + 20
+		}),
+		zIndex: 120
+	});
+	var speed = 4, update = function(data) {
+		ec.Shape.prototype.update.call(this, data);
+		if (this.isActive) {
+			var color = main_site.fill;
+			if (!color.equals(ec.Color.WHITE()) && text.value != this.text) {
+				if (color.r < 255) color.r += speed;
+				if (color.g < 255) color.g += speed;
+				if (color.b < 255) color.b += speed;
+			}
+			if (color.equals(ec.Color.WHITE()) && text.value != this.text) {
+				text.value = this.text;
+			} else if (this.text == text.value && !color.equals(this.fill)) {
+				if (color.r > this.fill.r) color.r -= speed;
+				if (color.g > this.fill.g) color.g -= speed;
+				if (color.b > this.fill.b) color.b -= speed;
+			}
+		}
+	};
+	var margin = 15, button = new Array(), o;
+	for (var i = 0; i < 4; i++) {
+		button.push(new ec.Rectangle({
+			x: main_site.position.x + main_site.size.width + margin,
+			y: main_site.position.y + (50 + margin) * i,
+			width: 50,
+			height: 50,
+			zIndex: i + 1,
+			isActive: false,
+			text: 'Tile ' + i
+		}));
+		button[i].update = update.bind(button[i]);
+		button[i].on('click', function(e) {
+			if (this.contains(e.mouseAbsPosition)) {
+				layer.components.each(function() {
+					this.isActive = false;
+				});
+				this.isActive = true;
+				return false;
+			}
+			return true;
+		});
+		
+	}
+	button[0].fill = new ec.Color({ r: 145, g: 200, b: 200 });
+	button[0].text = "Home page";
+	button[1].fill = new ec.Color({ r: 120, g: 200, b: 245 });
+	button[1].text = "Presentation page";
+	button[2].fill = new ec.Color({ r: 245, g: 120, b: 245 });
+	button[2].text = "Download page";
+	button[3].fill = new ec.Color({ r: 245, g: 200, b: 120 });
+	button[3].text = "About page";
+	for(i in button) {
+		layer.add(button[i]);
+	}
+	layer.add(main_site);
+	layer.add(text);
+	stage.run();
+	
+});
+</script></body></html>

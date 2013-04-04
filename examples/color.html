@@ -29,11 +29,7 @@
 				y: 0,
 				width: layer.width,
 				height: layer.height,
-				fill: new ec.Color({
-					r: Math.floor(Math.random() * 255),
-					g: Math.floor(Math.random() * 255),
-					b: Math.floor(Math.random() * 255)
-				}),
+				fill: ec.Color.random(),
 				state: 0,
 				up: true,
 				c: {

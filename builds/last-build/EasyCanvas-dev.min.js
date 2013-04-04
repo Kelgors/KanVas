@@ -1,8 +1,8 @@
 /**
 * EasyCanvas
 * @package ec
-* @version 0.2.6 (2013-03-21)
-* @author Matthieu BOHEAS <matthieuboheas@gmail.com>
+* @version 0.2.8 (2013-04-04)
+* @author Matthieu BOHEAS <matthieuboheas[at]gmail.com>
 * @copyright Copyright (c) 2013 Matthieu BOHEAS
 * @link https://github.com/Kelgors/EasyCanvas
 * @license http://opensource.org/licenses/mit-license.php MIT License
@@ -22,6 +22,8 @@
 * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 * OR OTHER DEALINGS IN THE SOFTWARE.
+*
+* Please minify before use
 */
 (function() {
 
@@ -35,7 +37,7 @@ window.ec = {
 	* @type {Boolean}
 	* @const 
 	*/
-	DEBUG: false,
+	DEBUG: true,
 	/**
 	* Extend a type with another type
 	* @param {?}
@@ -100,24 +102,17 @@ window.ec = {
 	/**
 	* Execute a function when the DOM is ready
 	* @param {Function}
+	* @param {String=} Event which triggers the function, by default: DOMContentLoaded
 	*/
-	ready: function(fn) {
+	ready: function(fn, load) {
 		if(!fn){return;}
-		var f = null;
+		var event, f;
+		event = load || 'DOMContentLoaded';
 		f = function(e) {
-			if (document.removeEventListener) {
-				document.removeEventListener('DOMContentLoaded', f, false);
-			} else if (document.detachEvent) {
-				document.detachEvent('DOMContentLoaded', f, false);
-			}
+			ec.EventManager.remove(event, f, false);
 			fn();
 		};
-		
-		if (document.addEventListener) {
-			document.addEventListener('DOMContentLoaded', f, false);
-		} else if (document.attachEvent) {
-			document.attachEvent('DOMContentLoaded', f, false);
-		}
+		ec.EventManager.add(event, f, false);
 	},
 	/**
 	* Check the requestAnimationFrame Function
@@ -313,9 +308,18 @@ ec.EventManager.prototype = {
 				if (typeof(this[e.type][i]) == 'function') {
 					if (this[e.type][i](e) == false) {
 						dontStop = false;
+						break;
 					}
 				}
 			}
+		}
+		if (!dontStop) {
+			if (e.preventDefault) { e.preventDefault(); }
+			if (e.stopImmediatePropagation) { e.stopImmediatePropagation(); }
+			e.cancelBubble = true;
+			e.returnValue = false;
+			
+			return false;
 		}
 		return dontStop;
 	},
@@ -350,6 +354,14 @@ ec.EventManager.prototype = {
 	*/
 	mousemove: null
 	/* etc... */
+};
+
+ec.EventManager.add = function(e, f, b) {
+	return document.addEventListener ? document.addEventListener(e, f, b) : document.attachEvent(e, f, b);
+};
+
+ec.EventManager.remove = function(e, f, b) {
+	return document.removeEventListener ? document.removeEventListener(e, f, b) : document.detachEvent(e, f, b);
 };
 
 /**
@@ -504,17 +516,21 @@ ec.Object.prototype = {
 
 /**
 * This class is an Array with more function, so is it an ArrayList ? Maybe, but List is shorter
-* @param {Object} settings
+* @param {Object|Array} settings
 * @param {Array} settings.array
 * @constructor
 * @extends {ec.Object}
 */
 ec.List = function(settings) {
 	this.types = {};
-	if (settings && settings.array) {
-		this.items = settings.array.slice();
-		delete settings.array;
+	if (settings && settings instanceof Object && settings.items) {
+		this.items = settings.items.slice();
+		delete settings.items;
 		this._checkType();
+	} else if (settings instanceof Array) {
+		this.items = settings.slice();
+		settings = null;
+		this._checkType()
 	} else {
 		this.items = new Array();
 	}
@@ -795,7 +811,7 @@ ec.List.prototype = {
 	},
 	/**
 	* Sort the list
-	* The String|Number is more efficient( log(n) ) than with a comparer function ( n\B2 )
+	* The String|Number is more efficient( log(n) ) than with a comparer function ( n² )
 	* @param {Function(Object, Object)=Number|null} Function that return +1, 0 or -1 to check if Object1 is more than Object2|null, then sort the list of Number|String
 	*/
 	sort: function(fn) {
@@ -996,9 +1012,9 @@ ec.Font.prototype = {
 		this.applyFont(ctx);
 		ctx.lineWidth = this.lineWidth;
 		if (this.fill)
-			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
+			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
 		if (this.stroke)
-			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
+			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
 	},
 	/**
 	* Set just the necessaries parameters for update
@@ -1048,11 +1064,17 @@ ec.Color.prototype = {
 	g: 0,
 	b: 0,
 	a: 1,
+	valid: function() {
+		this.r = this.r > 255 ? 255 : this.r < 0 ? 0 : this.r;
+		this.g = this.g > 255 ? 255 : this.g < 0 ? 0 : this.g;
+		this.b = this.b > 255 ? 255 : this.b < 0 ? 0 : this.b;
+	},
 	/**
 	 * return the color as HexaDecimal
 	 * @return {String}
 	 */
 	toHexa: function() {
+		this.valid();
 		return '#' + ((1 << 24) + (this.r << 16) + (this.g << 8) + this.b).toString(16).slice(1);
 	},
 	/**
@@ -1061,7 +1083,15 @@ ec.Color.prototype = {
 	 * @return {String}
 	 */
 	toString: function() {
+		return '{ r: ' + this.r + ', g: ' + this.g + ', b: ' + this.b + ', a: ' + this.a + ' }';
+	},
+	toRGBA: function() {
+		this.valid();
 		return 'rgba( ' + this.r + ', ' + this.g + ', ' + this.b + ', ' + this.a + ')';
+	},
+	toRGB: function() {
+		this.valid();
+		return 'rgb( ' + this.r + ', ' + this.g + ', ' + this.b + ')';
 	},
 	/**
 	 * Reverse this instance of color
@@ -1115,6 +1145,7 @@ ec.Color.prototype = {
     	});
     }
 };
+ec.extend(ec.Color, ec.Object);
 /**
  * Reverse color without changing instance
  * @param {Number} o
@@ -1132,10 +1163,14 @@ ec.Color.invert = function(o) {
  * Get a random color
  * @return {ec.Color}
  */
-ec.Color.random = function () {
-    return new ec.Color(Math.random() * 256, Math.random() * 256, Math.random() * 256, 1);
+ec.Color.random = function() {
+    return new ec.Color({
+		r: Math.floor(Math.random() * 256), 
+		g: Math.floor(Math.random() * 256),
+		b: Math.floor(Math.random() * 256), 
+		a: 1
+	});
 };
-ec.extend(ec.Color, ec.Object);
 
 /**
 * get the black color
@@ -1501,7 +1536,7 @@ ec.Size.prototype = {
 	equals: function(o){
 		if (o.inheritsof && o.inheritsof(ec.Size)) {
 			return this.width == o.width && this.height == o.height;
-		} else if (typeof o == 'number') {
+		} else if (typeof(o) == 'number') {
 			return this.width == o && this.height == o;
 		}
 		return false;
@@ -1706,7 +1741,8 @@ ec.Shape = function(settings) {
 				this.position[i] = settings[i]; break;
 			case 'width':
 			case 'height':
-				this.size[i] = settings[i]; break;
+				if (this.size)
+					this.size[i] = settings[i]; break;
 			case 'speed':
 			case 'amplitude':
 				this.floating[i] = settings[i]; break;
@@ -1788,13 +1824,26 @@ ec.Shape.prototype = {
 	},
 	random: 0,
 	/**
+	* Add this shape to a layer (or any List/shape container)
+	* @param {ec.Layer|ec.List|Array} this instance is adding to that
+	* @return {ec.Shape} this instance
+	*/
+	addTo: function(layer) {
+		if (layer instanceof Array) {
+			layer.push(this);
+		} else if (layer.add) {
+			layer.add(this);
+		}
+		return this;
+	},
+	/**
 	 * Default update function for shapes
 	 * @param {Object} data
 	 */
 	update : function(data) {
 		/* Floating effect support */
 		if (this.floating.speed && this.floating.amplitude) {
-			this.currentPosition.y = this.position.y + Math.cos(data.timer * (2 * this.floating.speed)) * this.floating.amplitude;
+			this.currentPosition.y = this.position.y + Math.cos(data.timer * (this.floating.speed/10)) * this.floating.amplitude/10;
 		} else {
 			this.currentPosition.y = this.position.y;
 		}
@@ -1823,7 +1872,9 @@ ec.Shape.prototype = {
 					if (e.which == 3 && ec.DEBUG) {
 						console.log(this);
 					}
-					if (this.onclick) { this.onclick(e); }
+					if (this.onclick) { 
+						return this.onclick(e);
+					}
 					return false;
 				}
 				return true;
@@ -1901,6 +1952,78 @@ ec.Shape.prototype = {
 };
 ec.extend(ec.Shape, ec.Object);
 
+
+ec.Line = function(settings) {
+	this.graphics = new ec.Graphics();
+	this.points = new ec.List(settings.points);
+	delete settings.points;
+	ec.Shape.call(this, settings);
+};
+
+ec.Line.prototype = {
+	info: {
+		type: 'Line',
+		getType: function() {
+			return ec.Line;
+		}
+	},
+	/**
+	* Color of the line
+	* @type {ec.Color}
+	*/
+	stroke: null,
+	/**
+	* All points that defined the line
+	* @type {List<ec.Point>}
+	*/
+	points: null,
+	/** 
+	* Defines the referential
+	* @type {ec.Graphics} 
+	*/
+	graphics: null,
+	/**
+	* Update some values
+	* @type {Function}
+	*/
+	update: function() {},
+	/**
+	* Draw the Line with data.context
+	* @override
+	* @param {Object} data
+	* @param {CanvasRenderingContext2D} data.context
+	* @param {Number} data.timer
+	* @param {Object} data.lastMouse
+	* @param {ec.Point} data.lastMouse.rel
+	* @param {ec.Point} data.lastMouse.abs
+	*/
+	draw: function(data) {
+		if (this.stroke) {
+			var ctx = data.context;
+			this.graphics.beforedraw(ctx);
+			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(ec.Color) ? this.stroke.toRGBA() : this.stroke;
+
+			ctx.beginPath();
+			ctx.moveTo(this.points.get(0).x, this.points.get(0).y);
+			this.points.each(function() {
+				ctx.lineTo(this.x, this.y);
+			});
+			ctx.stroke();
+
+			this.graphics.afterdraw(ctx);
+		}
+	},
+	/**
+	* Check if a line is equals to another line
+	* @param {ec.Line} another line
+	* @return {Boolean}
+	*/
+	equals: function(o) {
+		return this.begin.equals(o.begin) && this.end.equals(o.end);
+	}
+};
+
+ec.extend(ec.Line, ec.Shape);
 
 /**
  * A drawable string
@@ -2115,11 +2238,11 @@ ec.Rectangle.prototype = {
 		var ctx = data.context;
 		this.graphics.beforedraw(ctx);
 		if ( this.fill ) {
-			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
+			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
 			ctx.fillRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
 		}
 		if ( this.stroke ) {
-			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
+			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
 			ctx.lineWidth = this.lineWidth;
 			ctx.strokeRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
 		}
@@ -2149,14 +2272,18 @@ ec.Rectangle.prototype = {
 	/**
 	* Check if this instance of ec.Rectangle is equals to another
 	* @override
-	* @param {?} o
+	* @param {ec.Shape|Number} o
 	* @return {Boolean}
 	*/
 	equals: function(o) {
-		if (o.inheritsof(ec.Rectangle)) {
+		if (o.inhertitsof && o.inheritsof(ec.Rectangle)) {
 			return o.position.x == this.position.x && o.position.y == this.position.y
 				&& o.size.width == this.size.width && o.size.height == this.size.height;
+		} else if (typeof(o) == 'number') {
+			return this.position.x == o && this.position.y == o
+				&& this.size.width == o && this.size.height == o;
 		}
+		return false;
 	},
 	/**
 	 * Performs a comparison between two rectangles
@@ -2200,6 +2327,18 @@ ec.Rectangle.prototype = {
 			clickable: this.clickable,
 			draggable: this.draggable
 		});
+	},
+	get: function(tob, lor) {
+		if (tob == 'top') {
+			return lor == 'left'
+				? this.position
+				: new ec.Point({ x: this.position.x + this.size.width, y: this.position.y });
+		} else {
+			return lor == 'left'
+				? new ec.Point({ x: this.position.x, y: this.position.y + this.size.height })
+				: new ec.Point({ x: this.position.x + this.size.width, y: this.position.y + this.size.height });
+		}
+		return null;
 	}
 };
 
@@ -2252,11 +2391,11 @@ ec.Circle.prototype = {
 			ctx.beginPath();
 			ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, Math.PI * 2 );
 			if ( this.fill ) {
-				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toHexa() : this.fill;
+				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
 				ctx.fill();
 			}
 			if ( this.stroke ) {
-				ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toHexa() : this.stroke;
+				ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
 				ctx.lineWidth = this.lineWidth;
 				ctx.stroke();
 			}
@@ -2336,6 +2475,129 @@ ec.Circle.prototype = {
 
 ec.extend(ec.Circle, ec.Shape);
 
+
+/**
+* A canvas drawable image
+* @constructor
+* @param {Object} settings
+* @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|String} string can be the ID or the source of the image
+* @param {ec.Point} settings.position	Representation of the position of this image	(Unnecessary if X && Y are given)
+* @param {Number} settings.x			X component of the position	(Unnecessary if position is given)
+* @param {Number} settings.y			Y component of the position (Unnecessary if position is given)
+* @param {ec.Size} settings.size		Representation of the dimension of the rectangle	(Unnecessary if Width && Height are given)
+* @param {Number} settings.width		Width of this image		(Unnecessary if Size is given)
+* @param {Number} settings.height		Height of this image	(Unnecessary if Size is given)
+* @param {Number} settings.amplitude	Necessary for floating effect
+* @param {Number} settings.speed		Necessary for floating effect
+*/
+ec.Image = function(settings) {
+	this.offset = new ec.Rectangle();
+	this.size = new ec.Size();
+	this.contains = ec.Rectangle.prototype.contains.bind(this);
+	ec.Shape.call(this, settings);
+	
+	/* Set the Image */
+	if (typeof(this.image) == 'string') {
+		if (this.image.charAt(0) == '#') {
+			this.image = document.getElementById(this.image.substr(1, this.image.length));
+		} else {
+			var src = this.image;
+			this.image = new Image();
+			this.image.src = src;
+		}
+	} else {
+		
+	}
+	
+	if (this.size.equals(0)) {
+		var that = this;
+		this.image.onload = function() {
+			that.size.width = this.width;
+			that.size.height = this.height;
+			that.isLoaded = true;
+		};
+		
+	}
+};
+
+ec.Image.prototype = {
+	info: {
+		type: 'Image',
+		getType: function() { return ec.Image; }
+	},
+	/**
+	* Define if the image is loaded or not
+	* @type {Boolean}
+	*/
+	isLoaded: false,
+	/**
+	* The position of the Image on the Layer
+	* @type {ec.Point}
+	*/
+	position: null,
+	/**
+	* The size of the Image on the Layer
+	* @type {ec.Point}
+	*/
+	size: null,
+	/**
+	* The area of the Image you want to draw
+	* @type {ec.Rectangle}
+	*/
+	offset: null,
+	/**
+	* The Image|Canvas|Video you want to draw on the Layer
+	* @type {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement}
+	*/
+	image: null,
+	/**
+	* Draw the Rectangle with data.context
+	* @override
+	* @param {Object} data
+	* @param {CanvasRenderingContext2D} data.context
+	* @param {Number} data.timer
+	* @param {Object} data.lastMouse
+	* @param {ec.Point} data.lastMouse.rel
+	* @param {ec.Point} data.lastMouse.abs
+	*/
+	draw: function(data) {
+		if (this.image && this.isLoaded) {
+			this.graphics.beforedraw(data.context);
+			if (!this.offset.equals(0)) {
+				data.context.drawImage(
+					this.image,
+					this.offset.position.x,
+					this.offset.position.y,
+					this.offset.size.width,
+					this.offset.size.height,
+					this.currentPosition.x,
+					this.currentPosition.y,
+					this.size.width,
+					this.size.height
+				);
+			} else {
+				data.context.drawImage(
+					this.image,
+					this.currentPosition.x,
+					this.currentPosition.y,
+					this.size.width,
+					this.size.height
+				);
+			}
+			this.graphics.afterdraw(data.context);
+		}
+	},
+	/**
+	* Check if this Image contains somthing
+	* @override
+	* @methodOf {ec.Rectangle}
+	* @param {ec.Object}
+	* @return {Boolean}
+	*/
+	contains: null
+};
+
+ec.extend(ec.Image, ec.Shape);
 
 ec.Timer = function(seconds) {
 	this.base = ec.Timer.time;
@@ -2562,6 +2824,19 @@ ec.Layer.prototype = {
 		abs: null
 	},
 	/**
+	* Add this ec.Layer to an Array, Stage or something else with the add|push method
+	* @param {ec.Stage|Array} this instance is adding to that
+	* @return {ec.Layer} this instance
+	*/
+	addTo: function(stage) {
+		if (stage instanceof Array) {
+			stage.push(this);
+		} else if (stage.add) {
+			stage.add(this);
+		}
+		return this;
+	},
+	/**
 	* Add a drawable component, configure events before add
 	* @param {ec.Object} the component to add
 	*/
@@ -2580,7 +2855,6 @@ ec.Layer.prototype = {
 					for (var i = this.components.items.length-1; i > -1; i--) {
 						/* for each components, spread the event */
 						if (!this.components.items[i].events.execute(e)) {
-							if (e.preventDefault) { e.preventDefault(); }
 							return false;
 						}
 					}
@@ -2593,9 +2867,9 @@ ec.Layer.prototype = {
 						else if (e.toElement) { target = e.toElement; }
 						else if (e.target) { target = e.target; }
 						if (target != this.canvas) {
-							for(var i in this.components) {
-								this.components[i].events.reset();
-							}
+							this.components.each(function() {
+								this.events.reset();
+							});
 						}
 					}).bind(this), false);
 					this.mouseUpCorrection = true;

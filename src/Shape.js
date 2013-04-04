@@ -28,7 +28,8 @@ ec.Shape = function(settings) {
 				this.position[i] = settings[i]; break;
 			case 'width':
 			case 'height':
-				this.size[i] = settings[i]; break;
+				if (this.size)
+					this.size[i] = settings[i]; break;
 			case 'speed':
 			case 'amplitude':
 				this.floating[i] = settings[i]; break;
@@ -110,13 +111,26 @@ ec.Shape.prototype = {
 	},
 	random: 0,
 	/**
+	* Add this shape to a layer (or any List/shape container)
+	* @param {ec.Layer|ec.List|Array} this instance is adding to that
+	* @return {ec.Shape} this instance
+	*/
+	addTo: function(layer) {
+		if (layer instanceof Array) {
+			layer.push(this);
+		} else if (layer.add) {
+			layer.add(this);
+		}
+		return this;
+	},
+	/**
 	 * Default update function for shapes
 	 * @param {Object} data
 	 */
 	update : function(data) {
 		/* Floating effect support */
 		if (this.floating.speed && this.floating.amplitude) {
-			this.currentPosition.y = this.position.y + Math.cos(data.timer * (2 * this.floating.speed)) * this.floating.amplitude;
+			this.currentPosition.y = this.position.y + Math.cos(data.timer * (this.floating.speed/10)) * this.floating.amplitude/10;
 		} else {
 			this.currentPosition.y = this.position.y;
 		}
@@ -145,7 +159,9 @@ ec.Shape.prototype = {
 					if (e.which == 3 && ec.DEBUG) {
 						console.log(this);
 					}
-					if (this.onclick) { this.onclick(e); }
+					if (this.onclick) { 
+						return this.onclick(e);
+					}
 					return false;
 				}
 				return true;

@@ -1,16 +1,29 @@
 # Easy Canvas
 
-Easy Canvas is a javascript library that give you all keys to use easily canvas in HTML5.
+*Easy Canvas* is a javascript library that gives you all keys to use and manage canvas in HTML5.
 
-### Why this library
 
-I tryed KineticJS library but i wasn't convinced and I think some things were not clear for me.
-Finally, i don't really like the approach of the subject but some functionality are very useful and well coded, i can't deny that.
+### What is this f***ing library ?
 
-If KineticJS suits you, i think you can go your way.
+ * A **2D Engine** for **HTML5 canvas**
+ * A way to simplify the development with canvas.
+ * Not inessential things
+ * (So a) Very quick library to execute
 
-### Next new functionalities
+
+### To be continued...
 * Input class|Keyboard class
 * ec.Stage/ec.Layer Prerendering
 * Image class
-* Line class
+
+
+### Licence
+
+All of the EasyCanvas specific code is under the [MIT licence](http://opensource.org/licenses/mit-license.php).
+
+
+### Thanks
+
+ * Eric Drowell - KineticJS was my first motivation to do this project.
+ * Matthieu L   - To say why my projects around this library is very useful.
+ 

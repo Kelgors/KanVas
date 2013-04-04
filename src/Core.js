@@ -74,24 +74,17 @@ window.ec = {
 	/**
 	* Execute a function when the DOM is ready
 	* @param {Function}
+	* @param {String=} Event which triggers the function, by default: DOMContentLoaded
 	*/
-	ready: function(fn) {
+	ready: function(fn, load) {
 		if(!fn){return;}
-		var f = null;
+		var event, f;
+		event = load || 'DOMContentLoaded';
 		f = function(e) {
-			if (document.removeEventListener) {
-				document.removeEventListener('DOMContentLoaded', f, false);
-			} else if (document.detachEvent) {
-				document.detachEvent('DOMContentLoaded', f, false);
-			}
+			ec.EventManager.remove(event, f, false);
 			fn();
 		};
-		
-		if (document.addEventListener) {
-			document.addEventListener('DOMContentLoaded', f, false);
-		} else if (document.attachEvent) {
-			document.attachEvent('DOMContentLoaded', f, false);
-		}
+		ec.EventManager.add(event, f, false);
 	},
 	/**
 	* Check the requestAnimationFrame Function

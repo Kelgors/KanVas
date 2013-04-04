@@ -32,7 +32,7 @@ ec.Size.prototype = {
 	equals: function(o){
 		if (o.inheritsof && o.inheritsof(ec.Size)) {
 			return this.width == o.width && this.height == o.height;
-		} else if (typeof o == 'number') {
+		} else if (typeof(o) == 'number') {
 			return this.width == o && this.height == o;
 		}
 		return false;
