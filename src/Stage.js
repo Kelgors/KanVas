@@ -1,14 +1,14 @@
-ec.Stage = function(settings) {
-	ec.Object.call(this, settings);
-	this.timer = new ec.Timer();
+kan.Stage = function(settings) {
+	kan.Object.call(this, settings);
+	this.timer = new kan.Timer();
 	this.layers = new Array();
 };
 
-ec.Stage.prototype = {
+kan.Stage.prototype = {
 	info: {
 		type: 'Stage',
 		getType: function() {
-			return ec.Stage;
+			return kan.Stage;
 		}
 	},
 	timer: null,
@@ -30,15 +30,15 @@ ec.Stage.prototype = {
 	},
 	run: function() {
 		this.isRunning = true;
-		ec.Timer.step();
+		kan.Timer.step();
 		this.timer.reset();
 		this._loop();
 	},
 	_loop: function() {
 		if (this.isRunning) {
-			ec.Timer.step();
+			kan.Timer.step();
 			this.update();
-			ec.Timer.step();
+			kan.Timer.step();
 			this.draw();
 			window.requestAnimFrame(this._loop.bind(this));
 		}
@@ -47,14 +47,14 @@ ec.Stage.prototype = {
 		this.layers.push(o);
 	},
 	/**
-	* Check the equality of this to another ec.Stage
+	* Check the equality of this to another kan.Stage
 	* @override
 	* @param {?} o
 	* @return {Boolean}
 	*/
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
-		return this.ID === o.ID && o.inheritsof(ec.Stage);
+		return this.ID === o.ID && o.inheritsof(kan.Stage);
 	}
 };
-ec.extend(ec.Stage, ec.Object);
+kan.extend(kan.Stage, kan.Object);

@@ -2,7 +2,7 @@
 * An event manager
 * @constructor
 */
-ec.EventManager = function() {
+kan.EventManager = function() {
 	this.state = {
 		clicked: false,
 		pressed: false,
@@ -10,7 +10,7 @@ ec.EventManager = function() {
 	};
 };
 
-ec.EventManager.prototype = {
+kan.EventManager.prototype = {
 	state: null,
 	/**
 	* Performs all functions link to an event
@@ -72,10 +72,10 @@ ec.EventManager.prototype = {
 	/* etc... */
 };
 
-ec.EventManager.add = function(e, f, b) {
+kan.EventManager.add = function(e, f, b) {
 	return document.addEventListener ? document.addEventListener(e, f, b) : document.attachEvent(e, f, b);
 };
 
-ec.EventManager.remove = function(e, f, b) {
+kan.EventManager.remove = function(e, f, b) {
 	return document.removeEventListener ? document.removeEventListener(e, f, b) : document.detachEvent(e, f, b);
 };

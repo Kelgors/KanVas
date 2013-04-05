@@ -1,15 +1,15 @@
-ec.Timer = function(seconds) {
-	this.base = ec.Timer.time;
-	this.last = ec.Timer.time;
+kan.Timer = function(seconds) {
+	this.base = kan.Timer.time;
+	this.last = kan.Timer.time;
 	
 	this.target = seconds || 0;
 };
 	
-ec.Timer.prototype = {
+kan.Timer.prototype = {
 	info: {
 		type: 'Timer',
 		getType: function() {
-			return ec.Timer;
+			return kan.Timer;
 		}
 	},
 	last: 0,
@@ -19,53 +19,53 @@ ec.Timer.prototype = {
 	
 	set: function( seconds ) {
 		this.target = seconds || 0;
-		this.base = ec.Timer.time;
+		this.base = kan.Timer.time;
 		this.pausedAt = 0;
 	},
 	
 	
 	reset: function() {
-		this.base = ec.Timer.time;
+		this.base = kan.Timer.time;
 		this.pausedAt = 0;
 	},
 	
 	tick: function() {
-		var delta = ec.Timer.time - this.last;
-		this.last = ec.Timer.time;
+		var delta = kan.Timer.time - this.last;
+		this.last = kan.Timer.time;
 		return (this.pausedAt ? 0 : delta);
 	},
 	
 	
 	delta: function() {
-		return (this.pausedAt || ec.Timer.time) - this.base - this.target;
+		return (this.pausedAt || kan.Timer.time) - this.base - this.target;
 	},
 
 
 	pause: function() {
 		if( !this.pausedAt ) {
-			this.pausedAt = ec.Timer.time;
+			this.pausedAt = kan.Timer.time;
 		}
 	},
 
 
 	unpause: function() {
 		if( this.pausedAt ) {
-			this.base += ec.Timer.time - this.pausedAt;
+			this.base += kan.Timer.time - this.pausedAt;
 			this.pausedAt = 0;
 		}
 	}
 };
 
-ec.Timer._last = 0;
-ec.Timer.time = Number.MIN_VALUE;
-ec.Timer.timeScale = 1;
-ec.Timer.maxStep = 0.05;
+kan.Timer._last = 0;
+kan.Timer.time = Number.MIN_VALUE;
+kan.Timer.timeScale = 1;
+kan.Timer.maxStep = 0.05;
 
-ec.Timer.step = function() {
+kan.Timer.step = function() {
 	var current = Date.now();
-	var delta = (current - ec.Timer._last) / 1000;
-	ec.Timer.time += Math.min(delta, ec.Timer.maxStep) * ec.Timer.timeScale;
-	ec.Timer._last = current;
+	var delta = (current - kan.Timer._last) / 1000;
+	kan.Timer.time += Math.min(delta, kan.Timer.maxStep) * kan.Timer.timeScale;
+	kan.Timer._last = current;
 };
 
-ec.extend(ec.Timer, ec.Object);
+kan.extend(kan.Timer, kan.Object);

@@ -1,5 +1,5 @@
 
-window.ec = {
+window.kan = {
 	/** 
 	* @type {String}
 	* @const
@@ -13,7 +13,7 @@ window.ec = {
 	/**
 	* Extend a type with another type
 	* @param {?}
-	* @param {ec.Object} an ec.Object's type
+	* @param {kan.Object} an kan.Object's type
 	*/
 	extend: function(that, p) {
 		/* Inheritance based on John Resigs code
@@ -49,14 +49,14 @@ window.ec = {
 		for( var name in parent ) {
 			if ( !prototype[name] && name != 'to'+type ) {
 				prototype[name] = parent[name];
-			} else if ( prototype[name] && ec.isNativeFunction(prototype[name]) ) {
+			} else if ( prototype[name] && kan.isNativeFunction(prototype[name]) ) {
 				prototype[name] = parent[name];
 			}
 		}
 		/* Avoid to copy adress values of internal parent object */
 		
-		that.prototype = ec._clone(prototype);
-		that.prototype.info.parent = ec._clone(p.prototype.info);
+		that.prototype = kan._clone(prototype);
+		that.prototype.info.parent = kan._clone(p.prototype.info);
 	},
 	/**
 	* _clone make a deep copy of an object
@@ -68,7 +68,7 @@ window.ec = {
 		if (obj instanceof Array) { return obj.slice(0); }
 		var temp = obj.constructor(); // changed
 		for(var key in obj)
-			temp[key] = ec._clone(obj[key]);
+			temp[key] = kan._clone(obj[key]);
 		return temp;
 	},
 	/**
@@ -81,10 +81,10 @@ window.ec = {
 		var event, f;
 		event = load || 'DOMContentLoaded';
 		f = function(e) {
-			ec.EventManager.remove(event, f, false);
+			kan.EventManager.remove(event, f, false);
 			fn();
 		};
-		ec.EventManager.add(event, f, false);
+		kan.EventManager.add(event, f, false);
 	},
 	/**
 	* Check the requestAnimationFrame Function
@@ -144,13 +144,13 @@ window.ec = {
 						for (var n in this[i]) {
 							if (typeof(this[i][n]) == 'function') { continue; }
 							if (this[i][n].equals) {
-								/* Array/Object of ec.Object */
+								/* Array/Object of kan.Object */
 								if (!this[i][n].equals(o[i][n])) {
 									return false;
 								}
 							} else if (typeof(this[i][n]) == 'object' && typeof(o[i][n]) == 'object') {
 								/* Array/Object of object */
-								if (!ec.equal(this[i][n], o[i][n])) {
+								if (!kan.equal(this[i][n], o[i][n])) {
 									return false;
 								}
 							} else {
@@ -167,6 +167,15 @@ window.ec = {
 			}
 			
 		}
+	},
+	/**
+	* Get the type of something
+	*   if the object has info: {}, returns o.info.type
+	* @param {?} an object
+	* @return {String} the type of the object
+	*/
+	typeof: function(o) {
+		return o.info ? o.info.type : typeof(o); 
 	},
 	/**
 	* Guid Object
@@ -207,4 +216,4 @@ window.ec = {
 		}
 	}
 };
-window.ec._set_requestAnimFrame();
+window.kan._set_requestAnimFrame();

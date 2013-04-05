@@ -1,14 +1,14 @@
-ec.Input = function() {
+kan.Input = function() {
 
 };
 
-ec.Input.prototype = {
+kan.Input.prototype = {
 	
 };
 
-ec.extend(ec.Input, ec.Object);
+kan.extend(kan.Input, kan.Object);
 
-ec.Input.KEY = {
+kan.Input.KEY = {
 	BACK_SPACE: 8,
 	TAB: 9,
 	CLEAR: 12, /* 5 on numpad when numlock is unlocked */
@@ -154,4 +154,4 @@ ec.Input.KEY = {
 	META: 224,
 	ALTGR: 225
 };
-ec.extend(ec.Input, ec.Object);
+kan.extend(kan.Input, kan.Object);

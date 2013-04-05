@@ -1,19 +1,20 @@
-# Easy Canvas
+# KanVas
 
-*Easy Canvas* is a javascript library that gives you all keys to use and manage canvas in HTML5.
+*KanVas* is a javascript library that gives you all keys to use and manage canvas in HTML5.
 
 
 ### What is this f***ing library ?
 
  * A **2D Engine** for **HTML5 canvas**
- * A way to simplify the development with canvas.
- * Not inessential things
- * (So a) Very quick library to execute
-
+ * A **way to simplify** the development with canvas.
+ * **Not** inessential things
+ * (So a) **Very quick** library to execute
+ * What else ?
+ 
 
 ### To be continued...
 * Input class|Keyboard class
-* ec.Stage/ec.Layer Prerendering
+* kan.Stage/kan.Layer Prerendering
 * Image class
 
 

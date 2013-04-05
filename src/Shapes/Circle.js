@@ -1,30 +1,34 @@
 
 /**
- * Create a instance of ec.Circle
+ * Create a instance of kan.Circle
  * @param {Object} settings
- * @param {ec.Point} settings.position	Representation of the position of this instance	(Unnecessary if X && Y are given)
+ * @param {kan.Point} settings.position	Representation of the position of this instance	(Unnecessary if X && Y are given)
  * @param {Number} settings.x			X component of the position	(Unnecessary if position is given)
  * @param {Number} settings.y			Y component of the position (Unnecessary if position is given)
  * @param {Number} settings.radius		Radius of this circle
  * @param {Number} settings.amplitude	Necessary for floating effect
  * @param {Number} settings.speed		Necessary for floating effect
  * @constructor
- * @extends {ec.Shape} 
- * @type {ec.Circle}
- * @returns {ec.Circle}
+ * @extends {kan.Shape} 
+ * @type {kan.Circle}
+ * @returns {kan.Circle}
  */
-ec.Circle = function(settings) {
-	ec.Shape.call(this, settings);
+kan.Circle = function(settings) {
+	kan.Shape.call(this, settings);
 };
 
-ec.Circle.prototype = {
+kan.Circle.prototype = {
 	info: {
 		type: 'Circle',
 		getType: function() {
-			return ec.Circle;
+			return kan.Circle;
 		}
 	},
 	currentPosition: null,
+	/**
+	* The radius of the Circle
+	* @type {Number}
+	*/
 	radius: 0,
 	/**
 	* Draw the circle with data.context
@@ -33,8 +37,8 @@ ec.Circle.prototype = {
 	* @param {CanvasRenderingContext2D} data.context
 	* @param {Number} data.timer
 	* @param {Object} data.lastMouse
-	* @param {ec.Point} data.lastMouse.rel
-	* @param {ec.Point} data.lastMouse.abs
+	* @param {kan.Point} data.lastMouse.rel
+	* @param {kan.Point} data.lastMouse.abs
 	*/
 	draw: function(data) {
 		/** @define {CanvasRenderingContext2D} */
@@ -44,11 +48,11 @@ ec.Circle.prototype = {
 			ctx.beginPath();
 			ctx.arc( this.currentPosition.x, this.currentPosition.y, this.radius, 0, Math.PI * 2 );
 			if ( this.fill ) {
-				ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
+				ctx.fillStyle = this.fill instanceof kan.Color ? this.fill.toRGBA() : this.fill;
 				ctx.fill();
 			}
 			if ( this.stroke ) {
-				ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
+				ctx.strokeStyle = this.stroke instanceof kan.Color ? this.stroke.toRGBA() : this.stroke;
 				ctx.lineWidth = this.lineWidth;
 				ctx.stroke();
 			}
@@ -57,19 +61,19 @@ ec.Circle.prototype = {
 	},
 	/**
 	 * Check if this instance containing another
-	 * @param {ec.Point|ec.Circle} c
+	 * @param {kan.Point|kan.Circle} c
 	 * @return {Boolean}
 	 */
 	contains: function( c ) {
 		/** @returns {Number} */
 		var d = 0,
 		tp = this.currentPosition ? this.currentPosition : this.position;
-		if ( c.inheritsof(ec.Point) ) {
-			d = ec.Vector2.distance(tp, c);
+		if ( c.inheritsof(kan.Point) ) {
+			d = kan.Vector2.distance(tp, c);
 			if (this.isClicked) { this.isClicked = false; }
             return (d < this.radius);
-		} else if (c.inheritsof(ec.Circle)) {
-			d = ec.Vector2.distance(tp, c.position);
+		} else if (c.inheritsof(kan.Circle)) {
+			d = kan.Vector2.distance(tp, c.position);
 			return d < ( this.radius + c.radius );
 		}
 		return false;
@@ -77,11 +81,11 @@ ec.Circle.prototype = {
 	/**
 	 * Check if this instance of circle is equal to another
 	 * @override
-	 * @param {ec.Circle} o other instance of circle
+	 * @param {kan.Circle} o other instance of circle
 	 * @return {Boolean}
 	 */
 	equals: function(o) {
-		if (o.inheritsof(ec.Circle)) {
+		if (o.inheritsof(kan.Circle)) {
 			return o.position.x == this.position.x && o.position.y == this.position.y
 				&& this.radius == o.radius;
 		}
@@ -89,14 +93,14 @@ ec.Circle.prototype = {
 	},
 	/**
 	 * Performs a comparison between two circles
-	 * @param {ec.Circle} o
-	 * @return {ec.Circle|Boolean}
+	 * @param {kan.Circle} o
+	 * @return {kan.Circle|Boolean}
 	 */
 	compare: function(o) {
-		if (o.inheritsof(ec.Shape)) {
+		if (o.inheritsof(kan.Shape)) {
 			var r = 0;
 			if (this.radius > o.radius) { r = 1; } else if (this.radius < o.radius) { r = -1; }
-			return new ec.Circle({
+			return new kan.Circle({
 				position: this.position.compare(o.position),
 				currentPosition: this.currentPosition.compare(o.currentPosition),
 				radius: r
@@ -107,12 +111,12 @@ ec.Circle.prototype = {
 	/**
 	* Clone this instance of circle
 	* @override
-	* @return {ec.Circle}
+	* @return {kan.Circle}
 	*/
 	clone: function() {
-		var fill = this.fill instanceof ec.Color ? this.fill.clone() : this.fill;
-		var stroke = this.stroke instanceof ec.Color ? this.stroke.clone() : this.stroke;
-		return new ec.Circle({
+		var fill = this.fill instanceof kan.Color ? this.fill.clone() : this.fill;
+		var stroke = this.stroke instanceof kan.Color ? this.stroke.clone() : this.stroke;
+		return new kan.Circle({
 			position: this.position.clone(),
 			radius: this.radius,
 			fill: fill,
@@ -126,4 +130,4 @@ ec.Circle.prototype = {
 	}
 };
 
-ec.extend(ec.Circle, ec.Shape);
+kan.extend(kan.Circle, kan.Shape);

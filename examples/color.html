@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<script src="../builds/nightly-build/EasyCanvas.js"></script>
+		<script src="../builds/nightly-build/Kanvas.js"></script>
 	</head>
 	<style>
 		html, body {
@@ -13,23 +13,23 @@
 		<canvas id="main"></canvas>
 	</body>
 	<script>
-		ec.ready(function() {
-			ec.Color.prototype.toString = function() {
+		kan.ready(function() {
+			kan.Color.prototype.toString = function() {
 				return '{ '+this.r+', '+this.g+', '+this.b+' }';
 			};
-			var stage = new ec.Stage();
-			var layer = new ec.Layer({
+			var stage = new kan.Stage();
+			var layer = new kan.Layer({
 				canvas: 'main',
 				width: window.innerWidth,
 				height: window.innerHeight
 			});
 			stage.add(layer);
-			var r = new ec.Rectangle({
+			var r = new kan.Rectangle({
 				x: 0,
 				y: 0,
 				width: layer.width,
 				height: layer.height,
-				fill: ec.Color.random(),
+				fill: kan.Color.random(),
 				state: 0,
 				up: true,
 				c: {
@@ -41,17 +41,17 @@
 					return false;
 				}
 			});
-			var t = new ec.Text({
+			var t = new kan.Text({
 				value: r.fill.toString(),
-				font: new ec.Font({
-					stroke: ec.Color.BLACK(),
-					fill: ec.Color.WHITE(),
+				font: new kan.Font({
+					stroke: kan.Color.BLACK(),
+					fill: kan.Color.WHITE(),
 					size: 52,
 					lineWidth: 2,
 					baseLine: 'middle',
 					textAlign: 'center'
 				}),
-				position: new ec.Point({
+				position: new kan.Point({
 					x: layer.width / 2,
 					y: layer.height / 2
 				}),
@@ -61,7 +61,7 @@
 					if (m) { m = m.substr(0, 2); }
 					//this.value = s.split('.')[0] + '.' + m +' seconds';
 					this.value = r.fill.toString();
-					ec.Text.prototype.update.call(this, data);
+					kan.Text.prototype.update.call(this, data);
 				}
 			});
 			r.update = function() {
@@ -99,7 +99,7 @@
 				} else if (posX < layer.context.measureText(t.value).width/2) {
 					posX = layer.context.measureText(t.value).width/2;
 				}
-				t.position = new ec.Point({
+				t.position = new kan.Point({
 					x: posX,
 					y: window.innerHeight/2 < layer.height - t.font.size/2 ? window.innerHeight/2 : layer.height - t.font.size/2
 				});

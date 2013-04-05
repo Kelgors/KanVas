@@ -4,19 +4,19 @@
  * @param settings.x	{Number}	X Component
  * @param settings.y	{Number}	Y Component
  * @constructor
- * @extends {ec.Object}
+ * @extends {kan.Object}
  */
-ec.Point = function(settings) {
+kan.Point = function(settings) {
 	this.x = this.y = 0;
 	if(settings) {
-		ec.Object.call(this, settings);
+		kan.Object.call(this, settings);
 	}
 };
-ec.Point.prototype = {
+kan.Point.prototype = {
 	info:{
 		type: 'Point',
 		getType: function() {
-			return ec.Point;
+			return kan.Point;
 		}
 	},
 	/** @type {number} */
@@ -26,7 +26,7 @@ ec.Point.prototype = {
 	/**
 	 * Check if X-Y component are equals to this instance
 	 * @override
-	 * @param {ec.Point}
+	 * @param {kan.Point}
 	 * @returns {Boolean}
 	 */
 	equals: function(o) {
@@ -38,15 +38,15 @@ ec.Point.prototype = {
 	/**
 	 * Performs a comparison between two points
 	 * @override
-	 * @param {ec.Point} o
-	 * @return	{ec.Point}
+	 * @param {kan.Point} o
+	 * @return	{kan.Point}
 	 */
 	compare: function(o) {
 		if ( o.x != null && o.y != null ) {
 			var x = 0, y = 0;
 			if (this.x > o.x) { x = 1; } else if (this.x < o.x) { x = -1; }
 			if (this.y > o.y) { y = 1; } else if (this.y < o.y) { y = -1; }
-			return new ec.Point({
+			return new kan.Point({
 				x: x,
 				y: y
 			});
@@ -63,13 +63,13 @@ ec.Point.prototype = {
 	},
 	/**
 	 * Return this instance of Point as a Vector2
-	 * @return {ec.Vector2}
+	 * @return {kan.Vector2}
 	 */
 	toVector2: function() {
-		return new ec.Vector2({
+		return new kan.Vector2({
 			x: this.x,
 			y: this.y
 		});
 	}
 };
-ec.extend(ec.Point, ec.Object);
+kan.extend(kan.Point, kan.Object);

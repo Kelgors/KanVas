@@ -1,31 +1,29 @@
 /**
  * A drawable string
  * @param {Object} 		settings
- * @param {ec.Point} 	settings.position	Position where drawing this text
+ * @param {kan.Point} 	settings.position	Position where drawing this text
  * @param {String} 		settings.value		String to draw
- * @param {ec.Font} 	settings.font		ec.Font instance
+ * @param {kan.Font} 	settings.font		kan.Font instance
  * @constructor
- * @extends {ec.Shape}
- * @type {ec.Text}
- * @returns {ec.Text}
+ * @extends {kan.Shape}
  */
-ec.Text = function(settings) {
+kan.Text = function(settings) {
 	this.value = '';
-	this.font = new ec.Font();
-	ec.Shape.call(this, settings);
+	this.font = new kan.Font();
+	kan.Shape.call(this, settings);
 };
 
-ec.Text.prototype = {
+kan.Text.prototype = {
 	info: {
 		type: 'Text',
 		getType: function() {
-			return ec.Text;
+			return kan.Text;
 		}
 	},
 	value: null,
 	currentPosition: null,
 	getOrigin: function() {
-		return ec.Vector2.add(this.position, this.origin);
+		return kan.Vector2.add(this.position, this.origin);
 	},
 	/**
 	* Update all values if the value != lastvalue
@@ -33,14 +31,14 @@ ec.Text.prototype = {
 	* @param {CanvasRenderingContext2D} data.context
 	* @param {Number} data.timer
 	* @param {Object} data.lastMouse
-	* @param {ec.Point} data.lastMouse.rel
-	* @param {ec.Point} data.lastMouse.abs
+	* @param {kan.Point} data.lastMouse.rel
+	* @param {kan.Point} data.lastMouse.abs
 	*/
 	update: function(data) {
 		if (this.value != this.lastValue) {
 			this.font.applyFont(data.context);
 			this.width = data.context.measureText(this.value).width;
-			this.origin = new ec.Point({
+			this.origin = new kan.Point({
 				x: this.width/2,
 				y: this.size/2
 			});
@@ -62,8 +60,8 @@ ec.Text.prototype = {
 	* @param {CanvasRenderingContext2D} data.context
 	* @param {Number} data.timer
 	* @param {Object} data.lastMouse
-	* @param {ec.Point} data.lastMouse.rel
-	* @param {ec.Point} data.lastMouse.abs
+	* @param {kan.Point} data.lastMouse.rel
+	* @param {kan.Point} data.lastMouse.abs
 	*/
 	draw: function(data){
 		/** @define {CanvasRenderingContext2D} */
@@ -86,19 +84,33 @@ ec.Text.prototype = {
 	* Compare this instance to another
 	* @override
 	* @param {?} o
-	* @return {ec.Text}
+	* @return {kan.Text}
 	*/
 	compare: function(o) {
-		/* TODO: ec.Text comparison */
+		/* TODO: kan.Text comparison */
 		return null;
 	},
 	/**
-	* Clone this instance of ec.Text
+	* Check if the text value and font is equals to another instance
 	* @override
-	* @return {ec.Text}
+	* @param {kan.Text|String}
+	* @return {Boolean}
+	*/
+	equals: function(o) {
+		if (o.inheritsof && o.inheritsof(kan.Text) && this.value === o.value) {
+			return this.font.equals(o.font);
+		} else if (typeof(o) == 'string') {
+			return this.value == o;
+		}
+		return false;
+	},
+	/**
+	* Clone this instance of kan.Text
+	* @override
+	* @return {kan.Text}
 	*/
 	clone: function() {
-		return new ec.Text({
+		return new kan.Text({
 			position: this.position.clone(),
 			font: this.font.clone(),
 			value: this.value
@@ -107,11 +119,11 @@ ec.Text.prototype = {
 	/**
 	* Check if this contains another shape
 	* For now, only Point support
-	* @param {ec.Point} p
+	* @param {kan.Point} p
 	* @return {Boolean}
 	*/
 	contains: function(p) {
-	    /* ec.Point support */
+	    /* kan.Point support */
 		if (p.x != null && p.y != null) {
 			var posY = 0, posYMax = 0, posX = 0, posXMax = 0;
 			/* multilines containing support */
@@ -159,4 +171,4 @@ ec.Text.prototype = {
 		return false;
 	}
 };
-ec.extend(ec.Text, ec.Shape);
+kan.extend(kan.Text, kan.Shape);

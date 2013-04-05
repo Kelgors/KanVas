@@ -5,17 +5,17 @@
  * @param settings.g {Number} [0-255]
  * @param settings.b {Number} [0-255]
  * @param settings.a {Number} [0-1]
- * @return {ec.Color}
+ * @return {kan.Color}
  */
-ec.Color = function(settings) {
-	ec.Object.call(this, settings);
+kan.Color = function(settings) {
+	kan.Object.call(this, settings);
 };
 
-ec.Color.prototype = {
+kan.Color.prototype = {
 	info: {
 		type: 'Color',
 		getType: function() {
-			return ec.Color;
+			return kan.Color;
 		}
 	},
 	r: 0,
@@ -53,7 +53,7 @@ ec.Color.prototype = {
 	},
 	/**
 	 * Reverse this instance of color
-	 * @return {ec.Color} this
+	 * @return {kan.Color} this
 	 */
     inverts: function () {
         this.r = Math.abs(this.r - 255);
@@ -62,9 +62,9 @@ ec.Color.prototype = {
         return this;
     },
     /**
-     * Check if this RGBA components are equals to another instance of ec.Color
+     * Check if this RGBA components are equals to another instance of kan.Color
      * @override
-     * @param {ec.Color} o	other color
+     * @param {kan.Color} o	other color
      * @returns {Boolean}
      */
     equals: function(o) {
@@ -73,8 +73,8 @@ ec.Color.prototype = {
 	/**
 	* Compare two colors
 	* @override
-	* @param {ec.Color}
-	* @return {ec.Color}
+	* @param {kan.Color}
+	* @return {kan.Color}
 	*/
     compare: function(o) {
     	var r=0,g=0,b=0;
@@ -82,7 +82,7 @@ ec.Color.prototype = {
     	if (this.g > o.g) { g=1; } else if (this.g < o.g) { g=-1; }
     	if (this.b > o.b) { b=1; } else if (this.b < o.b) { b=-1; }
     	if (this.a > o.a) { a=1; } else if (this.a < o.a) { a=-1; }
-    	return new ec.Color({
+    	return new kan.Color({
     		r: r,
     		g: g,
     		b: b,
@@ -92,10 +92,10 @@ ec.Color.prototype = {
 	/**
 	* Clone this instance of object
 	* @override
-	* @return {ec.Color}
+	* @return {kan.Color}
 	*/
     clone: function() {
-    	return new ec.Color({
+    	return new kan.Color({
     		r: this.r,
     		g: this.g,
     		b: this.b,
@@ -103,14 +103,14 @@ ec.Color.prototype = {
     	});
     }
 };
-ec.extend(ec.Color, ec.Object);
+kan.extend(kan.Color, kan.Object);
 /**
  * Reverse color without changing instance
  * @param {Number} o
- * @return {ec.Color}
+ * @return {kan.Color}
  */
-ec.Color.invert = function(o) {
-	return new ec.Color({
+kan.Color.invert = function(o) {
+	return new kan.Color({
 		r: Math.abs(o.r - 255),
 		g: Math.abs(o.g - 255),
 		b: Math.abs(o.b - 255),
@@ -119,10 +119,10 @@ ec.Color.invert = function(o) {
 };
 /**
  * Get a random color
- * @return {ec.Color}
+ * @return {kan.Color}
  */
-ec.Color.random = function() {
-    return new ec.Color({
+kan.Color.random = function() {
+    return new kan.Color({
 		r: Math.floor(Math.random() * 256), 
 		g: Math.floor(Math.random() * 256),
 		b: Math.floor(Math.random() * 256), 
@@ -132,68 +132,68 @@ ec.Color.random = function() {
 
 /**
 * get the black color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.BLACK = function() { return new ec.Color({ name:'black', r: 0, g: 0, b: 0 }); };
+kan.Color.BLACK = function() { return new kan.Color({ name:'black', r: 0, g: 0, b: 0 }); };
 /**
 * get the WHITE color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.WHITE = function() { return new ec.Color({ r: 255, g: 255, b: 255, name:'white' }); };
+kan.Color.WHITE = function() { return new kan.Color({ r: 255, g: 255, b: 255, name:'white' }); };
 /**
 * get the RED color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.RED = function() { return new ec.Color({ r: 255, name: 'red' }); };
+kan.Color.RED = function() { return new kan.Color({ r: 255, name: 'red' }); };
 /**
 * get the GREEN color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.GREEN = function() { return new ec.Color({ g: 255, name:'green' }); };
+kan.Color.GREEN = function() { return new kan.Color({ g: 255, name:'green' }); };
 /**
 * get the BLUE color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.BLUE = function() { return new ec.Color({ b: 255, name:'blue' }); };
+kan.Color.BLUE = function() { return new kan.Color({ b: 255, name:'blue' }); };
 /**
 * get the YELLOW color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.YELLOW = function() { return new ec.Color({ r: 255, g: 255, name:'yellow' }); };
+kan.Color.YELLOW = function() { return new kan.Color({ r: 255, g: 255, name:'yellow' }); };
 /**
 * get the MAGENTA color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.MAGENTA = function() { return new ec.Color({ r: 255, b: 255, name:'magenta' }); };
+kan.Color.MAGENTA = function() { return new kan.Color({ r: 255, b: 255, name:'magenta' }); };
 /**
 * get the AQUA color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.AQUA = function() { return new ec.Color({ g: 255, b: 255, name:'aqua' }); };
+kan.Color.AQUA = function() { return new kan.Color({ g: 255, b: 255, name:'aqua' }); };
 /**
 * get the ORANGE color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.ORANGE = function() { return new ec.Color({ r: 255, g: 165, name:'orange' }); };
+kan.Color.ORANGE = function() { return new kan.Color({ r: 255, g: 165, name:'orange' }); };
 /**
 * get the PURPLE color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.PURPLE = function() { return new ec.Color({ r: 160, g: 32, b: 240, name:'purple' }); };
+kan.Color.PURPLE = function() { return new kan.Color({ r: 160, g: 32, b: 240, name:'purple' }); };
 /**
 * get the PINK color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.PINK = function() { return new ec.Color({ r: 255, g: 192, b: 203, name:'pink' }); };
+kan.Color.PINK = function() { return new kan.Color({ r: 255, g: 192, b: 203, name:'pink' }); };
 /**
 * get the CORNFLOWERBLUE color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.CORNFLOWERBLUE = function() { return new ec.Color({ r: 100, g: 149, b: 237, name:'cornflower blue' }); }
+kan.Color.CORNFLOWERBLUE = function() { return new kan.Color({ r: 100, g: 149, b: 237, name:'cornflower blue' }); }
 /**
 * get a gray color
-* @return {ec.Color}
+* @return {kan.Color}
 */
-ec.Color.Gray = function(factor) {
-	return (new ec.Color({ name: 'Gray '+factor, r: factor, g: factor, b: factor }));
+kan.Color.Gray = function(factor) {
+	return (new kan.Color({ name: 'Gray '+factor, r: factor, g: factor, b: factor }));
 };

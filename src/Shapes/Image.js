@@ -3,20 +3,20 @@
 * @constructor
 * @param {Object} settings
 * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|String} string can be the ID or the source of the image
-* @param {ec.Point} settings.position	Representation of the position of this image	(Unnecessary if X && Y are given)
+* @param {kan.Point} settings.position	Representation of the position of this image	(Unnecessary if X && Y are given)
 * @param {Number} settings.x			X component of the position	(Unnecessary if position is given)
 * @param {Number} settings.y			Y component of the position (Unnecessary if position is given)
-* @param {ec.Size} settings.size		Representation of the dimension of the rectangle	(Unnecessary if Width && Height are given)
+* @param {kan.Size} settings.size		Representation of the dimension of the rectangle	(Unnecessary if Width && Height are given)
 * @param {Number} settings.width		Width of this image		(Unnecessary if Size is given)
 * @param {Number} settings.height		Height of this image	(Unnecessary if Size is given)
 * @param {Number} settings.amplitude	Necessary for floating effect
 * @param {Number} settings.speed		Necessary for floating effect
 */
-ec.Image = function(settings) {
-	this.offset = new ec.Rectangle();
-	this.size = new ec.Size();
-	this.contains = ec.Rectangle.prototype.contains.bind(this);
-	ec.Shape.call(this, settings);
+kan.Image = function(settings) {
+	this.offset = new kan.Rectangle();
+	this.size = new kan.Size();
+	this.contains = kan.Rectangle.prototype.contains.bind(this);
+	kan.Shape.call(this, settings);
 	
 	/* Set the Image */
 	if (typeof(this.image) == 'string') {
@@ -42,10 +42,10 @@ ec.Image = function(settings) {
 	}
 };
 
-ec.Image.prototype = {
+kan.Image.prototype = {
 	info: {
 		type: 'Image',
-		getType: function() { return ec.Image; }
+		getType: function() { return kan.Image; }
 	},
 	/**
 	* Define if the image is loaded or not
@@ -54,17 +54,17 @@ ec.Image.prototype = {
 	isLoaded: false,
 	/**
 	* The position of the Image on the Layer
-	* @type {ec.Point}
+	* @type {kan.Point}
 	*/
 	position: null,
 	/**
 	* The size of the Image on the Layer
-	* @type {ec.Point}
+	* @type {kan.Point}
 	*/
 	size: null,
 	/**
 	* The area of the Image you want to draw
-	* @type {ec.Rectangle}
+	* @type {kan.Rectangle}
 	*/
 	offset: null,
 	/**
@@ -79,8 +79,8 @@ ec.Image.prototype = {
 	* @param {CanvasRenderingContext2D} data.context
 	* @param {Number} data.timer
 	* @param {Object} data.lastMouse
-	* @param {ec.Point} data.lastMouse.rel
-	* @param {ec.Point} data.lastMouse.abs
+	* @param {kan.Point} data.lastMouse.rel
+	* @param {kan.Point} data.lastMouse.abs
 	*/
 	draw: function(data) {
 		if (this.image && this.isLoaded) {
@@ -112,11 +112,11 @@ ec.Image.prototype = {
 	/**
 	* Check if this Image contains somthing
 	* @override
-	* @methodOf {ec.Rectangle}
-	* @param {ec.Object}
+	* @methodOf {kan.Rectangle}
+	* @param {kan.Object}
 	* @return {Boolean}
 	*/
 	contains: null
 };
 
-ec.extend(ec.Image, ec.Shape);
+kan.extend(kan.Image, kan.Shape);

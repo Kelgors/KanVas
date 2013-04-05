@@ -4,23 +4,23 @@
  * @param settings.x	{Number}	X Component
  * @param settings.y	{Number}	Y Component
  * @constructor
- * @extends {ec.Point}
+ * @extends {kan.Point}
  */
-ec.Vector2 = function(settings) {
-	ec.Point.call(this, settings);
+kan.Vector2 = function(settings) {
+	kan.Point.call(this, settings);
 };
 
-ec.Vector2.prototype = {
+kan.Vector2.prototype = {
 	info: {
 		type: 'Vector2',
 		getType: function() {
-			return ec.Vector2;
+			return kan.Vector2;
 		}
 	},
 	/**
 	 * Add to each value of this instance o
-	 * @param o {Number|ec.Point} Numeric value|Other Point
-	 * @return {ec.Vector2} this instance
+	 * @param o {Number|kan.Point} Numeric value|Other Point
+	 * @return {kan.Vector2} this instance
 	 */
 	adds: function(value){
 		if ( typeof(value) == 'number' ) {
@@ -34,8 +34,8 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Substract to each value of this instance o
-	 * @param {Number|ec.Point} Numeric value|Other Point
-	 * @return {ec.Vector2} this instance
+	 * @param {Number|kan.Point} Numeric value|Other Point
+	 * @return {kan.Vector2} this instance
 	 */
 	substracts: function(value){
 		if ( typeof(value) == 'number' ) {
@@ -49,8 +49,8 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Multiply each component of this instance by value
-	 * @param value {Number|ec.Point} Scalar value|Other Point
-	 * @return {ec.Vector2} this instance
+	 * @param value {Number|kan.Point} Scalar value|Other Point
+	 * @return {kan.Vector2} this instance
 	 */
 	multiplies: function(value){ 
 		if ( typeof(value) == 'number' ) {
@@ -64,8 +64,8 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Divide each component of this instance by value
-	 * @param value {Number|ec.Point} Scalar value|Other Point
-	 * @return {ec.Vector2} this instance
+	 * @param value {Number|kan.Point} Scalar value|Other Point
+	 * @return {kan.Vector2} this instance
 	 */
 	divides: function(value){
 		if ( typeof(value) == 'number' ) {
@@ -79,7 +79,7 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Get distance between this and another Vector2 instance
-	 * @param o {ec.Point}
+	 * @param o {kan.Point}
 	 * @return	{Number|NaN}
 	 */
 	distance: function(o) {
@@ -90,7 +90,7 @@ ec.Vector2.prototype = {
 	},
 	/**
 	 * Get distance squared between this and another Vector2 instance
-	 * @param o {ec.Vector2}
+	 * @param o {kan.Vector2}
 	 * @return {Number|NaN}
 	 */
 	distanceSquared: function(o) {
@@ -102,65 +102,65 @@ ec.Vector2.prototype = {
 	/**
 	 * Performs a comparison between two Vector2
 	 * @override
-	 * @param {ec.Point} o
-	 * @return	{ec.Point}
+	 * @param {kan.Point} o
+	 * @return	{kan.Point}
 	 */
 	compare: function(o) {
-		if (o.inheritsof(ec.Point)) {
+		if (o.inheritsof(kan.Point)) {
 			var x = 0, y = 0;
 			if (this.x > o.x) { x=1; } else if (this.x < o.x) { x=-1; }
 			if (this.y > o.y) { y=1; } else if(this.y < o.y) { y=-1; }
-			return new ec.Vector2({
+			return new kan.Vector2({
 				x: x,
 				y: y
 			});
 		}
 	}
 };
-ec.extend(ec.Vector2, ec.Point);
+kan.extend(kan.Vector2, kan.Point);
 /**
  * Perform an addition with two Vector2
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
- * @return {ec.Vector2}
+ * @param v1 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @param v2 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @return {kan.Vector2}
  */
-ec.Vector2.add = function(v1 , v2){
-	return new ec.Vector2({ x: v1.x + v2.x, y: v1.y + v2.y});
+kan.Vector2.add = function(v1 , v2){
+	return new kan.Vector2({ x: v1.x + v2.x, y: v1.y + v2.y});
 };
 /**
  * Perform an substraction with two Vector2
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
- * @return {ec.Vector2}
+ * @param v1 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @param v2 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @return {kan.Vector2}
  */
-ec.Vector2.substract = function(v1 , v2){
-	return new ec.Vector2({ x: v1.x - v2.x, y: v1.y - v2.y});
+kan.Vector2.substract = function(v1 , v2){
+	return new kan.Vector2({ x: v1.x - v2.x, y: v1.y - v2.y});
 };
 /**
  * Perform an multiplication with two Vector2
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
- * @return {ec.Vector2}
+ * @param v1 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @param v2 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @return {kan.Vector2}
  */
-ec.Vector2.multiply = function(v1 , v2){
-	return new ec.Vector2({ x: v1.x * v2.x, y: v1.y * v2.y});
+kan.Vector2.multiply = function(v1 , v2){
+	return new kan.Vector2({ x: v1.x * v2.x, y: v1.y * v2.y});
 };
 /**
  * Perform an division with two Vector2
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
- * @return {ec.Vector2}
+ * @param v1 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @param v2 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @return {kan.Vector2}
  */
-ec.Vector2.divide = function(v1 , v2){
-	return new ec.Vector2({ x: v1.x / v2.x, y: v1.y / v2.y});
+kan.Vector2.divide = function(v1 , v2){
+	return new kan.Vector2({ x: v1.x / v2.x, y: v1.y / v2.y});
 };
 /**
  * Get the distance between two points
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
+ * @param v1 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @param v2 {kan.Point|kan.Vector2} Other Point|Vector2
  * @return {Number|NaN}
  */
-ec.Vector2.distance = function(v1 , v2){
+kan.Vector2.distance = function(v1 , v2){
 	if ( v1.x != null && v1.y != null && v2.x != null && v2.y != null ) {
 		return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
 	}
@@ -168,17 +168,17 @@ ec.Vector2.distance = function(v1 , v2){
 };
 /**
  * Get the distance squared between two points
- * @param v1 {ec.Point|ec.Vector2} Other Point|Vector2
- * @param v2 {ec.Point|ec.Vector2} Other Point|Vector2
+ * @param v1 {kan.Point|kan.Vector2} Other Point|Vector2
+ * @param v2 {kan.Point|kan.Vector2} Other Point|Vector2
  * @return {Number}
  */
-ec.Vector2.distanceSquared = function(v1, v2) {
+kan.Vector2.distanceSquared = function(v1, v2) {
 	return v1.clone().distanceSquared(v2);
 };
 /**
  * Get a Vector2 instance x=1 && y=1
- * @return {ec.Vector2}
+ * @return {kan.Vector2}
  */
-ec.Vector2.One = function() {
+kan.Vector2.One = function() {
 	return new Vector2({ x: 1, y: 1});
 };

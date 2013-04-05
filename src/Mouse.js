@@ -1,24 +1,24 @@
-ec.Mouse = {
+kan.Mouse = {
 	/**
-	 * Get the absolute mouse position as ec.Point from Event 
+	 * Get the absolute mouse position as kan.Point from Event 
 	 * @param {MouseEvent} e
-	 * @type ec.Point
-	 * @returns {ec.Point}
+	 * @type kan.Point
+	 * @returns {kan.Point}
 	 */
 	getAbsolutePosition: function(e) {
-		return new ec.Point({
+		return new kan.Point({
 			x: e.clientX,
 			y: e.clientY
 		});
 	},
 	/**
-	 * Get the relative mousePosition as ec.Point from Event
+	 * Get the relative mousePosition as kan.Point from Event
 	 * @param {MouseEvent} e
-	 * @type ec.Point
-	 * @returns {ec.Point}
+	 * @type kan.Point
+	 * @returns {kan.Point}
 	 */
 	getPosition: function(e) {
-		return new ec.Point({
+		return new kan.Point({
 			x: e.layerX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft),
 			y: e.layerY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop)
 		});

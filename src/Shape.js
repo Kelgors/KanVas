@@ -1,20 +1,20 @@
 /**
-* An abstract shape
-* @param {Object} settings
-* @param {Number} settings.x
-* @param {Number} settings.y
-* @param {ec.Point} settings.position
-* @param {Boolean} settings.clickable
-* @param {Boolean} settings.draggable
-* @constructor
-* @extends {ec.Object}
-*/
-ec.Shape = function(settings) {
+ * An abstract shape
+ * @param {Object} settings
+ * @param {Number} settings.x
+ * @param {Number} settings.y
+ * @param {kan.Point} settings.position
+ * @param {Boolean} settings.clickable
+ * @param {Boolean} settings.draggable 
+ * @constructor
+ * @extends {kan.Object}
+ */
+kan.Shape = function(settings) {
 	/* Redefine position && currentPosition for this construction */
-	this.events = new ec.EventManager();
-	this.currentPosition = new ec.Point();
-	this.position = new ec.Point();
-	this.graphics = new ec.Graphics();
+	this.events = new kan.EventManager();
+	this.currentPosition = new kan.Point();
+	this.position = new kan.Point();
+	this.graphics = new kan.Graphics();
 	/** 
 	 * Default random value associate to this shape, to simulate its own behavior
 	 * @define {Number} Number[0-1]
@@ -48,35 +48,35 @@ ec.Shape = function(settings) {
 		this.on('mousemove', this.eventsHandlers.drag.move);
 		this.on('mouseup', this.eventsHandlers.drag.end);
 	}
-	ec.Object.call(this);
+	kan.Object.call(this);
 };
 
-ec.Shape.prototype = {
+kan.Shape.prototype = {
 	info : {
 		type : 'Shape',
 		getType: function() {
-			return ec.Shape;
+			return kan.Shape;
 		}
 	},
 	/** 
 	* The position where to draw the shape
-	* @type {ec.Point} 
+	* @type {kan.Point} 
 	*/
 	position : null,
 	zIndex: 0,
 	/** 
 	* The position where to draw the shape + position modifications
-	* @type {ec.Point} 
+	* @type {kan.Point} 
 	*/
 	currentPosition: null,
 	/** 
 	* The fill color
-	* @type {ec.Color|string} 
+	* @type {kan.Color|string} 
 	*/
 	fill : null,
 	/** 
 	* The stroke color
-	* @type {ec.Color|string} 
+	* @type {kan.Color|string} 
 	*/
 	stroke : null,
 	/** 
@@ -96,12 +96,12 @@ ec.Shape.prototype = {
 	draggable : false,
 	/** 
 	* Defines the referential
-	* @type {ec.Graphics} 
+	* @type {kan.Graphics} 
 	*/
 	graphics: null,
 	/**
 	* Events container
-	* @type {ec.EventManager}
+	* @type {kan.EventManager}
 	*/
 	events: null,
 	/** Elements for floating effect */
@@ -112,8 +112,8 @@ ec.Shape.prototype = {
 	random: 0,
 	/**
 	* Add this shape to a layer (or any List/shape container)
-	* @param {ec.Layer|ec.List|Array} this instance is adding to that
-	* @return {ec.Shape} this instance
+	* @param {kan.Layer|kan.List|Array} this instance is adding to that
+	* @return {kan.Shape} this instance
 	*/
 	addTo: function(layer) {
 		if (layer instanceof Array) {
@@ -144,7 +144,7 @@ ec.Shape.prototype = {
 				this.events.state.clicked = false;
 				if (this.contains(e.mousePosition)) {
 					this.events.state.pressed = true;
-					ec.Mouse.pressed = true;
+					kan.Mouse.pressed = true;
 					if (this.onpressed) { this.onpressed(e); }
 					return false;
 				}
@@ -154,9 +154,9 @@ ec.Shape.prototype = {
 			up : function(e) {
 				if (this.contains(e.mousePosition) && this.events.state.pressed && !this.events.state.dragging) {
 					this.events.state.pressed = false;
-					ec.Mouse.pressed = false;
+					kan.Mouse.pressed = false;
 					this.events.state.clicked = true;
-					if (e.which == 3 && ec.DEBUG) {
+					if (e.which == 3 && kan.DEBUG) {
 						console.log(this);
 					}
 					if (this.onclick) { 
@@ -172,8 +172,8 @@ ec.Shape.prototype = {
 				if (e.which == 1) {
 					if (this.contains(e.mousePosition)) {
 						this.events.state.pressed = true;
-						ec.Mouse.pressed = true;
-						this.events.state.lastPosition = ec.Vector2.substract(this.position, e.mousePosition);
+						kan.Mouse.pressed = true;
+						this.events.state.lastPosition = kan.Vector2.substract(this.position, e.mousePosition);
 						return false;
 					}
 					this.events.state.pressed = false;
@@ -195,7 +195,7 @@ ec.Shape.prototype = {
 					this.position.y = e.mousePosition.y + this.events.state.lastPosition.y;
 					this.events.state.dragging = false;
 					this.events.state.pressed = false;
-					ec.Mouse.pressed = false;
+					kan.Mouse.pressed = false;
 					return false;
 				}
 				return true;
@@ -205,11 +205,11 @@ ec.Shape.prototype = {
 	/**
 	* Compare this Shape to another
 	* @override
-	* @param {ec.Shape} o
-	* @return {ec.Shape}
+	* @param {kan.Shape} o
+	* @return {kan.Shape}
 	*/
 	compare: function(o) {
-		if (o.inheritsof && o.inheritsof(ec.Shape)) {
+		if (o.inheritsof && o.inheritsof(kan.Shape)) {
 			return new o.info.getType()({
 				position: this.position.compare(o.position),
 				currentPosition: this.currentPosition.compare(o.currentPosition)
@@ -218,7 +218,7 @@ ec.Shape.prototype = {
 		return null;
 	},
 	/**
-	*  Create a new Event Handler for this ec.Object
+	*  Create a new Event Handler for this kan.Object
 	* You can add as many 'mousemove' events as you want to same item, for example
 	*  @param {String} e
 	*  @param {Function(Event)} function to perform when the event's spreading
@@ -237,4 +237,4 @@ ec.Shape.prototype = {
 		}
 	}
 };
-ec.extend(ec.Shape, ec.Object);
+kan.extend(kan.Shape, kan.Object);

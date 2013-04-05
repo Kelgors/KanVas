@@ -1,10 +1,10 @@
 /**
 * Define the referential of drawing
 * @constructor
-* @extends {ec.Object}
+* @extends {kan.Object}
 */
-ec.Graphics = function() {
-	this.transform = new ec.Object({
+kan.Graphics = function() {
+	this.transform = new kan.Object({
 		m11: 1,
 		m12: 0,
 		m21: 0,
@@ -12,31 +12,31 @@ ec.Graphics = function() {
 		dx: 0,
 		dy: 0
 	});
-	this.scale = new ec.Point({ x:1,y:1 });
+	this.scale = new kan.Point({ x:1,y:1 });
 	this.rotation = 0;
 	this.defaults = {
 		transform: this.transform.clone(),
 		scale: this.scale.clone(),
 		rotation: 0
 	};
-	ec.Object.call(this);
+	kan.Object.call(this);
 };
 
-ec.Graphics.prototype = {
+kan.Graphics.prototype = {
 	info: {
 		type: 'Graphics',
 		getType: function() {
-			return ec.Graphics;
+			return kan.Graphics;
 		}
 	},
 	/**
 	* Set the transformation
-	* @type {ec.Object}
+	* @type {kan.Object}
 	*/
 	transform: null,
 	/**
 	* Set the scale
-	* @type {ec.Point}
+	* @type {kan.Point}
 	*/
 	scale: null,
 	/**
@@ -88,13 +88,13 @@ ec.Graphics.prototype = {
 	},
 	/**
 	* Set the scale value
-	* @param {Number|ec.Point}
+	* @param {Number|kan.Point}
 	*/
 	setScale: function(value) {
 		if (typeof(value) == 'number') {
 			this.scale.y = this.scale.x = value;
 		} else if ( value.x != null && value.y != null ) {
-			this.scale = value.clone ? value.clone() : ec._clone(value);
+			this.scale = value.clone ? value.clone() : kan._clone(value);
 		}
 	},
 	_contextSaved: false,
@@ -124,4 +124,4 @@ ec.Graphics.prototype = {
 	}
 };
 
-ec.extend(ec.Graphics, ec.Object);
+kan.extend(kan.Graphics, kan.Object);

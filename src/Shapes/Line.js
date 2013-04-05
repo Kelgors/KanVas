@@ -1,30 +1,37 @@
-ec.Line = function(settings) {
-	this.graphics = new ec.Graphics();
-	this.points = new ec.List(settings.points);
+/**
+ * Line instance - can contains several points
+ * @constructor
+ * @extends {kan.Shape}
+ * @param {Object} settings
+ * @param {Array|kan.List} points that define the line
+ */
+kan.Line = function(settings) {
+	this.graphics = new kan.Graphics();
+	this.points = new kan.List(settings.points);
 	delete settings.points;
-	ec.Shape.call(this, settings);
+	kan.Shape.call(this, settings);
 };
 
-ec.Line.prototype = {
+kan.Line.prototype = {
 	info: {
 		type: 'Line',
 		getType: function() {
-			return ec.Line;
+			return kan.Line;
 		}
 	},
 	/**
 	* Color of the line
-	* @type {ec.Color}
+	* @type {kan.Color}
 	*/
 	stroke: null,
 	/**
 	* All points that defined the line
-	* @type {List<ec.Point>}
+	* @type {List<kan.Point>}
 	*/
 	points: null,
 	/** 
 	* Defines the referential
-	* @type {ec.Graphics} 
+	* @type {kan.Graphics} 
 	*/
 	graphics: null,
 	/**
@@ -39,14 +46,14 @@ ec.Line.prototype = {
 	* @param {CanvasRenderingContext2D} data.context
 	* @param {Number} data.timer
 	* @param {Object} data.lastMouse
-	* @param {ec.Point} data.lastMouse.rel
-	* @param {ec.Point} data.lastMouse.abs
+	* @param {kan.Point} data.lastMouse.rel
+	* @param {kan.Point} data.lastMouse.abs
 	*/
 	draw: function(data) {
 		if (this.stroke) {
 			var ctx = data.context;
 			this.graphics.beforedraw(ctx);
-			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(ec.Color) ? this.stroke.toRGBA() : this.stroke;
+			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
 
 			ctx.beginPath();
 			ctx.moveTo(this.points.get(0).x, this.points.get(0).y);
@@ -60,12 +67,20 @@ ec.Line.prototype = {
 	},
 	/**
 	* Check if a line is equals to another line
-	* @param {ec.Line} another line
+	* @override
+	* @param {kan.Line} another line
 	* @return {Boolean}
 	*/
 	equals: function(o) {
-		return this.begin.equals(o.begin) && this.end.equals(o.end);
+		if (o.inheritsof && o.inheritsof(kan.Line)) {
+			return this.points.equals(o.points);
+		}
+		return false;
+	},
+	clone: function() {
+		return new kan.Line({
+			points: this.points.clone()
+		})
 	}
 };
-
-ec.extend(ec.Line, ec.Shape);
+kan.extend(kan.Line, kan.Shape);

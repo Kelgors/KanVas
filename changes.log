@@ -1,3 +1,8 @@
+0.2.9
+[~] Rename the project from EasyCanvas to KanVas, this is f***ing cooler
+[~] Very needed improvments to the kan.List
+[+] typeof method added to kan object
+
 0.2.8
 [+] ec.Line class
 [+=] ec.ready function take two parameters now ec.ready(function fn, String event = 'DOMContentLoaded')

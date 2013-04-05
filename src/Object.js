@@ -2,31 +2,31 @@
  * Basic instance
  * @constructor
  */
-ec.Object = function(settings) {
+kan.Object = function(settings) {
 	for( var i in settings ) {
 		this[i] = settings[i];
 	}
-	this.info.ID = ec.Guid.create();
+	this.info.ID = kan.Guid.create();
 };
 
-ec.Object.prototype = {
+kan.Object.prototype = {
 	info: {
 		ID: null,
 		type: 'Object',
 		getType: function() {
-			return ec.Object;
+			return kan.Object;
 		}
 	},
 	/**
 	 * Return a clone of this instance
-	 * @return	{ec.Object} the cloned object
+	 * @return	{kan.Object} the cloned object
 	 */
 	clone: function() {
-		var o = this.info ? new ec[this.info.type]() : this.constructor();
+		var o = this.info ? new kan[this.info.type]() : this.constructor();
 		for(var i in this) {
 			if (!this[i]) { continue; }
 			if (typeof(this[i]) == 'object') {
-				o[i] = this[i].inheritsof ? this[i].clone() : ec._clone(this[i]);
+				o[i] = this[i].inheritsof ? this[i].clone() : kan._clone(this[i]);
 			} else if (typeof(this[i]) != 'function') {
 				o[i] = this[i];
 			}
@@ -35,12 +35,12 @@ ec.Object.prototype = {
 	},
 	/**
 	 * Check if each value of this equals to others value
-	 * @param o {ec.Object} other
+	 * @param o {kan.Object} other
 	 * @return {boolean}
 	 */
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
-		if (o.inheritsof(ec.Object)) {
+		if (o.inheritsof(kan.Object)) {
 			for (var i in this) {
 				switch(typeof(this[i])) {
 					case 'function': continue;
@@ -54,18 +54,18 @@ ec.Object.prototype = {
 						/* Array equals */
 							for (var n in this[i]) {
 								if (this[i][n].equals) {
-									/* Array of ec.Object */
+									/* Array of kan.Object */
 									if (!this[i][n].equals(o[i][n])) {
 										return false;
 									}
 								} else if (typeof(this[i][n]) == 'object' && typeof(o[i][n]) == 'object') {
 									/* Array of object */
-									if (!(new ec.Object(this[i][n]).equals(o[i][n]))) {
+									if (!(new kan.Object(this[i][n]).equals(o[i][n]))) {
 										return false;
 									}
 								} else {
 									return false;
-								}// TODO: finish ec.Object.prototype.equals()
+								}// TODO: finish kan.Object.prototype.equals()
 							}
 						}
 						break;
@@ -81,32 +81,32 @@ ec.Object.prototype = {
 	},
 	/**
 	 * Compare two instances
-	 * @param {ec.Object} o
-	 * @return {ec.Object}
+	 * @param {kan.Object} o
+	 * @return {kan.Object}
 	 */
 	compare: function(o) {
-		var t = new ec[this.info.type]();
+		var t = new kan[this.info.type]();
 		for (var i in this) {
 			switch(typeof(this[i])) {
 				case 'number':
-					t[i] = ec.Number.compare(this[i], o[i]); break;
+					t[i] = kan.Number.compare(this[i], o[i]); break;
 				case 'string':
 					t[i] = this[i].localeCompare(o[i]); break;
 				case 'boolean':
 					t[i] = this[i] == o[i]; break;
 				case 'object':
 					if (this[i].compare) {
-						/* Compare these two ec.Object */
+						/* Compare these two kan.Object */
 						t[i] = this[i].compare(o[i]);
 					} else if (o[i] instanceof Date) {
 						/* compare their timestamp */
-						t[i] = ec.Number.compare(this[i].getTime(), o[i].getTime());
+						t[i] = kan.Number.compare(this[i].getTime(), o[i].getTime());
 					} else if (o[i] instanceof Array) {
 						/* compare arrays length */
-						t[i] = ec.Number.compare(this[i].length, o[i].length);
+						t[i] = kan.Number.compare(this[i].length, o[i].length);
 					} else {
-						/* Create a new ec.Object with the javascript object and compare them */
-						t[i] = new ec.Object(this[i]).compare(o[i]);
+						/* Create a new kan.Object with the javascript object and compare them */
+						t[i] = new kan.Object(this[i]).compare(o[i]);
 					}
 					break;
 			}
@@ -126,8 +126,8 @@ ec.Object.prototype = {
 		});
 	},
 	/**
-	*  Equivalent of instanceof but for ec.Objects
-	*  @param {Type} the type of object ( ec.Object, not 'ec.Object' )
+	*  Equivalent of instanceof but for kan.Objects
+	*  @param {Type} the type of object ( kan.Object, not 'kan.Object' )
 	*  @return {boolean}
 	*/
 	inheritsof: function(type) {

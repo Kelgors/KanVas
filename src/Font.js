@@ -1,8 +1,8 @@
 /**
 * A font
 * @param {Object} settings
-* @param {ec.Color|String} settings.fill the fill color of this font
-* @param {ec.Color|String} settings.stroke the stroke color of this font
+* @param {kan.Color|String} settings.fill the fill color of this font
+* @param {kan.Color|String} settings.stroke the stroke color of this font
 * @param {Number} settings.lineWidth the stroke line width, as default: 1
 * @param {String} settings.family the font family, as default: Arial
 * @param {Number} settings.size the font size, as default: 12
@@ -12,17 +12,17 @@
 * @param {String} settings.style the font style (normal|italic|underline)
 * @param {Boolean} settings.smallcaps text as smallcaps or not, as default: false
 * @constructor
-* @extends {ec.Object}
+* @extends {kan.Object}
 */
-ec.Font = function(settings) {
-	ec.Object.call(this, settings);
+kan.Font = function(settings) {
+	kan.Object.call(this, settings);
 };
 
-ec.Font.prototype = {
+kan.Font.prototype = {
 	info: {
-		type: 'ec.Font',
+		type: 'kan.Font',
 		getType: function() {
-			return ec.Font;
+			return kan.Font;
 		}
 	},
 	/**
@@ -47,12 +47,12 @@ ec.Font.prototype = {
 	family: 'Arial',
 	/**
 	* The fill color
-	* @type {ec.Color} 
+	* @type {kan.Color} 
 	*/
 	fill: null,
 	/**
 	* The stroke color
-	* @type {ec.Color} 
+	* @type {kan.Color} 
 	*/
 	stroke: null,
 	/**
@@ -83,9 +83,9 @@ ec.Font.prototype = {
 		this.applyFont(ctx);
 		ctx.lineWidth = this.lineWidth;
 		if (this.fill)
-			ctx.fillStyle = this.fill instanceof ec.Color ? this.fill.toRGBA() : this.fill;
+			ctx.fillStyle = this.fill instanceof kan.Color ? this.fill.toRGBA() : this.fill;
 		if (this.stroke)
-			ctx.strokeStyle = this.stroke instanceof ec.Color ? this.stroke.toRGBA() : this.stroke;
+			ctx.strokeStyle = this.stroke instanceof kan.Color ? this.stroke.toRGBA() : this.stroke;
 	},
 	/**
 	* Set just the necessaries parameters for update
@@ -108,4 +108,4 @@ ec.Font.prototype = {
 	}
 };
 
-ec.extend(ec.Font, ec.Object);
+kan.extend(kan.Font, kan.Object);

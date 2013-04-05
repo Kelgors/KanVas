@@ -5,17 +5,17 @@
  * @param {Number} settings.width
  * @param {Number} settings.height
  * @constructor
- * @extends {ec.Object}
+ * @extends {kan.Object}
  */
-ec.Layer = function(settings) {
+kan.Layer = function(settings) {
 	this.info.supportedEvents = new Object();
 	this.lastMouse = {
-		rel: new ec.Point(),
-		abs: new ec.Point()
+		rel: new kan.Point(),
+		abs: new kan.Point()
 	};
-	this.offset = new ec.Point();
-	this.components = new ec.List();
-	this.graphics = new ec.Graphics();
+	this.offset = new kan.Point();
+	this.components = new kan.List();
+	this.graphics = new kan.Graphics();
 	if ( settings.canvas ) {
 		/** @define {HTMLCanvasElement} */
 		this.canvas = document.getElementById(settings.canvas);
@@ -25,14 +25,14 @@ ec.Layer = function(settings) {
 		this.context = this.canvas.getContext('2d');
 		delete settings.canvas;
 	}
-	ec.Object.call(this, settings);
+	kan.Object.call(this, settings);
 };
 
-ec.Layer.prototype = {
+kan.Layer.prototype = {
 	info: {
 		type: 'Layer',
 		getType: function() {
-			return ec.Layer;
+			return kan.Layer;
 		},
 		supportedEvents: null
 	},
@@ -58,12 +58,12 @@ ec.Layer.prototype = {
 	height: 0,
 	/**
 	* The current offset of the context
-	* It is always necessary with the ec.Graphics Object ?
+	* It is always necessary with the kan.Graphics Object ?
 	*/
 	offset: null,
 	/**
 	* Graphics referential Object
-	* @type {ec.Graphics}
+	* @type {kan.Graphics}
 	*/
 	graphics: null,
 	/**
@@ -78,20 +78,20 @@ ec.Layer.prototype = {
 	lastMouse: {
 	    /**
 	    * Last relative position of the mouse since the last MouseEvent
-	    * @type {ec.Point}
+	    * @type {kan.Point}
 	    */
 		rel: null,
 	    /**
 	    * Last absolute position of the mouse since the last MouseEvent
 	    * No scrolling page
-	    * @type {ec.Point}
+	    * @type {kan.Point}
 	    */
 		abs: null
 	},
 	/**
-	* Add this ec.Layer to an Array, Stage or something else with the add|push method
-	* @param {ec.Stage|Array} this instance is adding to that
-	* @return {ec.Layer} this instance
+	* Add this kan.Layer to an Array, Stage or something else with the add|push method
+	* @param {kan.Stage|Array} this instance is adding to that
+	* @return {kan.Layer} this instance
 	*/
 	addTo: function(stage) {
 		if (stage instanceof Array) {
@@ -103,7 +103,7 @@ ec.Layer.prototype = {
 	},
 	/**
 	* Add a drawable component, configure events before add
-	* @param {ec.Object} the component to add
+	* @param {kan.Object} the component to add
 	*/
 	add: function(component) {
 		this.components.add(component);
@@ -114,8 +114,8 @@ ec.Layer.prototype = {
 				var addEventFunc = this.canvas.addEventListener ? 'addEventListener' : 'attachEvent';
 				this.canvas[addEventFunc](i, (function(e) {
 					if (e.type == 'mouseup' || e.type == 'mousedown' || e.type == 'click' || e.type == 'mousemove') {
-						this.lastMouse.rel = e.mousePosition = ec.Mouse.getPosition(e);
-						this.lastMouse.abs = e.mouseAbsPosition = ec.Mouse.getAbsolutePosition(e);
+						this.lastMouse.rel = e.mousePosition = kan.Mouse.getPosition(e);
+						this.lastMouse.abs = e.mouseAbsPosition = kan.Mouse.getAbsolutePosition(e);
 					}
 					for (var i = this.components.items.length-1; i > -1; i--) {
 						/* for each components, spread the event */
@@ -144,7 +144,7 @@ ec.Layer.prototype = {
 	},
 	/**
 	* update all components which are updatable
-	* @param {ec.Stage}
+	* @param {kan.Stage}
 	*/
 	update: function(stage) {
 		var data = {
@@ -163,7 +163,7 @@ ec.Layer.prototype = {
 	},
 	/**
 	* Draw all components which are drawable
-	* @param {ec.Stage}
+	* @param {kan.Stage}
 	*/
 	draw: function(stage) {
 	    /* Clear the canvas */
@@ -182,15 +182,15 @@ ec.Layer.prototype = {
 		this.graphics.afterdraw(this.context);
 	},
 	/**
-	* Check if a Layer equals to another ec.Object (which is a Layer)
-	* @param {ec.Object}
+	* Check if a Layer equals to another kan.Object (which is a Layer)
+	* @param {kan.Object}
 	* @override
 	* @return {Boolean}
 	*/
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
-		return this.ID === o.ID && o.inheritsof(ec.Layer);
+		return this.ID === o.ID && o.inheritsof(kan.Layer);
 	}
 };
 
-ec.extend(ec.Layer, ec.Object);
+kan.extend(kan.Layer, kan.Object);

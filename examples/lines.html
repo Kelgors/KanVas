@@ -8,22 +8,22 @@
 		background-color: #000;
 	}
 </style></head><body role="application"><canvas id="main" style="position: absolute; z-index: 0;"></canvas><canvas id="text"  style="position: absolute; z-index: 4;"></canvas><script type="text/javascript">
-	ec.ready(function() {
-		/* This example use a new function (2013-04-04) ==> var myShape = new ec.Shape(settings).addTo(layer) where addTo return the Shape */
-		stage = new ec.Stage();
-		layer = new ec.Layer({
+	kan.ready(function() {
+		/* This example use a new function (2013-04-04) ==> var myShape = new kan.Shape(settings).addTo(layer) where addTo return the Shape */
+		stage = new kan.Stage();
+		layer = new kan.Layer({
 			canvas: 'main',
 			width: window.innerWidth,
 			height: window.innerHeight
 		}).addTo(stage);
 		var size = 200;
 		/* Add two rectangles (with width == height) */
-		square1 = new ec.Rectangle({
-			position: new ec.Point({
+		square1 = new kan.Rectangle({
+			position: new kan.Point({
 				x: layer.width/2 - size/2 + 50,
 				y: layer.height/2 - size/2 + 50
 			}),
-			size: new ec.Size({
+			size: new kan.Size({
 				width: size,
 				height: size,
 				lineWidth: 2
@@ -31,12 +31,12 @@
 			stroke: '#FFF'
 		}).addTo(layer);
 		
-		square2 = new ec.Rectangle({
-			position: new ec.Point({
+		square2 = new kan.Rectangle({
+			position: new kan.Point({
 				x: square1.position.x - 50,
 				y: square1.position.y - 50
 			}),
-			size: new ec.Size({
+			size: new kan.Size({
 				width: size,
 				height: size,
 				lineWidth: 2
@@ -44,28 +44,28 @@
 			stroke: '#AAA'
 		}).addTo(layer);
 		/* Add jointures between these two squares */
-		new ec.Line({
+		new kan.Line({
 			points: [
 				square1.position,
 				square2.position
 			],
 			stroke: '#FFF'
 		}).addTo(layer);
-		new ec.Line({
+		new kan.Line({
 			points: [
 				square1.get('top', 'right'),
 				square2.get('top', 'right')
 			],
 			stroke: '#FFF'
 		}).addTo(layer);
-		new ec.Line({
+		new kan.Line({
 			points: [
 				square1.get('bottom', 'right'),
 				square2.get('bottom', 'right')
 			],
 			stroke: square2.stroke
 		}).addTo(layer);
-		new ec.Line({
+		new kan.Line({
 			points: [
 				square1.get('bottom', 'left'),
 				square2.get('bottom', 'left')
@@ -74,16 +74,16 @@
 		}).addTo(layer);
 		last = null, isClicked = false;
 		/* Manage Events */
-		ec.EventManager.add('mousedown', function(e) {
+		kan.EventManager.add('mousedown', function(e) {
 			if (!last && e.which == 1) {
-				last = ec.Mouse.getPosition(e);
+				last = kan.Mouse.getPosition(e);
 				isClicked = true;
 			}
 		}, false);
 		/* on mousemove, change the transformation of the main layer if user is holding the Mouse Button 1 */
-		ec.EventManager.add('mousemove', function(e) {
+		kan.EventManager.add('mousemove', function(e) {
 			if (last) {
-				var pos = ec.Mouse.getPosition(e);
+				var pos = kan.Mouse.getPosition(e);
 				
 				layer.graphics.transform.m21 -= (pos.x - last.x)/100;
 				layer.graphics.transform.m22 -= (pos.y - last.y)/100;
@@ -97,35 +97,35 @@
 				last = pos.clone();
 			}
 		}, false);
-		ec.EventManager.add('mouseup', function(e) {
+		kan.EventManager.add('mouseup', function(e) {
 			if (e.which == 1)
 				last = null;
 		}, false);
 		
 		/* Create a new stage with a new layer which will be stopped after the animation of the text */
-		s = new ec.Stage();
-		l = new ec.Layer({
+		s = new kan.Stage();
+		l = new kan.Layer({
 			canvas: 'text',
 			width: window.innerWidth,
 			height: window.innerHeight / 4
 		});
 		s.add(l);
 		/* Create a text */
-		new ec.Text({
-			font: new ec.Font({
+		new kan.Text({
+			font: new kan.Font({
 				family: 'Arial',
 				size: 24,
-				fill: ec.Color.WHITE(),
+				fill: kan.Color.WHITE(),
 				baseLine: 'middle',
 				textAlign: 'center'
 			}),
 			value: 'Rectangles & Lines + Transformations\nClick and move',
-			position: new ec.Point({
+			position: new kan.Point({
 				x: window.innerWidth/2,
 				y: l.height/2
 			}),
 			update: function(data) {
-				ec.Text.prototype.update.call(this, data);
+				kan.Text.prototype.update.call(this, data);
 				if (isClicked) {
 					if (this.font.fill.a > 0) {
 						this.font.fill.a -= 0.02;
@@ -136,7 +136,7 @@
 				}
 			}
 		}).addTo(l);
-		/* run the stage which contains the ec.Text */
+		/* run the stage which contains the kan.Text */
 		s.run();
 		
 		/* run the main stage */
