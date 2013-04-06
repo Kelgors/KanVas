@@ -80,11 +80,15 @@ window.kan = {
 		if(!fn){return;}
 		var event, f;
 		event = load || 'DOMContentLoaded';
-		f = function(e) {
-			kan.EventManager.remove(event, f, false);
-			fn();
-		};
-		kan.EventManager.add(event, f, false);
+		if (event === 'load') {
+			window.onload = fn;
+		} else {
+			f = function(e) {
+				kan.EventManager.remove(event, f, false);
+				fn();
+			};
+			kan.EventManager.add(event, f, false);
+		}
 	},
 	/**
 	* Check the requestAnimationFrame Function

@@ -26,9 +26,14 @@ kan.Line.prototype = {
 	stroke: null,
 	/**
 	* All points that defined the line
-	* @type {List<kan.Point>}
+	* @type {kan.List<kan.Point>}
 	*/
 	points: null,
+	/**
+	* Define the width of the line
+	* @type {Number}
+	*/
+	width: 1,
 	/** 
 	* Defines the referential
 	* @type {kan.Graphics} 
@@ -50,11 +55,11 @@ kan.Line.prototype = {
 	* @param {kan.Point} data.lastMouse.abs
 	*/
 	draw: function(data) {
-		if (this.stroke) {
+		if (this.stroke && !this.points.empty()) {
 			var ctx = data.context;
 			this.graphics.beforedraw(ctx);
 			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
-
+			ctx.lineWidth = this.width;
 			ctx.beginPath();
 			ctx.moveTo(this.points.get(0).x, this.points.get(0).y);
 			this.points.each(function() {

@@ -9,10 +9,12 @@
  * A **way to simplify** the development with canvas.
  * **Not** inessential things
  * (So a) **Very quick** library to execute
+ * Based on continue redrawing (Pre-rendering available soon)
  * What else ?
  
 
 ### To be continued...
+
 * Input class|Keyboard class
 * kan.Stage/kan.Layer Prerendering
 * Image class

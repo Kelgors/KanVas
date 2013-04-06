@@ -9,12 +9,8 @@
  */
 kan.Layer = function(settings) {
 	this.info.supportedEvents = new Object();
-	this.lastMouse = {
-		rel: new kan.Point(),
-		abs: new kan.Point()
-	};
 	this.offset = new kan.Point();
-	this.components = new kan.List();
+	this.components = new kan.ShapeList();
 	this.graphics = new kan.Graphics();
 	if ( settings.canvas ) {
 		/** @define {HTMLCanvasElement} */
@@ -72,23 +68,6 @@ kan.Layer.prototype = {
 	*/
 	components: null,
 	/**
-	* Last position of the mouse since the last event
-	* @type {Object}
-	*/
-	lastMouse: {
-	    /**
-	    * Last relative position of the mouse since the last MouseEvent
-	    * @type {kan.Point}
-	    */
-		rel: null,
-	    /**
-	    * Last absolute position of the mouse since the last MouseEvent
-	    * No scrolling page
-	    * @type {kan.Point}
-	    */
-		abs: null
-	},
-	/**
 	* Add this kan.Layer to an Array, Stage or something else with the add|push method
 	* @param {kan.Stage|Array} this instance is adding to that
 	* @return {kan.Layer} this instance
@@ -106,6 +85,7 @@ kan.Layer.prototype = {
 	* @param {kan.Object} the component to add
 	*/
 	add: function(component) {
+		component.info.layer = this;
 		this.components.add(component);
 		for (var i in component.events) 
 		{
@@ -113,12 +93,16 @@ kan.Layer.prototype = {
 			if (!this.info.supportedEvents[i]) {
 				var addEventFunc = this.canvas.addEventListener ? 'addEventListener' : 'attachEvent';
 				this.canvas[addEventFunc](i, (function(e) {
-					if (e.type == 'mouseup' || e.type == 'mousedown' || e.type == 'click' || e.type == 'mousemove') {
-						this.lastMouse.rel = e.mousePosition = kan.Mouse.getPosition(e);
-						this.lastMouse.abs = e.mouseAbsPosition = kan.Mouse.getAbsolutePosition(e);
+					if (e instanceof MouseEvent) {
+						kan.Mouse._update(e);
+						e.mousePosition = kan.Mouse.position.rel;
+						e.mouseAbsPosition = kan.Mouse.position.abs;
 					}
+					e.target = (function(event) {
+						return event.originalTarget || event.toElement || event.target;
+					})(e);
 					for (var i = this.components.items.length-1; i > -1; i--) {
-						/* for each components, spread the event */
+						/* for each components, spread the event from top to bottom */
 						if (!this.components.items[i].events.execute(e)) {
 							return false;
 						}
@@ -127,11 +111,10 @@ kan.Layer.prototype = {
 				this.info.supportedEvents[i] = true;
 				if (!this.mouseUpCorrection) {
 					document.addEventListener('mouseup', (function(e) {
-						var target = null;
-						if (e.originalTarget) { target = e.originalTarget; }
-						else if (e.toElement) { target = e.toElement; }
-						else if (e.target) { target = e.target; }
-						if (target != this.canvas) {
+						e.target = (function(event) {
+							return event.originalTarget || event.toElement || event.target;
+						})(e);
+						if (e.target != this.canvas) {
 							this.components.each(function() {
 								this.events.reset();
 							});
@@ -152,10 +135,10 @@ kan.Layer.prototype = {
 			timer: stage.timer.delta(),
 			mouse: this.lastMouse
 		};
-		/* Update each components in the list */
-		this.components.each(function() {
-			this.update(data);
-		});
+		/* Update each components (override the kan.DrawableComponentsList.each function to be a very little bit quicker) */
+		for(var index = 0; index < this.components.items.length; index++) {
+			this.components.items[index].update(data);
+		}
 		/* Resort the list */
 		this.components.sort(function(c1, c2) {
 			return c1.zIndex > c2.zIndex ? 1 : c1.zIndex < c2.zIndex ? -1 : 0;
@@ -175,10 +158,10 @@ kan.Layer.prototype = {
 			timer: stage.timer.delta(),
 			mouse: this.lastMouse
 		};
-		/* Draw each components */
-		this.components.each(function() {
-			this.draw(data);
-		});
+		/* Draw each components (override the kan.DrawableComponentsList.each function to be a very little bit quicker) */
+		for(var index = 0; index < this.components.items.length; index++) {
+			this.components.items[index].draw(data);
+		}
 		this.graphics.afterdraw(this.context);
 	},
 	/**

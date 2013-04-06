@@ -3,6 +3,7 @@
  * @constructor
  */
 kan.Object = function(settings) {
+	this.info = kan._clone(this.info);
 	for( var i in settings ) {
 		this[i] = settings[i];
 	}

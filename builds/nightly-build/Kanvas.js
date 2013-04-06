@@ -1,7 +1,7 @@
 /**
 * Kanvas
 * @package ec
-* @version 0.2.9 (2013-04-05)
+* @version 0.3 (2013-04-06)
 * @author Matthieu BOHEAS <matthieuboheas[at]gmail.com>
 * @copyright Copyright (c) 2013 Matthieu BOHEAS
 * @link https://github.com/Kelgors/Kanvas
@@ -108,11 +108,15 @@ window.kan = {
 		if(!fn){return;}
 		var event, f;
 		event = load || 'DOMContentLoaded';
-		f = function(e) {
-			kan.EventManager.remove(event, f, false);
-			fn();
-		};
-		kan.EventManager.add(event, f, false);
+		if (event === 'load') {
+			window.onload = fn;
+		} else {
+			f = function(e) {
+				kan.EventManager.remove(event, f, false);
+				fn();
+			};
+			kan.EventManager.add(event, f, false);
+		}
 	},
 	/**
 	* Check the requestAnimationFrame Function
@@ -248,25 +252,44 @@ window.kan._set_requestAnimFrame();
 
 kan.Mouse = {
 	/**
+	 * Position of the mouse contains two objects
+	 *   rel: the position relative to the page
+	 *   abs: the absolute position
+	 *   In most of cases, if your css for the canvas is position: absolute, take the absolute position and vice-versa for the relative position
+	 * @type {Object}
+	*/
+	position: {
+		rel: null,
+		abs: null
+	},
+	/**
 	 * Get the absolute mouse position as kan.Point from Event 
 	 * @param {MouseEvent} e
-	 * @type kan.Point
-	 * @returns {kan.Point}
+	 * @return {kan.Point}
 	 */
 	getAbsolutePosition: function(e) {
-		return new kan.Point({
-			x: e.clientX,
-			y: e.clientY
-		});
+		kan.Mouse._update(e);
+		return kan.Mouse.position.abs;
 	},
 	/**
 	 * Get the relative mousePosition as kan.Point from Event
 	 * @param {MouseEvent} e
-	 * @type kan.Point
-	 * @returns {kan.Point}
+	 * @return {kan.Point}
 	 */
 	getPosition: function(e) {
-		return new kan.Point({
+		kan.Mouse._update(e);
+		return kan.Mouse.position.rel;
+	},
+	/**
+	* Update the positions variables 
+	* @param {MouseEvent}
+	*/
+	_update: function(e) {
+		kan.Mouse.position.abs = new kan.Point({
+			x: e.clientX,
+			y: e.clientY
+		});
+		kan.Mouse.position.rel = new kan.Point({
 			x: e.layerX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft),
 			y: e.layerY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop)
 		});
@@ -274,8 +297,7 @@ kan.Mouse = {
 	/**
 	 * Get the relative X component of mouse position from an Event
 	 * @param {MouseEvent} e
-	 * @type Number
-	 * @returns {Number}
+	 * @return {Number}
 	 */
 	getX: function(e) {
 		return e.layerX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
@@ -283,8 +305,7 @@ kan.Mouse = {
 	/**
 	 * Get the relative Y component of mouse position from an Event
 	 * @param {MouseEvent} e
-	 * @type Number
-	 * @returns {Number}
+	 * @return {Number}
 	 */
 	getY: function(e) {
 		return e.layerY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
@@ -327,8 +348,6 @@ kan.EventManager.prototype = {
 			if (e.stopImmediatePropagation) { e.stopImmediatePropagation(); }
 			e.cancelBubble = true;
 			e.returnValue = false;
-			
-			return false;
 		}
 		return dontStop;
 	},
@@ -378,6 +397,7 @@ kan.EventManager.remove = function(e, f, b) {
  * @constructor
  */
 kan.Object = function(settings) {
+	this.info = kan._clone(this.info);
 	for( var i in settings ) {
 		this[i] = settings[i];
 	}
@@ -768,7 +788,7 @@ kan.List.prototype = {
 		return this;
 	},
 	/**
-	* Move an object to the end of the list
+	* Move an object at the beginning of the list
 	* @param {Function(this=List[index], index)=Boolean|?}
 	* @return {kan.List}
 	*/
@@ -778,7 +798,7 @@ kan.List.prototype = {
 		return this;
 	},
 	/**
-	* Move an object at the beginning of the list
+	* Move an object to the end of the list
 	* @param {Function(this=List[index], index)=Boolean|?}
 	* @return {kan.List}
 	*/
@@ -901,8 +921,9 @@ kan.List.prototype = {
 	getIndex: function(o) {
 		if (typeof(o) == 'object') {
 			for(var index = 0; index < this.items.length; index++) {
-				if (o.equals && o.equals(this.items[index])) {
-					return index;
+				if (o.equals) {
+					if (o.equals(this.items[index]))
+						return index;
 				} else if (kan.equal(o, this.items[index])) {
 					return index;
 				}
@@ -939,9 +960,11 @@ kan.List.prototype = {
 	* @return {Boolean} true or Function in param ask to break
 	*/
 	each: function(fn) {
+		var returnValue;
 		for (var index = 0; index < this.items.length; index++) {
-			if (fn.call(this.items[index], index) == false) {
-				return false;
+			
+			if (returnValue = fn.call(this.items[index], index)) {
+				return returnValue;
 			}
 		}
 		return false;
@@ -990,6 +1013,87 @@ kan.List.prototype = {
 
 };
 kan.extend(kan.List, kan.Object);
+
+kan.ShapeList = function(settings) {
+	kan.List.call(this, settings);
+};
+
+kan.ShapeList.prototype = {
+	info: {
+		type: 'ShapeList',
+		getType: function() {
+			return kan.ShapeList;
+		}
+	},
+	add: function(o) {
+		if (o.draw && o.update) {
+			kan.List.prototype.add.call(this, o);
+		}
+	},
+	moveToFirst: function(o) {
+		var index;
+		if (typeof(o) == 'number') {
+			index = o;
+			o = this.items[index];
+		} else {
+			index = this.getIndex(o);
+		}
+		o.lastZIndex = o.zIndex;
+		o.zIndex = this.first().zIndex - 1;
+		this.items.slice(index, 1);
+		this.items.unshift(o);
+	},
+	moveToLast: function(o) {
+		var index;
+		if (typeof(o) == 'number') {
+			index = o;
+			o = this.items[index];
+		} else {
+			index = this.getIndex(o);
+		}
+		o.lastZIndex = o.zIndex;
+		o.zIndex = this.last().zIndex + 1;
+		this.items.slice(index, 1);
+		this.items.push(o);
+	},
+	moveDown: function(o) {
+		var index;
+		if (typeof(o) == 'number') {
+			index = o;
+			o = this.items[index];
+		} else {
+			index = this.getIndex(o);
+		}
+		o.lastZIndex = o.zIndex;
+		o.zIndex = this.items[index-1] ? this.items[index-1].zIndex - 1 : o.zIndex - 1;
+		this.exchange(index, index-1);
+	},
+	moveUp: function(o) {
+		var index;
+		if (typeof(o) == 'number') {
+			index = o;
+			o = this.items[index];
+		} else {
+			index = this.getIndex(o);
+		}
+		o.lastZIndex = o.zIndex;
+		o.zIndex = this.items[index+1] ? this.items[index+1].zIndex + 1 : o.zIndex + 1;
+		this.exchange(index, index+1);
+	},
+	moveBack: function(o) {
+		o.zIndex = o.lastZIndex;
+	},
+	getIndex: function(o) {
+		for(var index = 0; index < this.items; index++) {
+			if (this.items[index].info.ID === o.info.ID) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+};
+kan.extend(kan.ShapeList, kan.List);
 
 /**
 * A font
@@ -1821,7 +1925,8 @@ kan.Shape = function(settings) {
 		this.on('mouseup', this.eventsHandlers.click.up);
 	}
 	if (this.draggable) {
-		this.on('mousedown', this.eventsHandlers.drag.begin);
+		if (!this.clickable)
+			this.on('mousedown', this.eventsHandlers.click.down);
 		this.on('mousemove', this.eventsHandlers.drag.move);
 		this.on('mouseup', this.eventsHandlers.drag.end);
 	}
@@ -1922,6 +2027,8 @@ kan.Shape.prototype = {
 				if (this.contains(e.mousePosition)) {
 					this.events.state.pressed = true;
 					kan.Mouse.pressed = true;
+					this.events.state.lastPosition = kan.Vector2.substract(this.position, e.mousePosition);
+					this.info.layer.components.moveToLast(this);
 					if (this.onpressed) { this.onpressed(e); }
 					return false;
 				}
@@ -1933,6 +2040,7 @@ kan.Shape.prototype = {
 					this.events.state.pressed = false;
 					kan.Mouse.pressed = false;
 					this.events.state.clicked = true;
+					this.info.layer.components.moveBack(this);
 					if (e.which == 3 && kan.DEBUG) {
 						console.log(this);
 					}
@@ -1945,18 +2053,6 @@ kan.Shape.prototype = {
 			}
 		},
 		drag : {
-			begin : function(e) {
-				if (e.which == 1) {
-					if (this.contains(e.mousePosition)) {
-						this.events.state.pressed = true;
-						kan.Mouse.pressed = true;
-						this.events.state.lastPosition = kan.Vector2.substract(this.position, e.mousePosition);
-						return false;
-					}
-					this.events.state.pressed = false;
-					return true;
-				}
-			},
 			move : function(e) {
 				if (this.events.state.pressed) {
 					this.position.x = e.mousePosition.x + this.events.state.lastPosition.x;
@@ -1973,6 +2069,7 @@ kan.Shape.prototype = {
 					this.events.state.dragging = false;
 					this.events.state.pressed = false;
 					kan.Mouse.pressed = false;
+					this.info.layer.components.moveBack(this);
 					return false;
 				}
 				return true;
@@ -2044,9 +2141,14 @@ kan.Line.prototype = {
 	stroke: null,
 	/**
 	* All points that defined the line
-	* @type {List<kan.Point>}
+	* @type {kan.List<kan.Point>}
 	*/
 	points: null,
+	/**
+	* Define the width of the line
+	* @type {Number}
+	*/
+	width: 1,
 	/** 
 	* Defines the referential
 	* @type {kan.Graphics} 
@@ -2068,11 +2170,11 @@ kan.Line.prototype = {
 	* @param {kan.Point} data.lastMouse.abs
 	*/
 	draw: function(data) {
-		if (this.stroke) {
+		if (this.stroke && !this.points.empty()) {
 			var ctx = data.context;
 			this.graphics.beforedraw(ctx);
 			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
-
+			ctx.lineWidth = this.width;
 			ctx.beginPath();
 			ctx.moveTo(this.points.get(0).x, this.points.get(0).y);
 			this.points.each(function() {
@@ -2838,12 +2940,8 @@ kan.extend(kan.Stage, kan.Object);
  */
 kan.Layer = function(settings) {
 	this.info.supportedEvents = new Object();
-	this.lastMouse = {
-		rel: new kan.Point(),
-		abs: new kan.Point()
-	};
 	this.offset = new kan.Point();
-	this.components = new kan.List();
+	this.components = new kan.ShapeList();
 	this.graphics = new kan.Graphics();
 	if ( settings.canvas ) {
 		/** @define {HTMLCanvasElement} */
@@ -2901,23 +2999,6 @@ kan.Layer.prototype = {
 	*/
 	components: null,
 	/**
-	* Last position of the mouse since the last event
-	* @type {Object}
-	*/
-	lastMouse: {
-	    /**
-	    * Last relative position of the mouse since the last MouseEvent
-	    * @type {kan.Point}
-	    */
-		rel: null,
-	    /**
-	    * Last absolute position of the mouse since the last MouseEvent
-	    * No scrolling page
-	    * @type {kan.Point}
-	    */
-		abs: null
-	},
-	/**
 	* Add this kan.Layer to an Array, Stage or something else with the add|push method
 	* @param {kan.Stage|Array} this instance is adding to that
 	* @return {kan.Layer} this instance
@@ -2935,6 +3016,7 @@ kan.Layer.prototype = {
 	* @param {kan.Object} the component to add
 	*/
 	add: function(component) {
+		component.info.layer = this;
 		this.components.add(component);
 		for (var i in component.events) 
 		{
@@ -2942,12 +3024,16 @@ kan.Layer.prototype = {
 			if (!this.info.supportedEvents[i]) {
 				var addEventFunc = this.canvas.addEventListener ? 'addEventListener' : 'attachEvent';
 				this.canvas[addEventFunc](i, (function(e) {
-					if (e.type == 'mouseup' || e.type == 'mousedown' || e.type == 'click' || e.type == 'mousemove') {
-						this.lastMouse.rel = e.mousePosition = kan.Mouse.getPosition(e);
-						this.lastMouse.abs = e.mouseAbsPosition = kan.Mouse.getAbsolutePosition(e);
+					if (e instanceof MouseEvent) {
+						kan.Mouse._update(e);
+						e.mousePosition = kan.Mouse.position.rel;
+						e.mouseAbsPosition = kan.Mouse.position.abs;
 					}
+					e.target = (function(event) {
+						return event.originalTarget || event.toElement || event.target;
+					})(e);
 					for (var i = this.components.items.length-1; i > -1; i--) {
-						/* for each components, spread the event */
+						/* for each components, spread the event from top to bottom */
 						if (!this.components.items[i].events.execute(e)) {
 							return false;
 						}
@@ -2956,11 +3042,10 @@ kan.Layer.prototype = {
 				this.info.supportedEvents[i] = true;
 				if (!this.mouseUpCorrection) {
 					document.addEventListener('mouseup', (function(e) {
-						var target = null;
-						if (e.originalTarget) { target = e.originalTarget; }
-						else if (e.toElement) { target = e.toElement; }
-						else if (e.target) { target = e.target; }
-						if (target != this.canvas) {
+						e.target = (function(event) {
+							return event.originalTarget || event.toElement || event.target;
+						})(e);
+						if (e.target != this.canvas) {
 							this.components.each(function() {
 								this.events.reset();
 							});
@@ -2981,10 +3066,10 @@ kan.Layer.prototype = {
 			timer: stage.timer.delta(),
 			mouse: this.lastMouse
 		};
-		/* Update each components in the list */
-		this.components.each(function() {
-			this.update(data);
-		});
+		/* Update each components (override the kan.DrawableComponentsList.each function to be a very little bit quicker) */
+		for(var index = 0; index < this.components.items.length; index++) {
+			this.components.items[index].update(data);
+		}
 		/* Resort the list */
 		this.components.sort(function(c1, c2) {
 			return c1.zIndex > c2.zIndex ? 1 : c1.zIndex < c2.zIndex ? -1 : 0;
@@ -3004,10 +3089,10 @@ kan.Layer.prototype = {
 			timer: stage.timer.delta(),
 			mouse: this.lastMouse
 		};
-		/* Draw each components */
-		this.components.each(function() {
-			this.draw(data);
-		});
+		/* Draw each components (override the kan.DrawableComponentsList.each function to be a very little bit quicker) */
+		for(var index = 0; index < this.components.items.length; index++) {
+			this.components.items[index].draw(data);
+		}
 		this.graphics.afterdraw(this.context);
 	},
 	/**

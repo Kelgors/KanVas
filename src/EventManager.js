@@ -34,8 +34,6 @@ kan.EventManager.prototype = {
 			if (e.stopImmediatePropagation) { e.stopImmediatePropagation(); }
 			e.cancelBubble = true;
 			e.returnValue = false;
-			
-			return false;
 		}
 		return dontStop;
 	},

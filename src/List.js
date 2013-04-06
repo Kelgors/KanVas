@@ -243,7 +243,7 @@ kan.List.prototype = {
 		return this;
 	},
 	/**
-	* Move an object to the end of the list
+	* Move an object at the beginning of the list
 	* @param {Function(this=List[index], index)=Boolean|?}
 	* @return {kan.List}
 	*/
@@ -253,7 +253,7 @@ kan.List.prototype = {
 		return this;
 	},
 	/**
-	* Move an object at the beginning of the list
+	* Move an object to the end of the list
 	* @param {Function(this=List[index], index)=Boolean|?}
 	* @return {kan.List}
 	*/
@@ -376,8 +376,9 @@ kan.List.prototype = {
 	getIndex: function(o) {
 		if (typeof(o) == 'object') {
 			for(var index = 0; index < this.items.length; index++) {
-				if (o.equals && o.equals(this.items[index])) {
-					return index;
+				if (o.equals) {
+					if (o.equals(this.items[index]))
+						return index;
 				} else if (kan.equal(o, this.items[index])) {
 					return index;
 				}
@@ -414,9 +415,11 @@ kan.List.prototype = {
 	* @return {Boolean} true or Function in param ask to break
 	*/
 	each: function(fn) {
+		var returnValue;
 		for (var index = 0; index < this.items.length; index++) {
-			if (fn.call(this.items[index], index) == false) {
-				return false;
+			
+			if (returnValue = fn.call(this.items[index], index)) {
+				return returnValue;
 			}
 		}
 		return false;

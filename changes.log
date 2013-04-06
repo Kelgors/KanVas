@@ -5,7 +5,7 @@
 
 0.2.8
 [+] ec.Line class
-[+=] ec.ready function take two parameters now ec.ready(function fn, String event = 'DOMContentLoaded')
+[~] ec.ready function take two parameters now ec.ready(function fn, String event = 'DOMContentLoaded')
 [+] Lines example
 [+] website experimentation in examples/
 [+] ec.List constructor can take directly an array ec.List(Object|Array settings)
@@ -24,7 +24,7 @@
 [+] ec.Graphics which manage translations, scales, rotations && transformations
 [+] ec.Shape.on  to add an event to this shape
 [+] ec.Shape.off to delete an event of this shape
-[+=] ec.Text
+[~] ec.Text
 [-] ec.EventManager static version
 
 0.2.4
@@ -32,16 +32,16 @@
 [+] ec.Object.info.ID 
 [+] examples/chronos.html
 [+] examples/color.html
-[+=] ec.Layer/ec.Stage .equals method
+[~] ec.Layer/ec.Stage .equals method
 
 0.2.3
 [+] ec.Object.stringify
 [+] ec.EventManager.purge method to clear all events
-[+=] ec.Object
-[+=] ec.Color
-[+=] ec.Rectangle
-[+=] ec.Vector2
-[+=] ec.Stage
+[~] ec.Object
+[~] ec.Color
+[~] ec.Rectangle
+[~] ec.Vector2
+[~] ec.Stage
 
 0.2.2
 [+] ec Object

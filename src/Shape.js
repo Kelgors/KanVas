@@ -44,7 +44,8 @@ kan.Shape = function(settings) {
 		this.on('mouseup', this.eventsHandlers.click.up);
 	}
 	if (this.draggable) {
-		this.on('mousedown', this.eventsHandlers.drag.begin);
+		if (!this.clickable)
+			this.on('mousedown', this.eventsHandlers.click.down);
 		this.on('mousemove', this.eventsHandlers.drag.move);
 		this.on('mouseup', this.eventsHandlers.drag.end);
 	}
@@ -145,6 +146,8 @@ kan.Shape.prototype = {
 				if (this.contains(e.mousePosition)) {
 					this.events.state.pressed = true;
 					kan.Mouse.pressed = true;
+					this.events.state.lastPosition = kan.Vector2.substract(this.position, e.mousePosition);
+					this.info.layer.components.moveToLast(this);
 					if (this.onpressed) { this.onpressed(e); }
 					return false;
 				}
@@ -156,6 +159,7 @@ kan.Shape.prototype = {
 					this.events.state.pressed = false;
 					kan.Mouse.pressed = false;
 					this.events.state.clicked = true;
+					this.info.layer.components.moveBack(this);
 					if (e.which == 3 && kan.DEBUG) {
 						console.log(this);
 					}
@@ -168,18 +172,6 @@ kan.Shape.prototype = {
 			}
 		},
 		drag : {
-			begin : function(e) {
-				if (e.which == 1) {
-					if (this.contains(e.mousePosition)) {
-						this.events.state.pressed = true;
-						kan.Mouse.pressed = true;
-						this.events.state.lastPosition = kan.Vector2.substract(this.position, e.mousePosition);
-						return false;
-					}
-					this.events.state.pressed = false;
-					return true;
-				}
-			},
 			move : function(e) {
 				if (this.events.state.pressed) {
 					this.position.x = e.mousePosition.x + this.events.state.lastPosition.x;
@@ -196,6 +188,7 @@ kan.Shape.prototype = {
 					this.events.state.dragging = false;
 					this.events.state.pressed = false;
 					kan.Mouse.pressed = false;
+					this.info.layer.components.moveBack(this);
 					return false;
 				}
 				return true;
