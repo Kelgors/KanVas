@@ -7,7 +7,8 @@
  * @extends {kan.Object}
  */
 kan.Point = function(settings) {
-	this.x = this.y = 0;
+	this.x = 0;
+	this.y = 0;
 	if(settings) {
 		kan.Object.call(this, settings);
 	}

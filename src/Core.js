@@ -53,8 +53,6 @@ window.kan = {
 				prototype[name] = parent[name];
 			}
 		}
-		/* Avoid to copy adress values of internal parent object */
-		
 		that.prototype = kan._clone(prototype);
 		that.prototype.info.parent = kan._clone(p.prototype.info);
 	},

@@ -14,6 +14,15 @@
  */
 kan.Rectangle = function(settings) {
 	this.size = new kan.Size();
+	if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
+		this.borderRadius = {
+			topLeft: settings.borderRadius,
+			topRight: settings.borderRadius,
+			bottomLeft: settings.borderRadius,
+			bottomRight: settings.borderRadius
+		};
+		delete settings.borderRadius;
+	}
 	kan.Shape.call(this, settings);
 };
 
@@ -32,6 +41,7 @@ kan.Rectangle.prototype = {
 			y: this.position.y + this.size.height/2
 		});
 	},
+	borderRadius: null,
 	/**
 	* Draw the Rectangle with data.context
 	* @override
@@ -46,14 +56,17 @@ kan.Rectangle.prototype = {
     	/** @define {CanvasRenderingContext2D} */
 		var ctx = data.context;
 		this.graphics.beforedraw(ctx);
-		if ( this.fill ) {
-			ctx.fillStyle = this.fill instanceof kan.Color ? this.fill.toRGBA() : this.fill;
-			ctx.fillRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
-		}
-		if ( this.stroke ) {
-			ctx.strokeStyle = this.stroke instanceof kan.Color ? this.stroke.toRGBA() : this.stroke;
+		if (this.fill || this.stroke) {
+			/* set Attributes */
+			if (this.fill) { ctx.fillStyle = this.fill instanceof kan.Color ? this.fill.toRGBA() : this.fill; }
+			if (this.stroke) { ctx.strokeStyle = this.stroke instanceof kan.Color ? this.stroke.toRGBA() : this.stroke; }
 			ctx.lineWidth = this.lineWidth;
-			ctx.strokeRect( this.currentPosition.x, this.currentPosition.y, this.size.width, this.size.height );
+			/* draw Path */
+			this.isRounded ? this._setRoundedRectPath(ctx) : this._setRectPath(ctx);
+			/* fill & stroke */
+			if (this.fill) { ctx.fill(); }
+			if (this.stroke) { ctx.stroke(); }
+		
 		}
 		this.graphics.afterdraw(ctx);
 	},
@@ -137,7 +150,7 @@ kan.Rectangle.prototype = {
 			draggable: this.draggable
 		});
 	},
-	get: function(tob, lor) {
+	getPoint: function(tob, lor) {
 		if (tob == 'top') {
 			return lor == 'left'
 				? this.position
@@ -148,6 +161,36 @@ kan.Rectangle.prototype = {
 				: new kan.Point({ x: this.position.x + this.size.width, y: this.position.y + this.size.height });
 		}
 		return null;
+	},
+	_setRoundedRectPath: function(context) {
+		var topRightPositionX = this.getPoint('top', 'right').x, 
+		bottomLeftPositionY = this.getPoint('bottom', 'left').y,
+		radius = this.borderRadius;
+		
+		context.beginPath();
+		context.moveTo(this.position.x + radius.topLeft, this.position.y);
+		context.lineTo(topRightPositionX - radius.topRight, this.position.y);
+		context.quadraticCurveTo(topRightPositionX, this.position.y, topRightPositionX, this.position.y + radius.topRight);
+		context.lineTo(topRightPositionX, bottomLeftPositionY - radius.bottomRight);
+		context.quadraticCurveTo(topRightPositionX, bottomLeftPositionY, topRightPositionX - radius.bottomRight, bottomLeftPositionY);
+		context.lineTo(this.position.x + radius.bottomRight, bottomLeftPositionY);
+		context.quadraticCurveTo(this.position.x, bottomLeftPositionY, this.position.x, bottomLeftPositionY - radius.bottomLeft);
+		context.lineTo(this.position.x, this.position.y + radius.topLeft);
+		context.quadraticCurveTo(this.position.x, this.position.y, this.position.x + radius.topLeft, this.position.y);
+	},
+	isRounded: function() {
+		return (this.borderRadius.topLeft == 0
+			 && this.borderRadius.topRight == 0
+			 && this.borderRadius.bottomLeft == 0
+			 && this.borderRadius.bottomRight == 0);
+	},
+	_setRectPath: function(context) {
+		context.beginPath();
+		context.moveTo(this.position.x, this.position.y);
+		context.LineTo(this.position.x + this.size.width, this.position.y);
+		context.LineTo(this.position.x + this.size.width, this.position.y + this.size.height);
+		context.LineTo(this.position.x, this.position.y + this.size.height);
+		context.LineTo(this.position.x, this.position.y);
 	}
 };
 

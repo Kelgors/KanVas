@@ -1,7 +1,7 @@
 /**
  * This class represents a Layer that drawing multiple Shapes
  * @param {Object} settings
- * @param {String} settings.canvas
+ * @param {String|HTMLCanvasElement} settings.canvas
  * @param {Number} settings.width
  * @param {Number} settings.height
  * @constructor
@@ -13,13 +13,19 @@ kan.Layer = function(settings) {
 	this.components = new kan.ShapeList();
 	this.graphics = new kan.Graphics();
 	if ( settings.canvas ) {
-		/** @define {HTMLCanvasElement} */
-		this.canvas = document.getElementById(settings.canvas);
-		this.canvas.width = settings.width;
-		this.canvas.height = settings.height;
-		/** @define {CanvasRenderingContext2D} */
-		this.context = this.canvas.getContext('2d');
-		delete settings.canvas;
+		if (typeof(settings.canvas) == 'string') {
+			/** @define {HTMLCanvasElement} */
+			this.canvas = document.getElementById(settings.canvas);
+			if (settings.width) { this.canvas.width = settings.width; }
+			if (settings.height) { this.canvas.height = settings.height; }
+			/** @define {CanvasRenderingContext2D} */
+			this.context = this.canvas.getContext('2d');
+			delete settings.canvas;
+		} else if (settings.canvas instanceof HTMLCanvasElement) {
+			this.context = settings.canvas.getContext('2d');
+			if (settings.width) { settings.canvas.width = settings.width; }
+			if (settings.height) { settings.canvas.height = settings.height; }
+		}
 	}
 	kan.Object.call(this, settings);
 };

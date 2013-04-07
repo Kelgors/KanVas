@@ -1,16 +1,27 @@
+0.3.1
+[+] kan.Rectangle.borderRadius
+[+] new Layer => settings.canvas can be now an HTMLCanvasElement
+
+0.3
+[+] kan.ShapeList added, ready
+[+] function load event supported
+[+] kan.Line.width added
+[~] kan.Shape premade events corrections
+[~] new kan.Object => clone info object
+
 0.2.9
+[+] typeof method added to kan object
 [~] Rename the project from EasyCanvas to KanVas, this is f***ing cooler
 [~] Very needed improvments to the kan.List
-[+] typeof method added to kan object
 
 0.2.8
 [+] ec.Line class
-[~] ec.ready function take two parameters now ec.ready(function fn, String event = 'DOMContentLoaded')
 [+] Lines example
 [+] website experimentation in examples/
 [+] ec.List constructor can take directly an array ec.List(Object|Array settings)
 [+] ec.Image class functions
 [+] ec.EventManager add() && remove() which calls the right browser's method 
+[~] ec.ready function take two parameters now ec.ready(function fn, String event = 'DOMContentLoaded')
 
 0.2.7
 [+] zIndex management in the update function into the Layer && zIndex attribute added to all Shapes
