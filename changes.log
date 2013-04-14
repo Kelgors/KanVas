@@ -1,6 +1,11 @@
 0.3.1
-[+] kan.Rectangle.borderRadius
 [+] new Layer => settings.canvas can be now an HTMLCanvasElement
+[+] kan.Rectangle.borderRadius attribute
+[+] kan.Rectangle._setRoundedRectPath(context)
+[+] kan.Rectangle._setRectPath(context)
+[+] new Layer => settings.canvas can be now an HTMLCanvasElement
+[~] kan.Rectangle.draw adaptations
+[~] kan.Rectangle.get => kan.Rectangle.getPoint (same params)
 
 0.3
 [+] kan.ShapeList added, ready

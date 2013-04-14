@@ -1,7 +1,7 @@
 /**
 * Kanvas
 * @package ec
-* @version 0.3.1 (2013-04-07)
+* @version 0.3.2 (2013-04-14)
 * @author Matthieu BOHEAS <matthieuboheas[at]gmail.com>
 * @copyright Copyright (c) 2013 Matthieu BOHEAS
 * @link https://github.com/Kelgors/Kanvas
@@ -2395,15 +2395,23 @@ kan.extend(kan.Text, kan.Shape);
  * @extends {kan.Shape}
  */
 kan.Rectangle = function(settings) {
+	this.borderRadius = {
+		topLeft: 0,
+		topRight: 0,
+		bottomLeft: 0,
+		bottomRight: 0
+	};
 	this.size = new kan.Size();
-	if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
-		this.borderRadius = {
-			topLeft: settings.borderRadius,
-			topRight: settings.borderRadius,
-			bottomLeft: settings.borderRadius,
-			bottomRight: settings.borderRadius
-		};
-		delete settings.borderRadius;
+	if (settings) {
+		if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
+			this.borderRadius = {
+				topLeft: settings.borderRadius,
+				topRight: settings.borderRadius,
+				bottomLeft: settings.borderRadius,
+				bottomRight: settings.borderRadius
+			};
+			delete settings.borderRadius;
+		}
 	}
 	kan.Shape.call(this, settings);
 };
@@ -2974,7 +2982,7 @@ kan.extend(kan.Stage, kan.Object);
 /**
  * This class represents a Layer that drawing multiple Shapes
  * @param {Object} settings
- * @param {String} settings.canvas
+ * @param {String|HTMLCanvasElement} settings.canvas
  * @param {Number} settings.width
  * @param {Number} settings.height
  * @constructor

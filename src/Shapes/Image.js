@@ -27,8 +27,6 @@ kan.Image = function(settings) {
 			this.image = new Image();
 			this.image.src = src;
 		}
-	} else {
-		
 	}
 	
 	if (this.size.equals(0)) {

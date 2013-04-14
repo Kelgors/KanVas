@@ -13,15 +13,23 @@
  * @extends {kan.Shape}
  */
 kan.Rectangle = function(settings) {
+	this.borderRadius = {
+		topLeft: 0,
+		topRight: 0,
+		bottomLeft: 0,
+		bottomRight: 0
+	};
 	this.size = new kan.Size();
-	if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
-		this.borderRadius = {
-			topLeft: settings.borderRadius,
-			topRight: settings.borderRadius,
-			bottomLeft: settings.borderRadius,
-			bottomRight: settings.borderRadius
-		};
-		delete settings.borderRadius;
+	if (settings) {
+		if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
+			this.borderRadius = {
+				topLeft: settings.borderRadius,
+				topRight: settings.borderRadius,
+				bottomLeft: settings.borderRadius,
+				bottomRight: settings.borderRadius
+			};
+			delete settings.borderRadius;
+		}
 	}
 	kan.Shape.call(this, settings);
 };
