@@ -155,21 +155,42 @@ kan.Rectangle.prototype = {
 			amplitude: this.floating.amplitude,
 			speed: this.floating.speed,
 			clickable: this.clickable,
-			draggable: this.draggable
+			draggable: this.draggable,
+      borderRadius: kan._clone(this.borderRadius)
 		});
 	},
-	getPoint: function(tob, lor) {
-		if (tob == 'top') {
-			return lor == 'left'
-				? this.position
-				: new kan.Point({ x: this.position.x + this.size.width, y: this.position.y });
-		} else {
-			return lor == 'left'
-				? new kan.Point({ x: this.position.x, y: this.position.y + this.size.height })
-				: new kan.Point({ x: this.position.x + this.size.width, y: this.position.y + this.size.height });
-		}
-		return null;
+  /**
+   * Get a point on this Rectangle
+   * @param {String} top|mid|bottom
+   * @param {String} left|mid|bottom
+   * @return {kan.Point}
+  **/
+	getPoint: function(tmb, lmr) {
+    var X, Y;
+    if (typeof(lmr) == 'string') {
+      if (lmr == 'left') {
+        X = this.position.x;
+      } else if (lmr == 'right') {
+        X = this.position.x + this.size.width;
+      } else {
+        X = this.position.x + this.size.width/2;
+      }
+    }
+    if (typeof(tmb) == 'string') {
+      if (tmb == 'top') {
+        Y = this.position.y;
+      } else if (tmb == 'bottom') {
+        Y = this.position.y + this.size.height;
+      } else {
+        Y = this.position.y + this.size.height/2;
+      }
+    }
+    return new kan.Point({ x: X, y: Y });
 	},
+  /**
+   * Set the path for a rounded Rectangle
+   * @param {CanvasRenderingContext2D}
+  */
 	_setRoundedRectPath: function(context) {
 		var topRightPositionX = this.getPoint('top', 'right').x, 
 		bottomLeftPositionY = this.getPoint('bottom', 'left').y,
@@ -186,12 +207,20 @@ kan.Rectangle.prototype = {
 		context.lineTo(this.position.x, this.position.y + radius.topLeft);
 		context.quadraticCurveTo(this.position.x, this.position.y, this.position.x + radius.topLeft, this.position.y);
 	},
+  /**
+   * Check if this instance of Rectangle is rounded or not
+   * @return {Boolean}
+  **/
 	isRounded: function() {
-		return (this.borderRadius.topLeft == 0
-			 && this.borderRadius.topRight == 0
-			 && this.borderRadius.bottomLeft == 0
-			 && this.borderRadius.bottomRight == 0);
+		return (this.borderRadius.topLeft != 0
+			 || this.borderRadius.topRight != 0
+			 || this.borderRadius.bottomLeft != 0
+			 || this.borderRadius.bottomRight != 0);
 	},
+  /**
+   * Set the path for a simple Rectangle
+   * @param {CanvasRenderingContext2D}
+  */
 	_setRectPath: function(context) {
 		context.beginPath();
 		context.moveTo(this.position.x, this.position.y);

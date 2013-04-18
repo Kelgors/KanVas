@@ -55,24 +55,24 @@
 		}).addTo(layer);
 		new kan.Line({
 			points: [
-				square1.get('top', 'right'),
-				square2.get('top', 'right')
+				square1.getPoint('top', 'right'),
+				square2.getPoint('top', 'right')
 			],
 			stroke: '#FFF'
 		}).addTo(layer);
 		new kan.Line({
 			points: [
-				square1.get('bottom', 'right'),
-				square2.get('bottom', 'right')
+				square1.getPoint('bottom', 'right'),
+				square2.getPoint('bottom', 'right')
 			],
 			stroke: square2.stroke
 		}).addTo(layer);
 		new kan.Line({
 			points: [
-				square1.get('bottom', 'left'),
-				square2.get('bottom', 'left')
+				square1.getPoint('bottom', 'left'),
+				square2.getPoint('bottom', 'left')
 			],
-			stroke: '#FFF'
+			stroke: '#FF0000'//'#FFF'
 		}).addTo(layer);
 		last = null, isClicked = false;
 		/* Manage Events */

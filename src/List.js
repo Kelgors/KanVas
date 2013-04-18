@@ -16,9 +16,7 @@ kan.List = function(settings) {
 		this.addRange(settings.slice(0));
 		settings = null;
 	}
-	for (var i in settings) {
-		this[i] = settings[i];
-	}
+	kan.Object.call(this, settings);
 };
 
 kan.List.prototype = {

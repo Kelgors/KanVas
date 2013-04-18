@@ -58,7 +58,7 @@ kan.Line.prototype = {
 		if (this.stroke && !this.points.empty()) {
 			var ctx = data.context;
 			this.graphics.beforedraw(ctx);
-			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
+			ctx.strokeStyle = this.stroke.inheritsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
 			ctx.lineWidth = this.width;
 			ctx.beginPath();
 			ctx.moveTo(this.points.get(0).x, this.points.get(0).y);

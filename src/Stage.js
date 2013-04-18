@@ -28,11 +28,19 @@ kan.Stage.prototype = {
 		clearTimeout();
 		clearInterval();
 	},
-	run: function() {
+	run: function(mode) {
 		this.isRunning = true;
 		kan.Timer.step();
+    switch(mode) {
+      case 'once':
+        this.update();
+        this.draw();
+        this.isRunning = false;
+        break;
+      default:
+        this._loop();
+    }
 		this.timer.reset();
-		this._loop();
 	},
 	_loop: function() {
 		if (this.isRunning) {
@@ -55,6 +63,11 @@ kan.Stage.prototype = {
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
 		return this.ID === o.ID && o.inheritsof(kan.Stage);
-	}
+	},
+  clear: function() {
+    for(var i = 0; i < this.layers.length; i++) {
+      this.layers[i].context.clearRect(0, 0, this.layers[i].canvas.width, this.layers[i].canvas.height);
+    }
+  }
 };
 kan.extend(kan.Stage, kan.Object);

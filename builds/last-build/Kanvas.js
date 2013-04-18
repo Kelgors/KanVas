@@ -1,7 +1,7 @@
 /**
 * Kanvas
 * @package ec
-* @version 0.3.2 (2013-04-14)
+* @version 0.3.3 (2013-04-18)
 * @author Matthieu BOHEAS <matthieuboheas[at]gmail.com>
 * @copyright Copyright (c) 2013 Matthieu BOHEAS
 * @link https://github.com/Kelgors/Kanvas
@@ -559,9 +559,7 @@ kan.List = function(settings) {
 		this.addRange(settings.slice(0));
 		settings = null;
 	}
-	for (var i in settings) {
-		this[i] = settings[i];
-	}
+	kan.Object.call(this, settings);
 };
 
 kan.List.prototype = {
@@ -1508,8 +1506,11 @@ kan.Vector2.prototype = {
 	 * @param o {Number|kan.Point} Numeric value|Other Point
 	 * @return {kan.Vector2} this instance
 	 */
-	adds: function(value){
-		if ( typeof(value) == 'number' ) {
+	adds: function(value, value2){
+    if (value2 && value) {
+      this.x += value;
+			this.y += value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x += value;
 			this.y += value;
 		} else if ( value.x != null && value.y != null ) {
@@ -1524,7 +1525,10 @@ kan.Vector2.prototype = {
 	 * @return {kan.Vector2} this instance
 	 */
 	substracts: function(value){
-		if ( typeof(value) == 'number' ) {
+		if (value2 && value) {
+      this.x -= value;
+			this.y -= value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x -= value;
 			this.y -= value;
 		} else if ( value.x != null && value.y != null ) {
@@ -1539,7 +1543,10 @@ kan.Vector2.prototype = {
 	 * @return {kan.Vector2} this instance
 	 */
 	multiplies: function(value){ 
-		if ( typeof(value) == 'number' ) {
+		if (value2 && value) {
+      this.x *= value;
+			this.y *= value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x *= value;
 			this.y *= value;
 		} else if ( value.x != null && value.y != null ) {
@@ -1554,7 +1561,10 @@ kan.Vector2.prototype = {
 	 * @return {kan.Vector2} this instance
 	 */
 	divides: function(value){
-		if ( typeof(value) == 'number' ) {
+		if (value2 && value) {
+      this.x /= value;
+			this.y /= value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x /= value;
 			this.y /= value;
 		} else if ( value.x != null && value.y != null ) {
@@ -2172,7 +2182,7 @@ kan.Line.prototype = {
 		if (this.stroke && !this.points.empty()) {
 			var ctx = data.context;
 			this.graphics.beforedraw(ctx);
-			ctx.strokeStyle = this.stroke.inhertitsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
+			ctx.strokeStyle = this.stroke.inheritsof && this.stroke.inheritsof(kan.Color) ? this.stroke.toRGBA() : this.stroke;
 			ctx.lineWidth = this.width;
 			ctx.beginPath();
 			ctx.moveTo(this.points.get(0).x, this.points.get(0).y);
@@ -2402,14 +2412,16 @@ kan.Rectangle = function(settings) {
 		bottomRight: 0
 	};
 	this.size = new kan.Size();
-	if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
-		this.borderRadius = {
-			topLeft: settings.borderRadius,
-			topRight: settings.borderRadius,
-			bottomLeft: settings.borderRadius,
-			bottomRight: settings.borderRadius
-		};
-		delete settings.borderRadius;
+	if (settings) {
+		if (settings.borderRadius && typeof(settings.borderRadius) == 'number') {
+			this.borderRadius = {
+				topLeft: settings.borderRadius,
+				topRight: settings.borderRadius,
+				bottomLeft: settings.borderRadius,
+				bottomRight: settings.borderRadius
+			};
+			delete settings.borderRadius;
+		}
 	}
 	kan.Shape.call(this, settings);
 };
@@ -2535,21 +2547,42 @@ kan.Rectangle.prototype = {
 			amplitude: this.floating.amplitude,
 			speed: this.floating.speed,
 			clickable: this.clickable,
-			draggable: this.draggable
+			draggable: this.draggable,
+      borderRadius: kan._clone(this.borderRadius)
 		});
 	},
-	getPoint: function(tob, lor) {
-		if (tob == 'top') {
-			return lor == 'left'
-				? this.position
-				: new kan.Point({ x: this.position.x + this.size.width, y: this.position.y });
-		} else {
-			return lor == 'left'
-				? new kan.Point({ x: this.position.x, y: this.position.y + this.size.height })
-				: new kan.Point({ x: this.position.x + this.size.width, y: this.position.y + this.size.height });
-		}
-		return null;
+  /**
+   * Get a point on this Rectangle
+   * @param {String} top|mid|bottom
+   * @param {String} left|mid|bottom
+   * @return {kan.Point}
+  **/
+	getPoint: function(tmb, lmr) {
+    var X, Y;
+    if (typeof(lmr) == 'string') {
+      if (lmr == 'left') {
+        X = this.position.x;
+      } else if (lmr == 'right') {
+        X = this.position.x + this.size.width;
+      } else {
+        X = this.position.x + this.size.width/2;
+      }
+    }
+    if (typeof(tmb) == 'string') {
+      if (tmb == 'top') {
+        Y = this.position.y;
+      } else if (tmb == 'bottom') {
+        Y = this.position.y + this.size.height;
+      } else {
+        Y = this.position.y + this.size.height/2;
+      }
+    }
+    return new kan.Point({ x: X, y: Y });
 	},
+  /**
+   * Set the path for a rounded Rectangle
+   * @param {CanvasRenderingContext2D}
+  */
 	_setRoundedRectPath: function(context) {
 		var topRightPositionX = this.getPoint('top', 'right').x, 
 		bottomLeftPositionY = this.getPoint('bottom', 'left').y,
@@ -2566,12 +2599,20 @@ kan.Rectangle.prototype = {
 		context.lineTo(this.position.x, this.position.y + radius.topLeft);
 		context.quadraticCurveTo(this.position.x, this.position.y, this.position.x + radius.topLeft, this.position.y);
 	},
+  /**
+   * Check if this instance of Rectangle is rounded or not
+   * @return {Boolean}
+  **/
 	isRounded: function() {
-		return (this.borderRadius.topLeft == 0
-			 && this.borderRadius.topRight == 0
-			 && this.borderRadius.bottomLeft == 0
-			 && this.borderRadius.bottomRight == 0);
+		return (this.borderRadius.topLeft != 0
+			 || this.borderRadius.topRight != 0
+			 || this.borderRadius.bottomLeft != 0
+			 || this.borderRadius.bottomRight != 0);
 	},
+  /**
+   * Set the path for a simple Rectangle
+   * @param {CanvasRenderingContext2D}
+  */
 	_setRectPath: function(context) {
 		context.beginPath();
 		context.moveTo(this.position.x, this.position.y);
@@ -2749,8 +2790,6 @@ kan.Image = function(settings) {
 			this.image = new Image();
 			this.image.src = src;
 		}
-	} else {
-		
 	}
 	
 	if (this.size.equals(0)) {
@@ -2945,11 +2984,19 @@ kan.Stage.prototype = {
 		clearTimeout();
 		clearInterval();
 	},
-	run: function() {
+	run: function(mode) {
 		this.isRunning = true;
 		kan.Timer.step();
+    switch(mode) {
+      case 'once':
+        this.update();
+        this.draw();
+        this.isRunning = false;
+        break;
+      default:
+        this._loop();
+    }
 		this.timer.reset();
-		this._loop();
 	},
 	_loop: function() {
 		if (this.isRunning) {
@@ -2972,7 +3019,12 @@ kan.Stage.prototype = {
 	equals: function(o) {
 		if (!o.inheritsof) { return false; }
 		return this.ID === o.ID && o.inheritsof(kan.Stage);
-	}
+	},
+  clear: function() {
+    for(var i = 0; i < this.layers.length; i++) {
+      this.layers[i].context.clearRect(0, 0, this.layers[i].canvas.width, this.layers[i].canvas.height);
+    }
+  }
 };
 kan.extend(kan.Stage, kan.Object);
 

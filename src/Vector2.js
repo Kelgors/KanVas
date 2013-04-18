@@ -22,8 +22,11 @@ kan.Vector2.prototype = {
 	 * @param o {Number|kan.Point} Numeric value|Other Point
 	 * @return {kan.Vector2} this instance
 	 */
-	adds: function(value){
-		if ( typeof(value) == 'number' ) {
+	adds: function(value, value2){
+    if (value2 && value) {
+      this.x += value;
+			this.y += value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x += value;
 			this.y += value;
 		} else if ( value.x != null && value.y != null ) {
@@ -38,7 +41,10 @@ kan.Vector2.prototype = {
 	 * @return {kan.Vector2} this instance
 	 */
 	substracts: function(value){
-		if ( typeof(value) == 'number' ) {
+		if (value2 && value) {
+      this.x -= value;
+			this.y -= value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x -= value;
 			this.y -= value;
 		} else if ( value.x != null && value.y != null ) {
@@ -53,7 +59,10 @@ kan.Vector2.prototype = {
 	 * @return {kan.Vector2} this instance
 	 */
 	multiplies: function(value){ 
-		if ( typeof(value) == 'number' ) {
+		if (value2 && value) {
+      this.x *= value;
+			this.y *= value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x *= value;
 			this.y *= value;
 		} else if ( value.x != null && value.y != null ) {
@@ -68,7 +77,10 @@ kan.Vector2.prototype = {
 	 * @return {kan.Vector2} this instance
 	 */
 	divides: function(value){
-		if ( typeof(value) == 'number' ) {
+		if (value2 && value) {
+      this.x /= value;
+			this.y /= value2;
+    } else if ( typeof(value) == 'number' ) {
 			this.x /= value;
 			this.y /= value;
 		} else if ( value.x != null && value.y != null ) {
